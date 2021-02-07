@@ -70,7 +70,8 @@ func main() {
 	})
 
 	inlineKeys := [][]tb.InlineButton{
-		[]tb.InlineButton{inlineBtn1, inlineBtn2},
+		// []tb.InlineButton{inlineBtn1, inlineBtn2},
+		{inlineBtn1, inlineBtn2},
 	}
 
 	b.Handle("/pick_time", func(m *tb.Message) {
@@ -78,6 +79,12 @@ func main() {
 			m.Sender,
 			"Day or night, you choose",
 			&tb.ReplyMarkup{InlineKeyboard: inlineKeys})
+	})
+
+	b.Handle(tb.OnQuery, func(q *tb.Query) {
+		// incoming inline queries
+		log.Println(q.From)
+		log.Println(q.Text)
 	})
 
 	b.Start()
