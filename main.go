@@ -93,6 +93,8 @@ func main() {
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		log.Println("****")
 		log.Println(q.Text)
+		log.Println(q.ID)
+		log.Println(q.From.ID)
 		log.Println("****")
 
 		plusIcon := "https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg"
