@@ -135,7 +135,7 @@ func main() {
 
 			result.SetResultID("TSLA" + fmt.Sprint(i))
 
-			result.SetReplyMarkup(inlineKeys)
+			// result.SetReplyMarkup(inlineKeys)
 
 			results[i] = result
 			// needed to set a unique string ID for each result
@@ -173,10 +173,14 @@ func main() {
 		log.Println(r.MessageID)
 		log.Println(r.ResultID)
 		log.Println(r.Query)
+		log.Println(r.From.ID)
+		log.Println(r.From.Recipient())
 		log.Println("====")
 
-		photo := &tb.Photo{File: tb.FromURL("https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg")}
-		b.Send(&r.From, photo)
+		// tb.ChatID
+
+		// photo := &tb.Photo{File: tb.FromURL("https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg")}
+		// b.Send(&r.From, photo)
 
 		// log.Println(q.Text)
 		// err := b.Answer(q, &tb.QueryResponse{
