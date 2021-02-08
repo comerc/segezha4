@@ -177,10 +177,10 @@ func main() {
 		log.Println(r.From.Recipient())
 		log.Println("====")
 
-		// tb.ChatID
+		group := tb.ChatID(r.From.ID)
 
-		// photo := &tb.Photo{File: tb.FromURL("https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg")}
-		// b.Send(&r.From, photo)
+		photo := &tb.Photo{File: tb.FromURL("https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg")}
+		b.Send(group, photo)
 
 		// log.Println(q.Text)
 		// err := b.Answer(q, &tb.QueryResponse{
