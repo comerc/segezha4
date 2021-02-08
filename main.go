@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -103,12 +104,18 @@ func main() {
 
 		results := make(tb.Results, len(urls)) // []tb.Result
 		for i, url := range urls {
-			result := &tb.PhotoResult{
-				URL: url,
+			result := &tb.ArticleResult{
+				Title: "Title" + fmt.Sprint(i),
+				Text:  "Text" + fmt.Sprint(i),
 
-				// required for photos
 				ThumbURL: url,
 			}
+			//  .PhotoResult{
+			// 	URL: url,
+
+			// 	// required for photos
+			// 	ThumbURL: url,
+			// }
 
 			results[i] = result
 			// needed to set a unique string ID for each result
