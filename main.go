@@ -87,22 +87,27 @@ func main() {
 		log.Println(q.Text)
 		log.Println("****")
 
+		plusIcon := "https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg"
+		minusIcon := "https://pp.vk.me/c627626/v627626512/2a635/ILYe7N2n8Zo.jpg"
+		divideIcon := "https://pp.vk.me/c627626/v627626512/2a620/oAvUk7Awps0.jpg"
+		multiplyIcon := "https://pp.vk.me/c627626/v627626512/2a62e/xqnPMigaP5c.jpg"
+		errorIcon := "https://pp.vk.me/c627626/v627626512/2a67a/ZvTeGq6Mf88.jpg"
+
 		urls := []string{
-			"https://pp.userapi.com/c627626/v627626512/2a67a/ZvTeGq6Mf88.jpg",
-			"https://pp.userapi.com/c627626/v627626512/2a627/7dlh4RRhd24.jpg",
-			// "8b98f59a-155b-464c-898f-1c04cfa86969.jpg",
-			// "054ea921-afab-496d-8bdb-ebcc9f16b69f.jpg",
+			plusIcon,
+			minusIcon,
+			divideIcon,
+			multiplyIcon,
+			errorIcon,
 		}
 
 		results := make(tb.Results, len(urls)) // []tb.Result
 		for i, url := range urls {
 			result := &tb.PhotoResult{
 				URL: url,
-				// URL: "https://minsk8-2.web.app/cdn/image/width=400/" + url,
 
 				// required for photos
 				ThumbURL: url,
-				// ThumbURL: "https://minsk8-2.web.app/cdn/image/width=50/" + url,
 			}
 
 			results[i] = result
