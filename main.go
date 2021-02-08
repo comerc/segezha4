@@ -9,6 +9,14 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// type ArticleResultExt struct {
+// 	tb.ArticleResult
+
+// 	// Optional. Send Markdown or HTML, if you want Telegram apps to show
+// 	// bold, italic, fixed-width text or inline URLs in the media caption.
+// 	ParseMode tb.ParseMode `json:"parse_mode,omitempty"`
+// }
+
 func main() {
 	// log.Fatal("err1234")
 
@@ -104,13 +112,13 @@ func main() {
 
 		results := make(tb.Results, len(urls)) // []tb.Result
 		for i, url := range urls {
-			result := &tb.DocumentResult{
+			result := &tb.ArticleResult{
 				Title:       "Title" + fmt.Sprint(i) + " *Bold*",
 				Description: "Description" + fmt.Sprint(i) + " *Bold*",
-				// Text:        "Text" + fmt.Sprint(i) + " *Bold*",
-				ParseMode: "MarkdownV2",
-				URL:       "https://finviz.com/quote.ashx?t=LMT",
-				MIME:      "text/html",
+				Text:        "Text" + fmt.Sprint(i) + " *Bold*",
+				ParseMode:   tb.ModeMarkdownV2,
+				// URL:       "https://finviz.com/quote.ashx?t=LMT",
+				// MIME:      "text/html",
 
 				ThumbURL: url,
 			}
