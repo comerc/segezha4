@@ -115,8 +115,7 @@ func main() {
 			result := &tb.ArticleResult{
 				Title:       "Title" + fmt.Sprint(i) + " *Bold*",
 				Description: "Description" + fmt.Sprint(i) + " *Bold*",
-				Text:        "Text" + fmt.Sprint(i) + " *Bold*",
-				// ParseMode:   tb.ModeMarkdownV2,
+
 				// URL:       "https://finviz.com/quote.ashx?t=LMT",
 				// MIME:      "text/html",
 
@@ -128,6 +127,11 @@ func main() {
 			// 	// required for photos
 			// 	ThumbURL: url,
 			// }
+
+			result.SetContent(&tb.InputTextMessageContent{
+				Text:      "Text" + fmt.Sprint(i) + " *Bold*",
+				ParseMode: tb.ModeMarkdownV2,
+			})
 
 			results[i] = result
 			// needed to set a unique string ID for each result
