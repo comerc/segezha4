@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -134,9 +133,11 @@ func main() {
 				ParseMode: tb.ModeMarkdownV2,
 			})
 
+			result.SetResultID("TSLA" + fmt.Sprint(i))
+
 			results[i] = result
 			// needed to set a unique string ID for each result
-			results[i].SetResultID(strconv.Itoa(i))
+			// results[i].SetResultID(strconv.Itoa(i))
 		}
 
 		err := b.Answer(q, &tb.QueryResponse{
