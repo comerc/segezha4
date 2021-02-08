@@ -88,8 +88,8 @@ func main() {
 		log.Println("****")
 
 		urls := []string{
-			"https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg",
-			"https://pp.vk.me/c627626/v627626512/2a67a/ZvTeGq6Mf88.jpg",
+			"https://pp.userapi.com/c627626/v627626512/2a67a/ZvTeGq6Mf88.jpg",
+			"https://pp.userapi.com/c627626/v627626512/2a627/7dlh4RRhd24.jpg",
 			// "8b98f59a-155b-464c-898f-1c04cfa86969.jpg",
 			// "054ea921-afab-496d-8bdb-ebcc9f16b69f.jpg",
 		}
