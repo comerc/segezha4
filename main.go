@@ -129,11 +129,11 @@ func main() {
 			// 	ThumbURL: url,
 			// }
 
-			result.SetContent(&tb.InputTextMessageContent{
-				Text: "Text" + fmt.Sprint(i) + " *Bold* [src](https://itsallwidgets.com/screenshots/app-2041.png)",
+			// result.SetContent(&tb.InputTextMessageContent{
+			// 	Text: "Text" + fmt.Sprint(i) + " *Bold* [src](https://itsallwidgets.com/screenshots/app-2041.png)",
 
-				ParseMode: tb.ModeMarkdownV2,
-			})
+			// 	ParseMode: tb.ModeMarkdownV2,
+			// })
 
 			result.SetResultID("TSLA" + fmt.Sprint(i))
 
