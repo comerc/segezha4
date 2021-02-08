@@ -110,7 +110,7 @@ func main() {
 				// Text:        "Text" + fmt.Sprint(i) + " *Bold*",
 				ParseMode: "MarkdownV2",
 				URL:       "https://finviz.com/quote.ashx?t=LMT",
-				MIME:      "application/html",
+				MIME:      "text/html",
 
 				ThumbURL: url,
 			}
