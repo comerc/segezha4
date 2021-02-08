@@ -116,6 +116,7 @@ func main() {
 			result := &tb.ArticleResult{
 				Title:       "Title" + fmt.Sprint(i) + " *Bold*",
 				Description: "Description" + fmt.Sprint(i) + " *Bold*",
+				Text:        "",
 
 				// URL:       "https://finviz.com/quote.ashx?t=LMT",
 				// MIME:      "text/html",
