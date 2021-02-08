@@ -166,7 +166,10 @@ func main() {
 
 	b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
 		// incoming inline queries
-		log.Println(r.MessageID)
+		log.Println("====")
+		// log.Println(r.MessageID)
+		log.Println(r.ResultID)
+		log.Println("====")
 		// log.Println(q.Text)
 		// err := b.Answer(q, &tb.QueryResponse{
 		// 	Results:   results,
