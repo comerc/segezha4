@@ -104,9 +104,13 @@ func main() {
 
 		results := make(tb.Results, len(urls)) // []tb.Result
 		for i, url := range urls {
-			result := &tb.ArticleResult{
-				Title: "Title" + fmt.Sprint(i),
-				Text:  "Text" + fmt.Sprint(i),
+			result := &tb.DocumentResult{
+				Title:       "Title" + fmt.Sprint(i) + " *Bold*",
+				Description: "Description" + fmt.Sprint(i) + " *Bold*",
+				// Text:        "Text" + fmt.Sprint(i) + " *Bold*",
+				ParseMode: "MarkdownV2",
+				URL:       "https://finviz.com/quote.ashx?t=LMT",
+				MIME:      "application/html",
 
 				ThumbURL: url,
 			}
