@@ -129,7 +129,7 @@ func main() {
 			// }
 
 			result.SetContent(&tb.InputTextMessageContent{
-				Text: "Text" + fmt.Sprint(i) + " *Bold* ![demo](https://itsallwidgets.com/screenshots/app-2041.png)",
+				Text: "Text" + fmt.Sprint(i) + " *Bold* [demo](https://itsallwidgets.com/screenshots/app-2041.png)",
 
 				ParseMode: tb.ModeMarkdownV2,
 			})
@@ -164,20 +164,20 @@ func main() {
 
 	// })
 
-	// b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
-	// 	// incoming inline queries
-	// 	log.Println(r.MessageID)
-	// 	// log.Println(q.Text)
-	// 	// err := b.Answer(q, &tb.QueryResponse{
-	// 	// 	Results:   results,
-	// 	// 	CacheTime: 60, // a minute
-	// 	// })
-	// 	// if err != nil {
-	// 	// 	log.Println(err)
-	// 	// }
-	// 	// tb.PhotoResult
+	b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
+		// incoming inline queries
+		log.Println(r.MessageID)
+		// log.Println(q.Text)
+		// err := b.Answer(q, &tb.QueryResponse{
+		// 	Results:   results,
+		// 	CacheTime: 60, // a minute
+		// })
+		// if err != nil {
+		// 	log.Println(err)
+		// }
+		// tb.PhotoResult
 
-	// })
+	})
 
 	b.Start()
 }
