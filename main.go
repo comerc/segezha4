@@ -88,17 +88,21 @@ func main() {
 		log.Println("****")
 
 		urls := []string{
-			"8b98f59a-155b-464c-898f-1c04cfa86969.jpg",
-			"054ea921-afab-496d-8bdb-ebcc9f16b69f.jpg",
+			"https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg",
+			"https://pp.vk.me/c627626/v627626512/2a67a/ZvTeGq6Mf88.jpg",
+			// "8b98f59a-155b-464c-898f-1c04cfa86969.jpg",
+			// "054ea921-afab-496d-8bdb-ebcc9f16b69f.jpg",
 		}
 
 		results := make(tb.Results, len(urls)) // []tb.Result
 		for i, url := range urls {
 			result := &tb.PhotoResult{
-				URL: "https://minsk8-2.web.app/cdn/image/width=400/" + url,
+				URL: url,
+				// URL: "https://minsk8-2.web.app/cdn/image/width=400/" + url,
 
 				// required for photos
-				ThumbURL: "https://minsk8-2.web.app/cdn/image/width=50/" + url,
+				ThumbURL: url,
+				// ThumbURL: "https://minsk8-2.web.app/cdn/image/width=50/" + url,
 			}
 
 			results[i] = result
