@@ -83,6 +83,10 @@ func main() {
 	})
 
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
+		log.Println("****")
+		log.Println(q.Text)
+		log.Println("****")
+
 		urls := []string{
 			"8b98f59a-155b-464c-898f-1c04cfa86969.jpg",
 			"054ea921-afab-496d-8bdb-ebcc9f16b69f.jpg",
