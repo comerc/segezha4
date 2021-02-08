@@ -129,7 +129,7 @@ func main() {
 			// }
 
 			result.SetContent(&tb.InputTextMessageContent{
-				Text: "Text" + fmt.Sprint(i) + " *Bold* [](https://itsallwidgets.com/screenshots/app-2041.png)",
+				Text: "Text" + fmt.Sprint(i) + " *Bold* [src](https://itsallwidgets.com/screenshots/app-2041.png)",
 
 				ParseMode: tb.ModeMarkdownV2,
 			})
@@ -167,8 +167,9 @@ func main() {
 	b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
 		// incoming inline queries
 		log.Println("====")
-		// log.Println(r.MessageID)
+		log.Println(r.MessageID)
 		log.Println(r.ResultID)
+		log.Println(r.Query)
 		log.Println("====")
 		// log.Println(q.Text)
 		// err := b.Answer(q, &tb.QueryResponse{
