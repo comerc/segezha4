@@ -129,7 +129,8 @@ func main() {
 			// }
 
 			result.SetContent(&tb.InputTextMessageContent{
-				Text:      "Text" + fmt.Sprint(i) + " *Bold*",
+				Text: "Text" + fmt.Sprint(i) + " *Bold* ![demo](https://itsallwidgets.com/screenshots/app-2041.png)",
+
 				ParseMode: tb.ModeMarkdownV2,
 			})
 
