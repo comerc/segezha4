@@ -135,6 +135,8 @@ func main() {
 
 			result.SetResultID("TSLA" + fmt.Sprint(i))
 
+			result.SetReplyMarkup(inlineKeys)
+
 			results[i] = result
 			// needed to set a unique string ID for each result
 			// results[i].SetResultID(strconv.Itoa(i))
@@ -172,6 +174,9 @@ func main() {
 		log.Println(r.ResultID)
 		log.Println(r.Query)
 		log.Println("====")
+
+		photo := &tb.Photo{File: tb.FromURL("https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg")}
+
 		// log.Println(q.Text)
 		// err := b.Answer(q, &tb.QueryResponse{
 		// 	Results:   results,
