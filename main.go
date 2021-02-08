@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strconv"
 
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -82,10 +83,64 @@ func main() {
 	})
 
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
-		// incoming inline queries
-		log.Println(q.From)
-		log.Println(q.Text)
+		urls := []string{
+			"8b98f59a-155b-464c-898f-1c04cfa86969.jpg",
+			"054ea921-afab-496d-8bdb-ebcc9f16b69f.jpg",
+		}
+
+		results := make(tb.Results, len(urls)) // []tb.Result
+		for i, url := range urls {
+			result := &tb.PhotoResult{
+				URL: "https://minsk8-2.web.app/cdn/image/width=400/" + url,
+
+				// required for photos
+				ThumbURL: "https://minsk8-2.web.app/cdn/image/width=50/" + url,
+			}
+
+			results[i] = result
+			// needed to set a unique string ID for each result
+			results[i].SetResultID(strconv.Itoa(i))
+		}
+
+		err := b.Answer(q, &tb.QueryResponse{
+			Results:   results,
+			CacheTime: 60, // a minute
+		})
+
+		if err != nil {
+			log.Println(err)
+		}
 	})
+
+	// b.Handle(tb.OnQuery, func(q *tb.Query) {
+	// 	// incoming inline queries
+	// 	log.Println(q.From.Username)
+	// 	log.Println(q.Text)
+	// 	// err := b.Answer(q, &tb.QueryResponse{
+	// 	// 	Results:   results,
+	// 	// 	CacheTime: 60, // a minute
+	// 	// })
+	// 	// if err != nil {
+	// 	// 	log.Println(err)
+	// 	// }
+	// 	// tb.PhotoResult
+
+	// })
+
+	// b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
+	// 	// incoming inline queries
+	// 	log.Println(r.MessageID)
+	// 	// log.Println(q.Text)
+	// 	// err := b.Answer(q, &tb.QueryResponse{
+	// 	// 	Results:   results,
+	// 	// 	CacheTime: 60, // a minute
+	// 	// })
+	// 	// if err != nil {
+	// 	// 	log.Println(err)
+	// 	// }
+	// 	// tb.PhotoResult
+
+	// })
 
 	b.Start()
 }
