@@ -8,14 +8,6 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// type ArticleResultExt struct {
-// 	tb.ArticleResult
-
-// 	// Optional. Send Markdown or HTML, if you want Telegram apps to show
-// 	// bold, italic, fixed-width text or inline URLs in the media caption.
-// 	ParseMode tb.ParseMode `json:"parse_mode,omitempty"`
-// }
-
 func main() {
 	// log.Fatal("err1234")
 
@@ -102,6 +94,7 @@ func main() {
 		divideIcon := "https://pp.vk.me/c627626/v627626512/2a620/oAvUk7Awps0.jpg"
 		multiplyIcon := "https://pp.vk.me/c627626/v627626512/2a62e/xqnPMigaP5c.jpg"
 		errorIcon := "https://pp.vk.me/c627626/v627626512/2a67a/ZvTeGq6Mf88.jpg"
+		nvidiaIcon := "https://s3-symbol-logo.tradingview.com/nvidia.svg"
 
 		urls := []string{
 			plusIcon,
@@ -109,6 +102,7 @@ func main() {
 			divideIcon,
 			multiplyIcon,
 			errorIcon,
+			nvidiaIcon,
 		}
 
 		results := make(tb.Results, len(urls)) // []tb.Result
@@ -155,21 +149,6 @@ func main() {
 		}
 	})
 
-	// b.Handle(tb.OnQuery, func(q *tb.Query) {
-	// 	// incoming inline queries
-	// 	log.Println(q.From.Username)
-	// 	log.Println(q.Text)
-	// 	// err := b.Answer(q, &tb.QueryResponse{
-	// 	// 	Results:   results,
-	// 	// 	CacheTime: 60, // a minute
-	// 	// })
-	// 	// if err != nil {
-	// 	// 	log.Println(err)
-	// 	// }
-	// 	// tb.PhotoResult
-
-	// })
-
 	b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
 		// incoming inline queries
 		log.Println("====")
@@ -187,17 +166,6 @@ func main() {
 		photo := &tb.Photo{File: tb.FromURL("https://firebasestorage.googleapis.com/v0/b/minsk8-2.appspot.com/o/8b98f59a-155b-464c-898f-1c04cfa86969.jpg?alt=media&token=2628e0bf-d11d-403f-98ac-b09fff126831")}
 
 		b.Send(group, photo)
-
-		// log.Println(q.Text)
-		// err := b.Answer(q, &tb.QueryResponse{
-		// 	Results:   results,
-		// 	CacheTime: 60, // a minute
-		// })
-		// if err != nil {
-		// 	log.Println(err)
-		// }
-		// tb.PhotoResult
-
 	})
 
 	b.Start()
