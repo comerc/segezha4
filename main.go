@@ -94,7 +94,10 @@ func main() {
 		divideIcon := "https://pp.vk.me/c627626/v627626512/2a620/oAvUk7Awps0.jpg"
 		multiplyIcon := "https://pp.vk.me/c627626/v627626512/2a62e/xqnPMigaP5c.jpg"
 		errorIcon := "https://pp.vk.me/c627626/v627626512/2a67a/ZvTeGq6Mf88.jpg"
-		nvidiaIcon := "https://s3-symbol-logo.tradingview.com/nvidia.svg"
+		tslaIcon := "https://financemarker.ru/fa/fa_logos/TSLA.png"
+		nvdaIcon := "https://financemarker.ru/fa/fa_logos/NVDA.png"
+		vrtxIcon := "https://financemarker.ru/fa/fa_logos/VRTX.png"
+		twtrIcon := "https://financemarker.ru/fa/fa_logos/TWTR.png"
 
 		urls := []string{
 			plusIcon,
@@ -102,7 +105,10 @@ func main() {
 			divideIcon,
 			multiplyIcon,
 			errorIcon,
-			nvidiaIcon,
+			tslaIcon,
+			nvdaIcon,
+			vrtxIcon,
+			twtrIcon,
 		}
 
 		results := make(tb.Results, len(urls)) // []tb.Result
