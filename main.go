@@ -1,12 +1,17 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
 	tb "gopkg.in/tucnak/telebot.v2"
 )
+
+// Ticket of stock market
+type Ticket struct {
+	name string
+	desc string
+}
 
 func main() {
 	// log.Fatal("err1234")
@@ -89,39 +94,47 @@ func main() {
 		log.Println(q.From.ID)
 		log.Println("****")
 
-		plusIcon := "https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg"
-		minusIcon := "https://pp.vk.me/c627626/v627626512/2a635/ILYe7N2n8Zo.jpg"
-		divideIcon := "https://pp.vk.me/c627626/v627626512/2a620/oAvUk7Awps0.jpg"
-		multiplyIcon := "https://pp.vk.me/c627626/v627626512/2a62e/xqnPMigaP5c.jpg"
-		errorIcon := "https://pp.vk.me/c627626/v627626512/2a67a/ZvTeGq6Mf88.jpg"
-		tslaIcon := "https://financemarker.ru/fa/fa_logos/TSLA.png"
-		nvdaIcon := "https://financemarker.ru/fa/fa_logos/NVDA.png"
-		vrtxIcon := "https://financemarker.ru/fa/fa_logos/VRTX.png"
-		twtrIcon := "https://financemarker.ru/fa/fa_logos/TWTR.png"
+		// plusIcon := "https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg"
+		// minusIcon := "https://pp.vk.me/c627626/v627626512/2a635/ILYe7N2n8Zo.jpg"
+		// divideIcon := "https://pp.vk.me/c627626/v627626512/2a620/oAvUk7Awps0.jpg"
+		// multiplyIcon := "https://pp.vk.me/c627626/v627626512/2a62e/xqnPMigaP5c.jpg"
+		// errorIcon := "https://pp.vk.me/c627626/v627626512/2a67a/ZvTeGq6Mf88.jpg"
+		// tslaIcon := "https://financemarker.ru/fa/fa_logos/TSLA.png"
+		// nvdaIcon := "https://financemarker.ru/fa/fa_logos/NVDA.png"
+		// vrtxIcon := "https://financemarker.ru/fa/fa_logos/VRTX.png"
+		// twtrIcon := "https://financemarker.ru/fa/fa_logos/TWTR.png"
+		// https://storage.googleapis.com/iexcloud-hl37opg/api/logos/TWTR.png
 
-		urls := []string{
-			plusIcon,
-			minusIcon,
-			divideIcon,
-			multiplyIcon,
-			errorIcon,
-			tslaIcon,
-			nvdaIcon,
-			vrtxIcon,
-			twtrIcon,
+		// urls := []string{
+		// 	plusIcon,
+		// 	minusIcon,
+		// 	divideIcon,
+		// 	multiplyIcon,
+		// 	errorIcon,
+		// 	tslaIcon,
+		// 	nvdaIcon,
+		// 	vrtxIcon,
+		// 	twtrIcon,
+		// }
+
+		tickets := []Ticket{
+			{name: "TSLA", desc: "Tesla"},
+			{name: "NVDA", desc: "Nvidia"},
+			{name: "VRTX", desc: "VRTX"},
+			{name: "TWTR", desc: "Twitter"},
 		}
 
-		results := make(tb.Results, len(urls)) // []tb.Result
-		for i, url := range urls {
+		results := make(tb.Results, len(tickets)) // []tb.Result
+		for i, ticket := range tickets {
 			result := &tb.ArticleResult{
-				Title:       "Title" + fmt.Sprint(i) + " *Bold*",
-				Description: "Description" + fmt.Sprint(i) + " *Bold*",
-				Text:        "OK",
+				Title:       ticket.name, // "Title" + fmt.Sprint(i) + " *Bold*",
+				Description: ticket.desc, // "Description" + fmt.Sprint(i) + " *Bold*",
+				Text:        "OK " + ticket.desc,
 
 				// URL:       "https://finviz.com/quote.ashx?t=LMT",
 				// MIME:      "text/html",
 
-				ThumbURL: url,
+				ThumbURL: "https://storage.googleapis.com/iexcloud-hl37opg/api/logos/" + ticket.name + ".png",
 			}
 			//  .PhotoResult{
 			// 	URL: url,
@@ -136,7 +149,9 @@ func main() {
 			// 	ParseMode: tb.ModeMarkdownV2,
 			// })
 
-			result.SetResultID("TSLA" + fmt.Sprint(i))
+			result.SetResultID(ticket.name)
+
+			// result.SetResultID("TSLA" + fmt.Sprint(i))
 
 			// result.SetReplyMarkup(inlineKeys)
 
