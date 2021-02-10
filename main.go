@@ -132,12 +132,17 @@ func main() {
 		log.Println("====")
 		to := tb.ChatID(parseInt(chatID))
 		ticketName := r.ResultID
-		screenshot := Screenshot()
+		screenshot := Screenshot(ticketName)
 		photo := &tb.Photo{
 			File: tb.FromReader(bytes.NewReader(screenshot)),
 			// FromURL("https://firebasestorage.googleapis.com/v0/b/minsk8-2.appspot.com/o/8b98f59a-155b-464c-898f-1c04cfa86969.jpg?alt=media&token=2628e0bf-d11d-403f-98ac-b09fff126831"),
-			Caption: "#" + ticketName + " finviz",
+			// Caption: "#" + ticketName + " finviz",
 			// "https://finviz.com/quote.ashx?t=" + ticketName
+			Caption: fmt.Sprintf(
+				"\\#%[1]s [finviz](https://finviz.com/quote.ashx?t=%[1]s)",
+				ticketName,
+			),
+			ParseMode: tb.ModeMarkdownV2,
 		}
 		b.Send(to, photo)
 

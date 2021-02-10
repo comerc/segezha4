@@ -13,7 +13,7 @@ import (
 )
 
 // Screenshot description
-func Screenshot() []byte {
+func Screenshot(ticketName string) []byte {
 	// create context
 	ctx, cancel := chromedp.NewContext(context.Background())
 	defer cancel()
@@ -37,7 +37,7 @@ func Screenshot() []byte {
 	// if err := chromedp.Run(ctx, fullScreenshot(`https://www.gurufocus.com/stock/TAK/summary`, 90, &buf)); err != nil {
 	// if err := chromedp.Run(ctx, fullScreenshot(`https://www.marketwatch.com/investing/stock/zm`, 90, &buf)); err != nil {
 	// if err := chromedp.Run(ctx, fullScreenshot(`https://www.marketbeat.com/stocks/NASDAQ/FB/institutional-ownership/`, 90, &buf)); err != nil {
-	if err := chromedp.Run(ctx, fullScreenshot(`https://finviz.com/quote.ashx?t=zm`, 90, &buf)); err != nil {
+	if err := chromedp.Run(ctx, fullScreenshot("https://finviz.com/quote.ashx?t="+ticketName, 90, &buf)); err != nil {
 		log.Fatal(err)
 	}
 
