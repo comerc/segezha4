@@ -80,18 +80,18 @@ func main() {
 		log.Println(m.Via.IsBot)
 		log.Println(m.Via.Username)
 		log.Println("+++++")
-		// if m.Via.ID != b.Me.ID {
-		// 	return
-		// }
-		// err := b.Delete(
-		// 	&tb.StoredMessage{
-		// 		MessageID: strconv.Itoa(m.ID),
-		// 		ChatID:    parseInt(chatID),
-		// 	},
-		// )
-		// if err != nil {
-		// 	log.Println(err)
-		// }
+		if m.Via.ID != b.Me.ID {
+			return
+		}
+		err := b.Delete(
+			&tb.StoredMessage{
+				MessageID: strconv.Itoa(m.ID),
+				ChatID:    parseInt(chatID),
+			},
+		)
+		if err != nil {
+			log.Println(err)
+		}
 	})
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		log.Println("*****")
@@ -106,9 +106,9 @@ func main() {
 		// 	log.Println(err)
 		// }
 		// chat
-		// if strconv.Itoa(q.From.ID) != ownerID {
-		// 	return
-		// }
+		if strconv.Itoa(q.From.ID) != ownerID {
+			return
+		}
 		var search string
 		for _, param := range strings.Split(q.Text, " ") {
 			if strings.HasPrefix(param, "#") {
