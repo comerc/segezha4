@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -78,16 +79,19 @@ func main() {
 		tickets := GetTickets(q.Text)
 		results := make(tb.Results, len(tickets)) // []tb.Result
 		for i, ticket := range tickets {
+			url := fmt.Sprintf("https://stockanalysis.com/stocks/%s/", ticket.name)
 			result := &tb.ArticleResult{
 				Title:       ticket.name,
 				Description: ticket.description,
 				HideURL:     true,
-				URL:         fmt.Sprintf("https://stockanalysis.com/stocks/%s/", ticket.name),
-				ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", "GM"),
-				// ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticket.name),
+				URL:         url,
+				ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticket.name),
 			}
-			// text := fmt.Sprintf("$%s \\- %s", ticket.name, ticket.description)
-			text := "$" + ticket.name + " \\- " + ticket.description
+			text := fmt.Sprintf("$%s \\- [%s](%s)",
+				ticket.name,
+				strings.Replace(ticket.description, ".", "\\.", -1),
+				url,
+			)
 			// if contains(ARKTickets, ticket.name) {
 			// 	text += fmt.Sprintf(" \\([ARK](https://cathiesark.com/ark-combined-holdings-of-%s)\\)", strings.ToLower(ticket.name))
 			// }

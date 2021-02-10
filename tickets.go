@@ -2503,7 +2503,7 @@ var tickets = []Ticket{
 	{name: "GMOL", description: "General Moly"},
 	{name: "GMOLQ", description: "General Moly"},
 	{name: "GMRE", description: "Global Medical REIT"},
-	{name: "GMS", description: "GMS Inc\\."},
+	{name: "GMS", description: "GMS Inc."},
 	{name: "GMTX", description: "Gemini Therapeutics"},
 	{name: "GMVD", description: "G Medical Innovations"},
 	{name: "GMWX", description: "GameWorks"},
