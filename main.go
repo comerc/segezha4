@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -73,16 +72,16 @@ func main() {
 	// 		&tb.ReplyMarkup{InlineKeyboard: inlineKeys})
 	// })
 	b.Handle(tb.OnText, func(m *tb.Message) {
-		log.Println("+++++")
+		log.Println("++++")
 		log.Println(m.ID)
 		log.Println(m.InlineID)
 		log.Println(m.Sender.ID)
 		log.Println(m.Via.IsBot)
 		log.Println(m.Via.Username)
-		log.Println("+++++")
+		log.Println("++++")
 		if m.Via.ID != b.Me.ID {
 			log.Println("OK")
-			log.Println("+++++")
+			log.Println("++++")
 			return
 		}
 		err := b.Delete(
@@ -96,12 +95,12 @@ func main() {
 		}
 	})
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
-		log.Println("*****")
+		log.Println("****")
 		log.Println(q.Text)
 		log.Println(q.ID)
 		log.Println(q.From.ID)
 		log.Println(ownerID)
-		log.Println("*****")
+		log.Println("****")
 		// TODO: разрешить всем админам чата
 		// chat, err := b.ChatByID(chatID)
 		// if err != nil {
@@ -110,7 +109,7 @@ func main() {
 		// chat
 		if strconv.Itoa(q.From.ID) != ownerID {
 			log.Println("OK")
-			log.Println("*****")
+			log.Println("****")
 			return
 		}
 		var search string
@@ -161,12 +160,12 @@ func main() {
 	})
 	b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
 		// incoming inline queries
-		log.Println("=====")
+		log.Println("====")
 		log.Println(r.MessageID)
 		log.Println(r.ResultID)
 		log.Println(r.Query)
 		log.Println(r.From.ID)
-		log.Println("=====")
+		log.Println("====")
 		ticketName := r.ResultID
 		to := tb.ChatID(parseInt(chatID))
 		commands := make([]string, 0)
@@ -176,23 +175,23 @@ func main() {
 			}
 			commands = append(commands, param)
 		}
-		if len(commands) == 0 || contains(commands, "finviz") {
-			screenshot := Screenshot(ticketName)
-			photo := &tb.Photo{
-				File: tb.FromReader(bytes.NewReader(screenshot)),
-				Caption: fmt.Sprintf(
-					"\\#%[1]s [finviz](https://finviz.com/quote.ashx?t=%[1]s)",
-					ticketName,
-				),
-			}
-			b.Send(
-				to,
-				photo,
-				&tb.SendOptions{
-					ParseMode: tb.ModeMarkdownV2,
-				},
-			)
-		}
+		// if len(commands) == 0 || contains(commands, "finviz") {
+		// 	screenshot := Screenshot(ticketName)
+		// 	photo := &tb.Photo{
+		// 		File: tb.FromReader(bytes.NewReader(screenshot)),
+		// 		Caption: fmt.Sprintf(
+		// 			"\\#%[1]s [finviz](https://finviz.com/quote.ashx?t=%[1]s)",
+		// 			ticketName,
+		// 		),
+		// 	}
+		// 	b.Send(
+		// 		to,
+		// 		photo,
+		// 		&tb.SendOptions{
+		// 			ParseMode: tb.ModeMarkdownV2,
+		// 		},
+		// 	)
+		// }
 		if (len(commands) == 0 || contains(commands, "ark")) && contains(ARKTickets, ticketName) {
 			b.Send(
 				to,
