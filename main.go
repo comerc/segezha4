@@ -77,6 +77,10 @@ func main() {
 		log.Println(m.ID)
 		log.Println(m.InlineID)
 		log.Println(m.Sender.ID)
+		log.Println(m.Via.IsBot)
+		log.Println(m.Via.Username)
+		log.Println(m.Via.ID)
+		log.Println(b.Me.ID)
 		log.Println("++++")
 		err := b.Delete(
 			&tb.StoredMessage{
