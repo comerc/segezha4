@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
-	"strconv"
 
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -13,7 +13,7 @@ func main() {
 		port      = os.Getenv("PORT")
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
 		token     = os.Getenv("TOKEN")      // you must add it to your config vars
-		chatID    = os.Getenv("CHAT_ID")    // you must add it to your config vars
+		// chatID    = os.Getenv("CHAT_ID")    // you must add it to your config vars
 	)
 	webhook := &tb.Webhook{
 		Listen:   ":" + port,
@@ -78,18 +78,18 @@ func main() {
 		tickets := GetTickets(q.Text)
 		results := make(tb.Results, len(tickets)) // []tb.Result
 		for i, ticket := range tickets {
+			url := "https://stockanalysis.com/stocks/" + ticket.name + "/"
 			result := &tb.ArticleResult{
 				Title:       ticket.name,
 				Description: ticket.description,
-				Text:        "$" + ticket.name + " - " + ticket.description,
 				HideURL:     true,
-				URL:         "https://finviz.com/quote.ashx?t=" + ticket.name,
+				URL:         url,
 				ThumbURL:    "https://storage.googleapis.com/iexcloud-hl37opg/api/logos/" + ticket.name + ".png",
 			}
-			// result.SetContent(&tb.InputTextMessageContent{
-			// 	Text: "Text" + fmt.Sprint(i) + " *Bold* [src](https://itsallwidgets.com/screenshots/app-2041.png)",
-			// 	ParseMode: tb.ModeMarkdownV2,
-			// })
+			result.SetContent(&tb.InputTextMessageContent{
+				Text:      fmt.Sprintf("$%s - [%s](%s)", ticket.name, ticket.description, url),
+				ParseMode: tb.ModeMarkdownV2,
+			})
 			// result.SetReplyMarkup(inlineKeys)
 			// needed to set a unique string ID for each result
 			result.SetResultID(ticket.name)
@@ -104,27 +104,28 @@ func main() {
 			log.Println(err)
 		}
 	})
-	b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
-		// incoming inline queries
-		log.Println("====")
-		log.Println(r.MessageID)
-		log.Println(r.ResultID)
-		log.Println(r.Query)
-		log.Println(r.From.ID)
-		log.Println(r.From.Recipient())
-		log.Println("====")
-		i, err := strconv.ParseInt(chatID, 10, 64)
-		if err != nil {
-			log.Println(err)
-		}
-		to := tb.ChatID(i)
-		// photo := &tb.Photo{File: tb.FromURL("https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg")}
-		ticketName := r.ResultID
-		photo := &tb.Photo{
-			File:    tb.FromURL("https://firebasestorage.googleapis.com/v0/b/minsk8-2.appspot.com/o/8b98f59a-155b-464c-898f-1c04cfa86969.jpg?alt=media&token=2628e0bf-d11d-403f-98ac-b09fff126831"),
-			Caption: "#" + ticketName + " finviz",
-		}
-		b.Send(to, photo)
-	})
+	// b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
+	// 	// incoming inline queries
+	// 	log.Println("====")
+	// 	log.Println(r.MessageID)
+	// 	log.Println(r.ResultID)
+	// 	log.Println(r.Query)
+	// 	log.Println(r.From.ID)
+	// 	log.Println(r.From.Recipient())
+	// 	log.Println("====")
+	// 	i, err := strconv.ParseInt(chatID, 10, 64)
+	// 	if err != nil {
+	// 		log.Println(err)
+	// 	}
+	// 	to := tb.ChatID(i)
+	// 	// photo := &tb.Photo{File: tb.FromURL("https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg")}
+	// 	ticketName := r.ResultID
+	// 	photo := &tb.Photo{
+	// 		File:    tb.FromURL("https://firebasestorage.googleapis.com/v0/b/minsk8-2.appspot.com/o/8b98f59a-155b-464c-898f-1c04cfa86969.jpg?alt=media&token=2628e0bf-d11d-403f-98ac-b09fff126831"),
+	// 		Caption: "#" + ticketName + " finviz",
+	// 		// "https://finviz.com/quote.ashx?t=" + ticketName
+	// 	}
+	// 	b.Send(to, photo)
+	// })
 	b.Start()
 }
