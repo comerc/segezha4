@@ -104,7 +104,7 @@ func fullScreenshot(urlstr string, quality int64, res *[]byte) chromedp.Tasks {
 					X:      contentSize.X,
 					Y:      215, // contentSize.Y,
 					Width:  contentSize.Width,
-					Height: 845, // contentSize.Height,
+					Height: 845 - 91, // contentSize.Height,
 					Scale:  1,
 				}).Do(ctx)
 			if err != nil {
