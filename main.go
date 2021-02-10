@@ -81,6 +81,8 @@ func main() {
 		log.Println(m.Via.Username)
 		log.Println("+++++")
 		if m.Via.ID != b.Me.ID {
+			log.Println("OK")
+			log.Println("+++++")
 			return
 		}
 		err := b.Delete(
@@ -107,6 +109,8 @@ func main() {
 		// }
 		// chat
 		if strconv.Itoa(q.From.ID) != ownerID {
+			log.Println("OK")
+			log.Println("*****")
 			return
 		}
 		var search string
