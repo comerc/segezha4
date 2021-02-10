@@ -193,6 +193,8 @@ func main() {
 		// 	)
 		// }
 		if (len(commands) == 0 || contains(commands, "ark")) && contains(ARKTickets, ticketName) {
+			log.Println("OK")
+			log.Println("====")
 			b.Send(
 				to,
 				fmt.Sprintf(
