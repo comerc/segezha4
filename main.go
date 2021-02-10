@@ -88,7 +88,7 @@ func main() {
 			}
 			text := fmt.Sprintf("$%s \\- %s", ticket.name, ticket.description)
 			if contains(ARKTickets, ticket.name) {
-				text += fmt.Sprintf(" ([ARK](https://cathiesark.com/ark-combined-holdings-of-%s))", strings.ToLower(ticket.name))
+				text += fmt.Sprintf(" \\([ARK](https://cathiesark.com/ark-combined-holdings-of-%s)\\)", strings.ToLower(ticket.name))
 			}
 			result.SetContent(&tb.InputTextMessageContent{
 				Text:      text,
