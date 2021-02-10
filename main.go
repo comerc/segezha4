@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -128,28 +129,30 @@ func main() {
 		log.Println(r.From.ID)
 		log.Println(r.From.Recipient())
 		log.Println("====")
-		// photo := &tb.Photo{File: tb.FromURL("https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg")}
+		to := tb.ChatID(parseInt(chatID))
 		ticketName := r.ResultID
-		// photo := &tb.Photo{
-		// 	File:    tb.FromURL("https://firebasestorage.googleapis.com/v0/b/minsk8-2.appspot.com/o/8b98f59a-155b-464c-898f-1c04cfa86969.jpg?alt=media&token=2628e0bf-d11d-403f-98ac-b09fff126831"),
-		// 	Caption: "#" + ticketName + " finviz",
-		// 	// "https://finviz.com/quote.ashx?t=" + ticketName
-		// }
-		// b.Send(to, photo)
-
-		if contains(ARKTickets, ticketName) {
-			b.Send(tb.ChatID(parseInt(chatID)),
-				// "\\#TSLA [ARK](https://cathiesark.com/ark-combined-holdings-of-tsla)",
-				fmt.Sprintf(
-					"\\#%s [ARK](https://cathiesark.com/ark-combined-holdings-of-%s)",
-					ticketName,
-					strings.ToLower(ticketName),
-				),
-				&tb.SendOptions{
-					ParseMode: tb.ModeMarkdownV2,
-				},
-			)
+		screenshot := Screenshot()
+		photo := &tb.Photo{
+			File: tb.FromReader(bytes.NewReader(screenshot)),
+			// FromURL("https://firebasestorage.googleapis.com/v0/b/minsk8-2.appspot.com/o/8b98f59a-155b-464c-898f-1c04cfa86969.jpg?alt=media&token=2628e0bf-d11d-403f-98ac-b09fff126831"),
+			Caption: "#" + ticketName + " finviz",
+			// "https://finviz.com/quote.ashx?t=" + ticketName
 		}
+		b.Send(to, photo)
+
+		// if contains(ARKTickets, ticketName) {
+		// 	b.Send(to,
+		// 		// "\\#TSLA [ARK](https://cathiesark.com/ark-combined-holdings-of-tsla)",
+		// 		fmt.Sprintf(
+		// 			"\\#%s [ARK](https://cathiesark.com/ark-combined-holdings-of-%s)",
+		// 			ticketName,
+		// 			strings.ToLower(ticketName),
+		// 		),
+		// 		&tb.SendOptions{
+		// 			ParseMode: tb.ModeMarkdownV2,
+		// 		},
+		// 	)
+		// }
 
 	})
 	b.Start()
