@@ -124,7 +124,8 @@ func main() {
 				// URL:       "https://finviz.com/quote.ashx?t=LMT",
 				// MIME:      "text/html",
 
-				ThumbURL: "https://storage.googleapis.com/iexcloud-hl37opg/api/logos/" + ticket.name + ".png",
+				ThumbURL:   "https://storage.googleapis.com/iexcloud-hl37opg/api/logos/" + ticket.name + ".png",
+				ThumbWidth: 128,
 			}
 			//  .PhotoResult{
 			// 	URL: url,
