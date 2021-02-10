@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -77,20 +79,17 @@ func main() {
 		tickets := GetTickets(q.Text)
 		results := make(tb.Results, len(tickets)) // []tb.Result
 		for i, ticket := range tickets {
-			url := "https://stockanalysis.com/stocks/" + ticket.name + "/"
 			result := &tb.ArticleResult{
 				Title:       ticket.name,
 				Description: ticket.description,
 				HideURL:     true,
-				URL:         url,
-				ThumbURL:    "https://storage.googleapis.com/iexcloud-hl37opg/api/logos/" + ticket.name + ".png",
+				URL:         fmt.Sprintf("https://stockanalysis.com/stocks/%s/", ticket.name),
+				ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticket.name),
 			}
-			text := "$" + ticket.name + " - " + ticket.description
-			// if contains(ARKTickets, ticket.name) {
-			// 	text = fmt.Sprintf("$%s \\- [%s](%s)", ticket.name, ticket.description, url)
-			// } else {
-			// 	text = fmt.Sprintf("$%s \\- [%s](%s)", ticket.name, ticket.description, url)
-			// }
+			text := fmt.Sprintf("$%s \\- %s", ticket.name, ticket.description)
+			if contains(ARKTickets, ticket.name) {
+				text += fmt.Sprintf(" ([ARK Invest](https://cathiesark.com/ark-combined-holdings-of-%s))", strings.ToLower(ticket.name))
+			}
 			result.SetContent(&tb.InputTextMessageContent{
 				Text:      text,
 				ParseMode: tb.ModeMarkdownV2,
