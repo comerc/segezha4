@@ -135,12 +135,14 @@ func main() {
 		// b.Send(to, photo)
 
 		if contains(ARKTickets, ticketName) {
+			log.Println(">>>>")
 			b.Send(to,
-				fmt.Sprintf(
-					"#%s [ARK](https://cathiesark.com/ark-combined-holdings-of-%s)",
-					ticketName,
-					strings.ToLower(ticketName),
-				),
+				"[ARK](https://google.com)",
+				// fmt.Sprintf(
+				// 	"#%s [ARK](https://cathiesark.com/ark-combined-holdings-of-%s)",
+				// 	ticketName,
+				// 	strings.ToLower(ticketName),
+				// ),
 				&tb.SendOptions{
 					ParseMode: tb.ModeMarkdownV2,
 				},
