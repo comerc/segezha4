@@ -87,7 +87,18 @@ func main() {
 		// 	log.Println(err)
 		// }
 		// chat
-		tickets := GetTickets(q.Text)
+		var search string
+		for _, param := range strings.Split(q.Text, " ") {
+			if strings.HasPrefix(param, "#") {
+				search = strings.TrimLeft(param, "#")
+				break
+			}
+			if strings.HasPrefix(param, "$") {
+				search = strings.TrimLeft(param, "$")
+				break
+			}
+		}
+		tickets := GetTickets(search)
 		results := make(tb.Results, len(tickets)) // []tb.Result
 		for i, ticket := range tickets {
 			url := fmt.Sprintf("https://stockanalysis.com/stocks/%s/", ticket.name)
@@ -132,26 +143,35 @@ func main() {
 		log.Println("====")
 		to := tb.ChatID(parseInt(chatID))
 		ticketName := r.ResultID
-		screenshot := Screenshot(ticketName)
-		photo := &tb.Photo{
-			File: tb.FromReader(bytes.NewReader(screenshot)),
-			// FromURL("https://firebasestorage.googleapis.com/v0/b/minsk8-2.appspot.com/o/8b98f59a-155b-464c-898f-1c04cfa86969.jpg?alt=media&token=2628e0bf-d11d-403f-98ac-b09fff126831"),
-			// Caption: "#" + ticketName + " finviz",
-			// "https://finviz.com/quote.ashx?t=" + ticketName
-			Caption: fmt.Sprintf(
-				"\\#%[1]s [finviz](https://finviz.com/quote.ashx?t=%[1]s)",
-				ticketName,
-			),
-			// ParseMode: tb.ModeMarkdownV2,
+		commands := make([]string, 0)
+		for _, param := range strings.Split(r.Query, " ") {
+			if strings.HasPrefix(param, "#") || strings.HasPrefix(param, "$") {
+				continue
+			}
+			commands = append(commands, param)
 		}
-		b.Send(
-			to,
-			photo,
-			&tb.SendOptions{
-				ParseMode: tb.ModeMarkdownV2,
-			},
-		)
-		if contains(ARKTickets, ticketName) {
+		if len(commands) == 0 || contains(commands, "finviz") {
+			screenshot := Screenshot(ticketName)
+			photo := &tb.Photo{
+				File: tb.FromReader(bytes.NewReader(screenshot)),
+				// FromURL("https://firebasestorage.googleapis.com/v0/b/minsk8-2.appspot.com/o/8b98f59a-155b-464c-898f-1c04cfa86969.jpg?alt=media&token=2628e0bf-d11d-403f-98ac-b09fff126831"),
+				// Caption: "#" + ticketName + " finviz",
+				// "https://finviz.com/quote.ashx?t=" + ticketName
+				Caption: fmt.Sprintf(
+					"\\#%[1]s [finviz](https://finviz.com/quote.ashx?t=%[1]s)",
+					ticketName,
+				),
+				// ParseMode: tb.ModeMarkdownV2,
+			}
+			b.Send(
+				to,
+				photo,
+				&tb.SendOptions{
+					ParseMode: tb.ModeMarkdownV2,
+				},
+			)
+		}
+		if (len(commands) == 0 || contains(commands, "ark")) && contains(ARKTickets, ticketName) {
 			b.Send(
 				to,
 				fmt.Sprintf(
