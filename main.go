@@ -79,7 +79,7 @@ func main() {
 		log.Println(q.ID)
 		log.Println(q.From.ID)
 		log.Println(int64(q.From.ID) == parseInt(ownerID))
-		log.Println("OK")
+		log.Println("OK!")
 		log.Println("****")
 		// TODO: разрешить всем админам чата
 		// chat, err := b.ChatByID(chatID)
