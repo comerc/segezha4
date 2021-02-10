@@ -87,7 +87,7 @@ func main() {
 				ThumbURL:    "https://storage.googleapis.com/iexcloud-hl37opg/api/logos/" + ticket.name + ".png",
 			}
 			result.SetContent(&tb.InputTextMessageContent{
-				Text:      fmt.Sprintf("$%s | [%s](%s)", ticket.name, ticket.description, url),
+				Text:      fmt.Sprintf(`$%s | [%s](%s)`, ticket.name, ticket.description, url),
 				ParseMode: tb.ModeMarkdownV2,
 			})
 			// result.SetReplyMarkup(inlineKeys)
