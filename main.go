@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strconv"
 
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -14,6 +15,7 @@ func main() {
 		port      = os.Getenv("PORT")
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
 		token     = os.Getenv("TOKEN")      // you must add it to your config vars
+		chatID    = os.Getenv("CHAT_ID")
 	)
 
 	webhook := &tb.Webhook{
@@ -124,8 +126,7 @@ func main() {
 				// URL:       "https://finviz.com/quote.ashx?t=LMT",
 				// MIME:      "text/html",
 
-				ThumbURL:   "https://storage.googleapis.com/iexcloud-hl37opg/api/logos/" + ticket.name + ".png",
-				ThumbWidth: 128,
+				ThumbURL: "https://storage.googleapis.com/iexcloud-hl37opg/api/logos/" + ticket.name + ".png",
 			}
 			//  .PhotoResult{
 			// 	URL: url,
@@ -173,8 +174,14 @@ func main() {
 		log.Println(r.From.Recipient())
 		log.Println("====")
 
-		group := tb.ChatID(-1001439193008)
+		i, err := strconv.ParseInt(chatID, 10, 64)
+		if err != nil {
+			log.Println(err)
+		}
 
+		group := tb.ChatID(i)
+
+		// -1001439193008
 		// photo := &tb.Photo{File: tb.FromURL("https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg")}
 
 		ticketName := r.ResultID

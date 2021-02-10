@@ -10,6 +10,8 @@ type Ticket struct {
 	description string
 }
 
+// from https://stockanalysis.com/stocks/
+
 var tickets = []Ticket{
 	{name: "A", description: "Agilent Technologies"},
 	{name: "AA", description: "Alcoa"},
@@ -6505,6 +6507,7 @@ func GetTickets(search string) []Ticket {
 	if len(search) > 0 {
 		search = strings.ToUpper(search)
 		for _, ticket := range tickets {
+			// TODO: поиск по ticket.description
 			if strings.HasPrefix(ticket.name, search) {
 				result = append(result, ticket)
 				if len(search) == 1 {
