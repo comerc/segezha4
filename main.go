@@ -75,11 +75,8 @@ func main() {
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		log.Println("****")
 		log.Println(q.Text)
-		log.Println(len(q.Text))
 		log.Println(q.ID)
 		log.Println(q.From.ID)
-		log.Println(int64(q.From.ID) == parseInt(ownerID))
-		log.Println("OK!!!!")
 		log.Println("****")
 		// TODO: разрешить всем админам чата
 		// chat, err := b.ChatByID(chatID)
@@ -87,6 +84,9 @@ func main() {
 		// 	log.Println(err)
 		// }
 		// chat
+		if int64(q.From.ID) != parseInt(ownerID) {
+			return
+		}
 		var search string
 		for _, param := range strings.Split(q.Text, " ") {
 			if strings.HasPrefix(param, "#") {
@@ -110,18 +110,18 @@ func main() {
 				URL:         url,
 				ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticket.name),
 			}
-			// result.SetContent(&tb.InputTextMessageContent{
-			// 	Text: fmt.Sprintf("$%s \\- [%s](%s)",
-			// 		ticket.name,
-			// 		strings.Replace(ticket.description, ".", "\\.", -1),
-			// 		url,
-			// 	),
-			// 	ParseMode:      tb.ModeMarkdownV2,
-			// 	DisablePreview: true,
-			// })
+			result.SetContent(&tb.InputTextMessageContent{
+				Text: fmt.Sprintf("$%s \\- [%s](%s)",
+					ticket.name,
+					strings.Replace(ticket.description, ".", "\\.", -1),
+					url,
+				),
+				ParseMode:      tb.ModeMarkdownV2,
+				DisablePreview: true,
+			})
 			// result.SetReplyMarkup(inlineKeys)
 			// needed to set a unique string ID for each result
-			result.SetResultID(q.ID + "=" + ticket.name)
+			result.SetResultID(ticket.name)
 			results[i] = result
 			// TODO: max 50
 		}
@@ -140,18 +140,8 @@ func main() {
 		log.Println(r.ResultID)
 		log.Println(r.Query)
 		log.Println(r.From.ID)
-		log.Println(r.From.Recipient())
 		log.Println("====")
-		resultID := strings.Split(r.ResultID, "=")
-		messageID := resultID[0]
-		ticketName := resultID[1]
-		err := b.Delete(&tb.StoredMessage{
-			MessageID: messageID,
-			ChatID:    parseInt(chatID),
-		})
-		if err != nil {
-			log.Println(err)
-		}
+		ticketName := r.ResultID
 		to := tb.ChatID(parseInt(chatID))
 		commands := make([]string, 0)
 		for _, param := range strings.Split(r.Query, " ") {
@@ -164,14 +154,10 @@ func main() {
 			screenshot := Screenshot(ticketName)
 			photo := &tb.Photo{
 				File: tb.FromReader(bytes.NewReader(screenshot)),
-				// FromURL("https://firebasestorage.googleapis.com/v0/b/minsk8-2.appspot.com/o/8b98f59a-155b-464c-898f-1c04cfa86969.jpg?alt=media&token=2628e0bf-d11d-403f-98ac-b09fff126831"),
-				// Caption: "#" + ticketName + " finviz",
-				// "https://finviz.com/quote.ashx?t=" + ticketName
 				Caption: fmt.Sprintf(
 					"\\#%[1]s [finviz](https://finviz.com/quote.ashx?t=%[1]s)",
 					ticketName,
 				),
-				// ParseMode: tb.ModeMarkdownV2,
 			}
 			b.Send(
 				to,
