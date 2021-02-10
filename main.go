@@ -72,6 +72,13 @@ func main() {
 	// 		"Day or night, you choose",
 	// 		&tb.ReplyMarkup{InlineKeyboard: inlineKeys})
 	// })
+	b.Handle(tb.OnText, func(m *tb.Message) {
+		log.Println("++++")
+		log.Println(m.ID)
+		log.Println(m.InlineID)
+		log.Println(m.Sender.ID)
+		log.Println("++++")
+	})
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		log.Println("****")
 		log.Println(q.Text)
