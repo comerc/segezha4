@@ -83,7 +83,8 @@ func main() {
 				Description: ticket.description,
 				HideURL:     true,
 				URL:         fmt.Sprintf("https://stockanalysis.com/stocks/%s/", ticket.name),
-				ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticket.name),
+				ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", "GM"),
+				// ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticket.name),
 			}
 			text := fmt.Sprintf("$%s \\- %s", ticket.name, ticket.description)
 			// if contains(ARKTickets, ticket.name) {
