@@ -71,29 +71,29 @@ func main() {
 	// 		"Day or night, you choose",
 	// 		&tb.ReplyMarkup{InlineKeyboard: inlineKeys})
 	// })
-	b.Handle(tb.OnText, func(m *tb.Message) {
-		log.Println("++++")
-		log.Println(m.ID)
-		log.Println(m.InlineID)
-		log.Println(m.Sender.ID)
-		log.Println(m.Via.IsBot)
-		log.Println(m.Via.Username)
-		log.Println("++++")
-		if m.Via.ID != b.Me.ID {
-			log.Println("OK")
-			log.Println("++++")
-			return
-		}
-		err := b.Delete(
-			&tb.StoredMessage{
-				MessageID: strconv.Itoa(m.ID),
-				ChatID:    parseInt(chatID),
-			},
-		)
-		if err != nil {
-			log.Println(err)
-		}
-	})
+	// b.Handle(tb.OnText, func(m *tb.Message) {
+	// 	log.Println("++++")
+	// 	log.Println(m.ID)
+	// 	log.Println(m.InlineID)
+	// 	log.Println(m.Sender.ID)
+	// 	log.Println(m.Via.IsBot)
+	// 	log.Println(m.Via.Username)
+	// 	log.Println("++++")
+	// 	if m.Via.ID != b.Me.ID {
+	// 		log.Println("OK")
+	// 		log.Println("++++")
+	// 		return
+	// 	}
+	// 	err := b.Delete(
+	// 		&tb.StoredMessage{
+	// 			MessageID: strconv.Itoa(m.ID),
+	// 			ChatID:    parseInt(chatID),
+	// 		},
+	// 	)
+	// 	if err != nil {
+	// 		log.Println(err)
+	// 	}
+	// })
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		log.Println("****")
 		log.Println(q.Text)
@@ -138,7 +138,7 @@ func main() {
 			result.SetContent(&tb.InputTextMessageContent{
 				Text: fmt.Sprintf("$%s \\- [%s](%s)",
 					ticket.name,
-					strings.Replace(ticket.description, ".", "\\.", -1),
+					strings.Replace(ticket.description, ".", "\\.", -1), // TODO: "\\-"
 					url,
 				),
 				ParseMode:      tb.ModeMarkdownV2,
