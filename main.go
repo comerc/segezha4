@@ -105,22 +105,23 @@ func main() {
 			result := &tb.ArticleResult{
 				Title:       ticket.name,
 				Description: ticket.description,
+				Text:        "OK",
 				HideURL:     true,
 				URL:         url,
 				ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticket.name),
 			}
-			result.SetContent(&tb.InputTextMessageContent{
-				Text: fmt.Sprintf("$%s \\- [%s](%s)",
-					ticket.name,
-					strings.Replace(ticket.description, ".", "\\.", -1),
-					url,
-				),
-				ParseMode:      tb.ModeMarkdownV2,
-				DisablePreview: true,
-			})
+			// result.SetContent(&tb.InputTextMessageContent{
+			// 	Text: fmt.Sprintf("$%s \\- [%s](%s)",
+			// 		ticket.name,
+			// 		strings.Replace(ticket.description, ".", "\\.", -1),
+			// 		url,
+			// 	),
+			// 	ParseMode:      tb.ModeMarkdownV2,
+			// 	DisablePreview: true,
+			// })
 			// result.SetReplyMarkup(inlineKeys)
 			// needed to set a unique string ID for each result
-			result.SetResultID(ticket.name)
+			result.SetResultID(q.ID + "=" + ticket.name)
 			results[i] = result
 			// TODO: max 50
 		}
@@ -141,15 +142,17 @@ func main() {
 		log.Println(r.From.ID)
 		log.Println(r.From.Recipient())
 		log.Println("====")
+		resultID := strings.Split(r.ResultID, "=")
+		messageID := resultID[0]
+		ticketName := resultID[1]
 		err := b.Delete(&tb.StoredMessage{
-			MessageID: r.MessageID,
+			MessageID: messageID,
 			ChatID:    parseInt(chatID),
 		})
 		if err != nil {
 			log.Println(err)
 		}
 		to := tb.ChatID(parseInt(chatID))
-		ticketName := r.ResultID
 		commands := make([]string, 0)
 		for _, param := range strings.Split(r.Query, " ") {
 			if strings.HasPrefix(param, "#") || strings.HasPrefix(param, "$") {
