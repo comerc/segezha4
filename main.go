@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -71,29 +72,29 @@ func main() {
 	// 		"Day or night, you choose",
 	// 		&tb.ReplyMarkup{InlineKeyboard: inlineKeys})
 	// })
-	// b.Handle(tb.OnText, func(m *tb.Message) {
-	// 	log.Println("++++")
-	// 	log.Println(m.ID)
-	// 	log.Println(m.InlineID)
-	// 	log.Println(m.Sender.ID)
-	// 	log.Println(m.Via.IsBot)
-	// 	log.Println(m.Via.Username)
-	// 	log.Println("++++")
-	// 	if m.Via.ID != b.Me.ID {
-	// 		log.Println("OK")
-	// 		log.Println("++++")
-	// 		return
-	// 	}
-	// 	err := b.Delete(
-	// 		&tb.StoredMessage{
-	// 			MessageID: strconv.Itoa(m.ID),
-	// 			ChatID:    parseInt(chatID),
-	// 		},
-	// 	)
-	// 	if err != nil {
-	// 		log.Println(err)
-	// 	}
-	// })
+	b.Handle(tb.OnText, func(m *tb.Message) {
+		log.Println("++++")
+		log.Println(m.ID)
+		log.Println(m.InlineID)
+		log.Println(m.Sender.ID)
+		log.Println(m.Via.IsBot)
+		log.Println(m.Via.Username)
+		log.Println("++++")
+		if m.Via.ID != b.Me.ID {
+			log.Println("OK")
+			log.Println("++++")
+			return
+		}
+		err := b.Delete(
+			&tb.StoredMessage{
+				MessageID: strconv.Itoa(m.ID),
+				ChatID:    parseInt(chatID),
+			},
+		)
+		if err != nil {
+			log.Println(err)
+		}
+	})
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		log.Println("****")
 		log.Println(q.Text)
@@ -175,23 +176,23 @@ func main() {
 			}
 			commands = append(commands, param)
 		}
-		// if len(commands) == 0 || contains(commands, "finviz") {
-		// 	screenshot := Screenshot(ticketName)
-		// 	photo := &tb.Photo{
-		// 		File: tb.FromReader(bytes.NewReader(screenshot)),
-		// 		Caption: fmt.Sprintf(
-		// 			"\\#%[1]s [finviz](https://finviz.com/quote.ashx?t=%[1]s)",
-		// 			ticketName,
-		// 		),
-		// 	}
-		// 	b.Send(
-		// 		to,
-		// 		photo,
-		// 		&tb.SendOptions{
-		// 			ParseMode: tb.ModeMarkdownV2,
-		// 		},
-		// 	)
-		// }
+		if len(commands) == 0 || contains(commands, "finviz") {
+			screenshot := Screenshot(ticketName)
+			photo := &tb.Photo{
+				File: tb.FromReader(bytes.NewReader(screenshot)),
+				Caption: fmt.Sprintf(
+					"\\#%[1]s [finviz](https://finviz.com/quote.ashx?t=%[1]s)",
+					ticketName,
+				),
+			}
+			b.Send(
+				to,
+				photo,
+				&tb.SendOptions{
+					ParseMode: tb.ModeMarkdownV2,
+				},
+			)
+		}
 		if (len(commands) == 0 || contains(commands, "ark")) && contains(ARKTickets, ticketName) {
 			log.Println("OK")
 			log.Println("====")
