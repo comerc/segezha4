@@ -73,13 +73,13 @@ func main() {
 	// 		&tb.ReplyMarkup{InlineKeyboard: inlineKeys})
 	// })
 	b.Handle(tb.OnText, func(m *tb.Message) {
-		log.Println("++++")
+		log.Println("+++++")
 		log.Println(m.ID)
 		log.Println(m.InlineID)
 		log.Println(m.Sender.ID)
 		log.Println(m.Via.IsBot)
 		log.Println(m.Via.Username)
-		log.Println("++++")
+		log.Println("+++++")
 		if m.Via.ID != b.Me.ID {
 			return
 		}
