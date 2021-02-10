@@ -141,6 +141,13 @@ func main() {
 		log.Println(r.From.ID)
 		log.Println(r.From.Recipient())
 		log.Println("====")
+		err := b.Delete(&tb.StoredMessage{
+			MessageID: r.MessageID,
+			ChatID:    parseInt(chatID),
+		})
+		if err != nil {
+			log.Println(err)
+		}
 		to := tb.ChatID(parseInt(chatID))
 		ticketName := r.ResultID
 		commands := make([]string, 0)
