@@ -78,11 +78,15 @@ func main() {
 		log.Println(m.InlineID)
 		log.Println(m.Sender.ID)
 		log.Println("++++")
-		b.Delete(&tb.StoredMessage{
-			MessageID: strconv.Itoa(m.ID),
-			ChatID:    parseInt(chatID),
-		},
+		err := b.Delete(
+			&tb.StoredMessage{
+				MessageID: strconv.Itoa(m.ID),
+				ChatID:    parseInt(chatID),
+			},
 		)
+		if err != nil {
+			log.Println(err)
+		}
 	})
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		log.Println("****")
