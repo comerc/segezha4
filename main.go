@@ -87,7 +87,7 @@ func main() {
 				// ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticket.name),
 			}
 			// text := fmt.Sprintf("$%s \\- %s", ticket.name, ticket.description)
-			text := "$" + ticket.name
+			text := "$" + ticket.name + " \\- " + ticket.description
 			// if contains(ARKTickets, ticket.name) {
 			// 	text += fmt.Sprintf(" \\([ARK](https://cathiesark.com/ark-combined-holdings-of-%s)\\)", strings.ToLower(ticket.name))
 			// }
