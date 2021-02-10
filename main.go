@@ -82,6 +82,7 @@ func main() {
 				Title:       ticket.name,
 				Description: ticket.description,
 				Text:        "$" + ticket.name + " - " + ticket.description,
+				HideURL:     true,
 				URL:         "https://finviz.com/quote.ashx?t=" + ticket.name,
 				ThumbURL:    "https://storage.googleapis.com/iexcloud-hl37opg/api/logos/" + ticket.name + ".png",
 			}
