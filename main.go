@@ -73,19 +73,20 @@ func main() {
 	// 		&tb.ReplyMarkup{InlineKeyboard: inlineKeys})
 	// })
 	b.Handle(tb.OnText, func(m *tb.Message) {
-		log.Println("++++")
-		log.Println(m.ID)
-		log.Println(m.InlineID)
-		log.Println(m.Sender.ID)
-		log.Println(m.Via.IsBot)
-		log.Println(m.Via.Username)
-		log.Println(m.Via.ID)
-		log.Println(b.Me.ID)
-		log.Println("++++")
+		// log.Println("++++")
+		// log.Println(m.ID)
+		// log.Println(m.InlineID)
+		// log.Println(m.Sender.ID)
+		// log.Println(m.Via.IsBot)
+		// log.Println(m.Via.Username)
+		// log.Println("++++")
+		if m.Via.ID != b.Me.ID {
+			return
+		}
 		err := b.Delete(
 			&tb.StoredMessage{
 				MessageID: strconv.Itoa(m.ID),
-				ChatID:    parseInt(chatID),
+				ChatID:    parseInt64(chatID),
 			},
 		)
 		if err != nil {
@@ -104,7 +105,7 @@ func main() {
 		// 	log.Println(err)
 		// }
 		// chat
-		if int64(q.From.ID) != parseInt(ownerID) {
+		if strconv.Itoa(q.From.ID) != ownerID {
 			return
 		}
 		var search string
@@ -162,7 +163,7 @@ func main() {
 		log.Println(r.From.ID)
 		log.Println("====")
 		ticketName := r.ResultID
-		to := tb.ChatID(parseInt(chatID))
+		to := tb.ChatID(parseInt64(chatID))
 		commands := make([]string, 0)
 		for _, param := range strings.Split(r.Query, " ") {
 			if strings.HasPrefix(param, "#") || strings.HasPrefix(param, "$") {
@@ -213,7 +214,7 @@ func contains(slice []string, search string) bool {
 	return false
 }
 
-func parseInt(s string) int64 {
+func parseInt64(s string) int64 {
 	result, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
 		log.Println(err)
