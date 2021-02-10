@@ -81,9 +81,9 @@ func main() {
 			result := &tb.ArticleResult{
 				Title:       ticket.name,
 				Description: ticket.description,
-				// Text:        "OK " + ticket.description,
-				URL:      "https://finviz.com/quote.ashx?t=" + ticket.name,
-				ThumbURL: "https://storage.googleapis.com/iexcloud-hl37opg/api/logos/" + ticket.name + ".png",
+				Text:        "$" + ticket.name + " - " + ticket.description,
+				URL:         "https://finviz.com/quote.ashx?t=" + ticket.name,
+				ThumbURL:    "https://storage.googleapis.com/iexcloud-hl37opg/api/logos/" + ticket.name + ".png",
 			}
 			// result.SetContent(&tb.InputTextMessageContent{
 			// 	Text: "Text" + fmt.Sprint(i) + " *Bold* [src](https://itsallwidgets.com/screenshots/app-2041.png)",
