@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -86,8 +85,14 @@ func main() {
 				URL:         url,
 				ThumbURL:    "https://storage.googleapis.com/iexcloud-hl37opg/api/logos/" + ticket.name + ".png",
 			}
+			text := "$" + ticket.name + " - " + ticket.description
+			// if contains(ARKTickets, ticket.name) {
+			// 	text = fmt.Sprintf("$%s \\- [%s](%s)", ticket.name, ticket.description, url)
+			// } else {
+			// 	text = fmt.Sprintf("$%s \\- [%s](%s)", ticket.name, ticket.description, url)
+			// }
 			result.SetContent(&tb.InputTextMessageContent{
-				Text:      fmt.Sprintf("$%s \\- [%s](%s)", ticket.name, ticket.description, url),
+				Text:      text,
 				ParseMode: tb.ModeMarkdownV2,
 			})
 			// result.SetReplyMarkup(inlineKeys)
@@ -128,4 +133,13 @@ func main() {
 	// 	b.Send(to, photo)
 	// })
 	b.Start()
+}
+
+func contains(slice []string, search string) bool {
+	for _, element := range slice {
+		if element == search {
+			return true
+		}
+	}
+	return false
 }
