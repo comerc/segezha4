@@ -98,6 +98,7 @@ func main() {
 		log.Println(q.Text)
 		log.Println(q.ID)
 		log.Println(q.From.ID)
+		log.Println(ownerID)
 		log.Println("*****")
 		// TODO: разрешить всем админам чата
 		// chat, err := b.ChatByID(chatID)
