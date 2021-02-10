@@ -142,24 +142,28 @@ func main() {
 				"\\#%[1]s [finviz](https://finviz.com/quote.ashx?t=%[1]s)",
 				ticketName,
 			),
-			ParseMode: tb.ModeMarkdownV2,
+			// ParseMode: tb.ModeMarkdownV2,
 		}
-		b.Send(to, photo)
-
-		// if contains(ARKTickets, ticketName) {
-		// 	b.Send(to,
-		// 		// "\\#TSLA [ARK](https://cathiesark.com/ark-combined-holdings-of-tsla)",
-		// 		fmt.Sprintf(
-		// 			"\\#%s [ARK](https://cathiesark.com/ark-combined-holdings-of-%s)",
-		// 			ticketName,
-		// 			strings.ToLower(ticketName),
-		// 		),
-		// 		&tb.SendOptions{
-		// 			ParseMode: tb.ModeMarkdownV2,
-		// 		},
-		// 	)
-		// }
-
+		b.Send(
+			to,
+			photo,
+			&tb.SendOptions{
+				ParseMode: tb.ModeMarkdownV2,
+			},
+		)
+		if contains(ARKTickets, ticketName) {
+			b.Send(
+				to,
+				fmt.Sprintf(
+					"\\#%s [ARK](https://cathiesark.com/ark-combined-holdings-of-%s)",
+					ticketName,
+					strings.ToLower(ticketName),
+				),
+				&tb.SendOptions{
+					ParseMode: tb.ModeMarkdownV2,
+				},
+			)
+		}
 	})
 	b.Start()
 }
