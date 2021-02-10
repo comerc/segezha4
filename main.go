@@ -176,7 +176,10 @@ func main() {
 
 		// photo := &tb.Photo{File: tb.FromURL("https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg")}
 
-		photo := &tb.Photo{File: tb.FromURL("https://firebasestorage.googleapis.com/v0/b/minsk8-2.appspot.com/o/8b98f59a-155b-464c-898f-1c04cfa86969.jpg?alt=media&token=2628e0bf-d11d-403f-98ac-b09fff126831")}
+		photo := &tb.Photo{
+			File:    tb.FromURL("https://firebasestorage.googleapis.com/v0/b/minsk8-2.appspot.com/o/8b98f59a-155b-464c-898f-1c04cfa86969.jpg?alt=media&token=2628e0bf-d11d-403f-98ac-b09fff126831"),
+			Caption: "My Caption",
+		}
 
 		b.Send(group, photo)
 	})
