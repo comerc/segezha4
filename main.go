@@ -94,11 +94,11 @@ func main() {
 		}
 	})
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
-		log.Println("****")
+		log.Println("*****")
 		log.Println(q.Text)
 		log.Println(q.ID)
 		log.Println(q.From.ID)
-		log.Println("****")
+		log.Println("*****")
 		// TODO: разрешить всем админам чата
 		// chat, err := b.ChatByID(chatID)
 		// if err != nil {
@@ -156,12 +156,12 @@ func main() {
 	})
 	b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
 		// incoming inline queries
-		log.Println("====")
+		log.Println("=====")
 		log.Println(r.MessageID)
 		log.Println(r.ResultID)
 		log.Println(r.Query)
 		log.Println(r.From.ID)
-		log.Println("====")
+		log.Println("=====")
 		ticketName := r.ResultID
 		to := tb.ChatID(parseInt64(chatID))
 		commands := make([]string, 0)
