@@ -15,6 +15,7 @@ func main() {
 		port      = os.Getenv("PORT")
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
 		token     = os.Getenv("TOKEN")      // you must add it to your config vars
+		ownerID   = os.Getenv("OWNER_ID")   // you must add it to your config vars
 		chatID    = os.Getenv("CHAT_ID")    // you must add it to your config vars
 	)
 	webhook := &tb.Webhook{
@@ -76,7 +77,14 @@ func main() {
 		log.Println(len(q.Text))
 		log.Println(q.ID)
 		log.Println(q.From.ID)
+		log.Println(int64(q.From.ID) == parseInt(ownerID))
 		log.Println("****")
+		// TODO: разрешить всем админам чата
+		// chat, err := b.ChatByID(chatID)
+		// if err != nil {
+		// 	log.Println(err)
+		// }
+		// chat
 		tickets := GetTickets(q.Text)
 		results := make(tb.Results, len(tickets)) // []tb.Result
 		for i, ticket := range tickets {
@@ -120,11 +128,6 @@ func main() {
 		log.Println(r.From.ID)
 		log.Println(r.From.Recipient())
 		log.Println("====")
-		i, err := strconv.ParseInt(chatID, 10, 64)
-		if err != nil {
-			log.Println(err)
-		}
-		to := tb.ChatID(i)
 		// photo := &tb.Photo{File: tb.FromURL("https://pp.vk.me/c627626/v627626512/2a627/7dlh4RRhd24.jpg")}
 		ticketName := r.ResultID
 		// photo := &tb.Photo{
@@ -135,8 +138,7 @@ func main() {
 		// b.Send(to, photo)
 
 		if contains(ARKTickets, ticketName) {
-			log.Println(">>>>")
-			b.Send(to,
+			b.Send(tb.ChatID(parseInt(chatID)),
 				// "\\#TSLA [ARK](https://cathiesark.com/ark-combined-holdings-of-tsla)",
 				fmt.Sprintf(
 					"\\#%s [ARK](https://cathiesark.com/ark-combined-holdings-of-%s)",
@@ -160,4 +162,12 @@ func contains(slice []string, search string) bool {
 		}
 	}
 	return false
+}
+
+func parseInt(s string) int64 {
+	result, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		log.Println(err)
+	}
+	return result
 }
