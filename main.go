@@ -7,12 +7,6 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// Ticket of stock market
-type Ticket struct {
-	name string
-	desc string
-}
-
 func main() {
 	// log.Fatal("err1234")
 
@@ -90,6 +84,7 @@ func main() {
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		log.Println("****")
 		log.Println(q.Text)
+		log.Println(len(q.Text))
 		log.Println(q.ID)
 		log.Println(q.From.ID)
 		log.Println("****")
@@ -117,19 +112,14 @@ func main() {
 		// 	twtrIcon,
 		// }
 
-		tickets := []Ticket{
-			{name: "TSLA", desc: "Tesla"},
-			{name: "NVDA", desc: "Nvidia"},
-			{name: "VRTX", desc: "VRTX"},
-			{name: "TWTR", desc: "Twitter"},
-		}
+		tickets := GetTickets(q.Text)
 
 		results := make(tb.Results, len(tickets)) // []tb.Result
 		for i, ticket := range tickets {
 			result := &tb.ArticleResult{
-				Title:       ticket.name, // "Title" + fmt.Sprint(i) + " *Bold*",
-				Description: ticket.desc, // "Description" + fmt.Sprint(i) + " *Bold*",
-				Text:        "OK " + ticket.desc,
+				Title:       ticket.name,        // "Title" + fmt.Sprint(i) + " *Bold*",
+				Description: ticket.description, // "Description" + fmt.Sprint(i) + " *Bold*",
+				Text:        "OK " + ticket.description,
 
 				// URL:       "https://finviz.com/quote.ashx?t=LMT",
 				// MIME:      "text/html",
@@ -158,6 +148,8 @@ func main() {
 			results[i] = result
 			// needed to set a unique string ID for each result
 			// results[i].SetResultID(strconv.Itoa(i))
+
+			// TODO: max 50
 		}
 
 		err := b.Answer(q, &tb.QueryResponse{
