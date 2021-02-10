@@ -86,13 +86,14 @@ func main() {
 				ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", "GM"),
 				// ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticket.name),
 			}
-			text := fmt.Sprintf("$%s \\- %s", ticket.name, ticket.description)
+			// text := fmt.Sprintf("$%s \\- %s", ticket.name, ticket.description)
 			// if contains(ARKTickets, ticket.name) {
 			// 	text += fmt.Sprintf(" \\([ARK](https://cathiesark.com/ark-combined-holdings-of-%s)\\)", strings.ToLower(ticket.name))
 			// }
 			result.SetContent(&tb.InputTextMessageContent{
-				Text:      text,
-				ParseMode: tb.ModeMarkdownV2,
+				Text:           "text",
+				ParseMode:      tb.ModeMarkdownV2,
+				DisablePreview: true,
 			})
 			// result.SetReplyMarkup(inlineKeys)
 			// needed to set a unique string ID for each result
