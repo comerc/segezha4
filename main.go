@@ -56,9 +56,10 @@ func main() {
 			results[i] = result
 		}
 		err = b.Answer(q, &tb.QueryResponse{
-			Results:      results,
-			CacheTime:    60, // a minute
-			SwitchPMText: "SwitchPMText",
+			Results:           results,
+			CacheTime:         60, // a minute
+			SwitchPMText:      "SwitchPMText",
+			SwitchPMParameter: "SwitchPMParameter",
 		})
 		if err != nil {
 			log.Println(err)
