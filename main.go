@@ -79,6 +79,7 @@ func main() {
 		log.Println(m.Sender.ID)
 		// log.Println(m.Via.IsBot)
 		// log.Println(m.Via.Username)
+		log.Println(m.Via)
 		log.Println("++++")
 		// if m.Via.ID != b.Me.ID {
 		// 	log.Println("OK")
