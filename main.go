@@ -77,23 +77,23 @@ func main() {
 		log.Println(m.ID)
 		log.Println(m.InlineID)
 		log.Println(m.Sender.ID)
-		log.Println(m.Via.IsBot)
-		log.Println(m.Via.Username)
+		// log.Println(m.Via.IsBot)
+		// log.Println(m.Via.Username)
 		log.Println("++++")
-		if m.Via.ID != b.Me.ID {
-			log.Println("OK")
-			log.Println("++++")
-			return
-		}
-		err := b.Delete(
-			&tb.StoredMessage{
-				MessageID: strconv.Itoa(m.ID),
-				ChatID:    parseInt(chatID),
-			},
-		)
-		if err != nil {
-			log.Println(err)
-		}
+		// if m.Via.ID != b.Me.ID {
+		// 	log.Println("OK")
+		// 	log.Println("++++")
+		// 	return
+		// }
+		// err := b.Delete(
+		// 	&tb.StoredMessage{
+		// 		MessageID: strconv.Itoa(m.ID),
+		// 		ChatID:    parseInt(chatID),
+		// 	},
+		// )
+		// if err != nil {
+		// 	log.Println(err)
+		// }
 	})
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		log.Println("****")
