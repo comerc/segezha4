@@ -49,8 +49,8 @@ func main() {
 				HideURL:     true,
 				URL:         articleCase.url,
 				ThumbURL:    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/External_link_font_awesome.svg/240px-External_link_font_awesome.svg.png",
-				ThumbWidth:  240,
-				ThumbHeight: 240,
+				ThumbWidth:  24,
+				ThumbHeight: 24,
 			}
 			result.SetResultID(strconv.Itoa(i))
 			results[i] = result
