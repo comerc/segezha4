@@ -17,8 +17,8 @@ func main() {
 		port      = os.Getenv("PORT")
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
 		token     = os.Getenv("TOKEN")      // you must add it to your config vars
-		ownerID   = os.Getenv("OWNER_ID")   // you must add it to your config vars
-		chatID    = os.Getenv("CHAT_ID")    // you must add it to your config vars
+		// ownerID   = os.Getenv("OWNER_ID")   // you must add it to your config vars
+		// chatID    = os.Getenv("CHAT_ID")    // you must add it to your config vars
 	)
 	webhook := &tb.Webhook{
 		Listen:   ":" + port,
@@ -37,121 +37,77 @@ func main() {
 		log.Println(q.Text)
 		log.Println(q.ID)
 		log.Println(q.From.ID)
-		log.Println(ownerID)
 		log.Println("****")
-		// TODO: разрешить всем админам чата
-		chat, err := b.ChatByID(chatID)
+		results := make(tb.Results, len(ArticleCases)) // []tb.Result
+		for i, articleCase := range ArticleCases {
+			result := &tb.ArticleResult{
+				Title:    articleCase.name,
+				Text:     "OK",
+				HideURL:  true,
+				URL:      articleCase.url,
+				ThumbURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/External_link_font_awesome.svg/512px-External_link_font_awesome.svg.png",
+			}
+			result.SetResultID(strconv.Itoa(i))
+			results[i] = result
+		}
+		err = b.Answer(q, &tb.QueryResponse{
+			Results:   results,
+			CacheTime: 60, // a minute
+		})
 		if err != nil {
 			log.Println(err)
 		}
-		chatMember, err := b.ChatMemberOf(chat, &q.From)
-		if err != nil {
-			log.Println(err)
-		}
-		log.Println("role: " + chatMember.Role)
-		log.Println("****")
-		// if strconv.Itoa(q.From.ID) != ownerID {
-		// 	log.Println("OK")
-		// 	log.Println("****")
-		// 	return
+	})
+	b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
+		// incoming inline queries
+		log.Println("====")
+		log.Println(r.MessageID)
+		log.Println(r.ResultID)
+		log.Println(r.Query)
+		log.Println(r.From.ID)
+		log.Println("====")
+		// ticketName := r.ResultID
+		// to := tb.ChatID(parseInt(chatID))
+		// commands := make([]string, 0)
+		// for _, param := range strings.Split(r.Query, " ") {
+		// 	if strings.HasPrefix(param, "#") || strings.HasPrefix(param, "$") {
+		// 		continue
+		// 	}
+		// 	commands = append(commands, param)
 		// }
-
-		// var search string
-		// for _, param := range strings.Split(q.Text, " ") {
-		// 	if strings.HasPrefix(param, "#") {
-		// 		search = strings.TrimLeft(param, "#")
-		// 		break
-		// 	}
-		// 	if strings.HasPrefix(param, "$") {
-		// 		search = strings.TrimLeft(param, "$")
-		// 		break
-		// 	}
-		// }
-		// tickets := GetTickets(search)
-		// results := make(tb.Results, len(tickets)) // []tb.Result
-		// for i, ticket := range tickets {
-		// 	url := fmt.Sprintf("https://stockanalysis.com/stocks/%s/", ticket.name)
-		// 	result := &tb.ArticleResult{
-		// 		Title:       ticket.name,
-		// 		Description: ticket.description,
-		// 		Text:        "OK",
-		// 		HideURL:     true,
-		// 		URL:         url,
-		// 		ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticket.name),
-		// 	}
-		// 	result.SetContent(&tb.InputTextMessageContent{
-		// 		Text: fmt.Sprintf("$%s \\- [%s](%s)",
-		// 			ticket.name,
-		// 			strings.Replace(ticket.description, ".", "\\.", -1), // TODO: "\\-"
-		// 			url,
+		// if len(commands) == 0 || contains(commands, "finviz") {
+		// 	screenshot := Screenshot(ticketName)
+		// 	photo := &tb.Photo{
+		// 		File: tb.FromReader(bytes.NewReader(screenshot)),
+		// 		Caption: fmt.Sprintf(
+		// 			"\\#%[1]s [finviz](https://finviz.com/quote.ashx?t=%[1]s)",
+		// 			ticketName,
 		// 		),
-		// 		ParseMode:      tb.ModeMarkdownV2,
-		// 		DisablePreview: true,
-		// 	})
-		// 	// result.SetReplyMarkup(inlineKeys)
-		// 	// needed to set a unique string ID for each result
-		// 	result.SetResultID(ticket.name)
-		// 	results[i] = result
-		// 	// TODO: max 50
+		// 	}
+		// 	b.Send(
+		// 		to,
+		// 		photo,
+		// 		&tb.SendOptions{
+		// 			ParseMode: tb.ModeMarkdownV2,
+		// 		},
+		// 	)
 		// }
-		// err = b.Answer(q, &tb.QueryResponse{
-		// 	Results:   results,
-		// 	CacheTime: 60, // a minute
-		// })
-		// if err != nil {
-		// 	log.Println(err)
+		// if (len(commands) == 0 || contains(commands, "ark")) && contains(ARKTickets, ticketName) {
+		// 	log.Println("OK")
+		// 	log.Println("====")
+		// 	b.Send(
+		// 		to,
+		// 		fmt.Sprintf(
+		// 			"\\#%s [ARK](https://cathiesark.com/ark-combined-holdings-of-%s)",
+		// 			ticketName,
+		// 			strings.ToLower(ticketName),
+		// 		),
+		// 		&tb.SendOptions{
+		// 			ParseMode: tb.ModeMarkdownV2,
+		// 		},
+		// 	)
 		// }
 	})
-	// b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
-	// 	// incoming inline queries
-	// 	log.Println("====")
-	// 	log.Println(r.MessageID)
-	// 	log.Println(r.ResultID)
-	// 	log.Println(r.Query)
-	// 	log.Println(r.From.ID)
-	// 	log.Println("====")
-	// 	ticketName := r.ResultID
-	// 	to := tb.ChatID(parseInt(chatID))
-	// 	commands := make([]string, 0)
-	// 	for _, param := range strings.Split(r.Query, " ") {
-	// 		if strings.HasPrefix(param, "#") || strings.HasPrefix(param, "$") {
-	// 			continue
-	// 		}
-	// 		commands = append(commands, param)
-	// 	}
-	// 	if len(commands) == 0 || contains(commands, "finviz") {
-	// 		screenshot := Screenshot(ticketName)
-	// 		photo := &tb.Photo{
-	// 			File: tb.FromReader(bytes.NewReader(screenshot)),
-	// 			Caption: fmt.Sprintf(
-	// 				"\\#%[1]s [finviz](https://finviz.com/quote.ashx?t=%[1]s)",
-	// 				ticketName,
-	// 			),
-	// 		}
-	// 		b.Send(
-	// 			to,
-	// 			photo,
-	// 			&tb.SendOptions{
-	// 				ParseMode: tb.ModeMarkdownV2,
-	// 			},
-	// 		)
-	// 	}
-	// 	if (len(commands) == 0 || contains(commands, "ark")) && contains(ARKTickets, ticketName) {
-	// 		log.Println("OK")
-	// 		log.Println("====")
-	// 		b.Send(
-	// 			to,
-	// 			fmt.Sprintf(
-	// 				"\\#%s [ARK](https://cathiesark.com/ark-combined-holdings-of-%s)",
-	// 				ticketName,
-	// 				strings.ToLower(ticketName),
-	// 			),
-	// 			&tb.SendOptions{
-	// 				ParseMode: tb.ModeMarkdownV2,
-	// 			},
-	// 		)
-	// 	}
-	// })
 	b.Start()
 }
 
