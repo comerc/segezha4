@@ -44,13 +44,13 @@ func main() {
 		results := make(tb.Results, len(ArticleCases)) // []tb.Result
 		for i, articleCase := range ArticleCases {
 			result := &tb.ArticleResult{
-				Title:       articleCase.name,
-				Text:        "OK",
-				HideURL:     true,
-				URL:         articleCase.url,
-				ThumbURL:    "http://e38.ru/misc/external_link.png",
-				ThumbWidth:  16,
-				ThumbHeight: 16,
+				Title: articleCase.name,
+				Text:  "OK",
+				// HideURL:     true,
+				// URL:         articleCase.url,
+				// ThumbURL:    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/External_link_font_awesome.svg/240px-External_link_font_awesome.svg.png",
+				// ThumbWidth:  240,
+				// ThumbHeight: 240,
 			}
 			result.SetResultID(strconv.Itoa(i))
 			results[i] = result
