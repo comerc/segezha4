@@ -38,14 +38,19 @@ func main() {
 		log.Println(q.ID)
 		log.Println(q.From.ID)
 		log.Println("****")
+		if q.Text == "" {
+			return
+		}
 		results := make(tb.Results, len(ArticleCases)) // []tb.Result
 		for i, articleCase := range ArticleCases {
 			result := &tb.ArticleResult{
-				Title:    articleCase.name,
-				Text:     "OK",
-				HideURL:  true,
-				URL:      articleCase.url,
-				ThumbURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/External_link_font_awesome.svg/512px-External_link_font_awesome.svg.png",
+				Title:       articleCase.name,
+				Text:        "OK",
+				HideURL:     true,
+				URL:         articleCase.url,
+				ThumbURL:    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/External_link_font_awesome.svg/240px-External_link_font_awesome.svg.png",
+				ThumbWidth:  240,
+				ThumbHeight: 240,
 			}
 			result.SetResultID(strconv.Itoa(i))
 			results[i] = result
