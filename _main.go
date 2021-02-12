@@ -104,11 +104,22 @@
 // 		log.Println(ownerID)
 // 		log.Println("****")
 // 		// TODO: разрешить всем админам чата
-// 		// chat, err := b.ChatByID(chatID)
-// 		// if err != nil {
-// 		// 	log.Println(err)
-// 		// }
-// 		// chat
+// 		chat, err := b.ChatByID(chatID)
+// 		if err != nil {
+// 			log.Println(err)
+// 		}
+// 		chatMember, err := b.ChatMemberOf(chat, &q.From)
+// 		if err != nil {
+// 			log.Println(err)
+// 		}
+// 		log.Println("role: " + chatMember.Role)
+// 		log.Println("****")
+// 		// TODO: разрешить только для ownerID
+// 		if strconv.Itoa(q.From.ID) != ownerID {
+// 			log.Println("OK")
+// 			log.Println("****")
+// 			return
+// 		}
 // 		if strconv.Itoa(q.From.ID) != ownerID {
 // 			log.Println("OK")
 // 			log.Println("****")
