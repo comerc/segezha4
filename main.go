@@ -44,22 +44,22 @@ func main() {
 		results := make(tb.Results, len(ArticleCases)) // []tb.Result
 		for i, articleCase := range ArticleCases {
 			result := &tb.ArticleResult{
-				Title:       articleCase.name,
-				Text:        "OK",
-				HideURL:     true,
-				URL:         articleCase.url,
-				ThumbURL:    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAABACAYAAABcIPRGAAABVUlEQVRoQ+2YUQ6CQAxEyzk8rHpvjWaNGFEWi9NpxYw/JIaWeZ3uLmWwjf+Gjes3AVQ7KAfkAFiBv2ihC7kIBzPbg8/ohjcH2ADt4TSILAAaRCYABSIbIByiAiAUogogDKISIATCA7Azs5OZnTtXZBuGt1cPAOu0hsU3C6sAQsRXAYSJrwAIFZ8NEC4+E4AiPguAJj4DABV/vA8C3XmCuY1GiG85Fk9sFkCk+HEam83JAGCI70L8GkDr+bFtenPwpEAMgG/fMj3i35xgAayFWCN+AsEE8EJ8I/4BwQb4BIGIv0FkAPQgYPGZAK8QIeKzAUaI52tvq3T/n9VCbkEzNy7O3AJASuuMlQOszypOA5Y//2sNeMsI3Kc1oDUAtE8LVQttvoXADuCGe84BrgIwuwDAAsLhcgAuIZhADoAFhMOrDykByAG4B8AEcgAsIBwuB+ASggmuXaNxljt4uNQAAAAASUVORK5CYII=",
-				ThumbWidth:  64,
-				ThumbHeight: 64,
+				Title:    articleCase.name,
+				Text:     "OK",
+				HideURL:  true,
+				URL:      articleCase.url,
+				ThumbURL: "http://e38.ru/misc/external_link.png",
+				// ThumbWidth:  24,
+				// ThumbHeight: 24,
 			}
 			result.SetResultID(strconv.Itoa(i))
 			results[i] = result
 		}
 		err = b.Answer(q, &tb.QueryResponse{
-			Results:           results,
-			CacheTime:         60, // a minute
-			SwitchPMText:      "SwitchPMText",
-			SwitchPMParameter: "SwitchPMParameter",
+			Results:   results,
+			CacheTime: 60, // a minute
+			// SwitchPMText:      "SwitchPMText",
+			// SwitchPMParameter: "SwitchPMParameter",
 		})
 		if err != nil {
 			log.Println(err)
