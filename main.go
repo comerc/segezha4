@@ -39,7 +39,7 @@ func main() {
 		log.Println("****")
 		re := regexp.MustCompile("[^A-Za-z]")
 		symbol := re.ReplaceAllString(q.Text, "")
-		ticker := GetTicker(symbol)
+		ticker := GetExactTicker(symbol)
 		log.Println(ticker)
 		if &ticker == nil {
 			return

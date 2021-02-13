@@ -6519,8 +6519,8 @@ func GetTickers(search string) []Ticker {
 	return result
 }
 
-// GetTicker function
-func GetTicker(search string) Ticker {
+// GetExactTicker function
+func GetExactTicker(search string) Ticker {
 	var result Ticker
 	if len(search) > 0 {
 		search = strings.ToUpper(search)
