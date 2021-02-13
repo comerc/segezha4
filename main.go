@@ -73,7 +73,7 @@ func main() {
 				// ThumbHeight: 240,
 			}
 			result.SetResultID(articleCase.name)
-			results[i] = result
+			results[i+1] = result
 		}
 		err = b.Answer(q, &tb.QueryResponse{
 			Results:   results,
