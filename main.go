@@ -66,17 +66,18 @@ func main() {
 				Description: ticker.symbol,
 				HideURL:     true,
 				URL:         url,
+				Text:        ticker.symbol + "=" + articleCase.name,
 			}
-			result.SetContent(&tb.InputTextMessageContent{
-				Text: fmt.Sprintf(`\#%s by [%s](%s)`,
-					ticker.symbol,
-					escape(articleCase.name),
-					url,
-				),
-				ParseMode:      tb.ModeMarkdownV2,
-				DisablePreview: articleCase.hasPreview != true,
-			})
-			result.SetResultID(articleCase.name + "=" + ticker.symbol)
+			// result.SetContent(&tb.InputTextMessageContent{
+			// 	Text: fmt.Sprintf(`\#%s by [%s](%s)`,
+			// 		ticker.symbol,
+			// 		escape(articleCase.name),
+			// 		url,
+			// 	),
+			// 	ParseMode:      tb.ModeMarkdownV2,
+			// 	DisablePreview: articleCase.hasPreview != true,
+			// })
+			result.SetResultID(ticker.symbol + "=" + articleCase.name)
 			results[i+1] = result
 		}
 		err = b.Answer(q, &tb.QueryResponse{
@@ -101,8 +102,8 @@ func main() {
 			return
 		}
 		resultID := strings.Split(r.ResultID, "=")
-		articleCaseName := resultID[0]
-		tickerSymbol := resultID[1]
+		tickerSymbol := resultID[0]
+		articleCaseName := resultID[1]
 		log.Println(articleCaseName)
 		log.Println(tickerSymbol)
 		// ticketName := r.ResultID
