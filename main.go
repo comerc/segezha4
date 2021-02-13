@@ -41,7 +41,7 @@ func main() {
 		symbol := re.ReplaceAllString(q.Text, "")
 		ticker := GetExactTicker(symbol)
 		log.Println(ticker)
-		if &ticker == nil {
+		if ticker == nil {
 			return
 		}
 		results := make(tb.Results, 1+len(ArticleCases)) // []tb.Result
