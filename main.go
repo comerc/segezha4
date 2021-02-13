@@ -53,7 +53,7 @@ func main() {
 			Text: fmt.Sprintf(`$%s \- [%s](%s)`,
 				ticker.symbol,
 				// strings.Replace(ticket.description, ".", "\\.", -1), // TODO: "\\-"
-				"dot . defis - ",
+				`dot \. defis - `,
 				// ticker.description,
 				url,
 			),
