@@ -42,6 +42,7 @@ func main() {
 		ticker := GetExactTicker(symbol)
 		log.Println(ticker)
 		if ticker == nil {
+			log.Println("is nil")
 			return
 		}
 		results := make(tb.Results, 1+len(ArticleCases)) // []tb.Result
