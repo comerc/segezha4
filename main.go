@@ -7,6 +7,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -96,6 +97,14 @@ func main() {
 		log.Println(r.Query)
 		log.Println(r.From.ID)
 		log.Println("====")
+		if r.ResultID == "" {
+			return
+		}
+		resultID := strings.Split(r.ResultID, "=")
+		articleCaseName := resultID[0]
+		tickerSymbol := resultID[1]
+		log.Println(articleCaseName)
+		log.Println(tickerSymbol)
 		// ticketName := r.ResultID
 		// to := tb.ChatID(parseInt(chatID))
 		// commands := make([]string, 0)
