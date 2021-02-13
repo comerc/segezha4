@@ -6525,7 +6525,7 @@ func GetTicker(search string) Ticker {
 	if len(search) > 0 {
 		search = strings.ToUpper(search)
 		for _, ticker := range tickers {
-			if strings.HasPrefix(ticker.symbol, search) {
+			if ticker.symbol == search {
 				result = ticker
 				break
 			}
