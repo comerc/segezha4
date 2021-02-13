@@ -37,7 +37,9 @@ func main() {
 		log.Println(q.ID)
 		log.Println(q.From.ID)
 		log.Println("****")
-		ticker := GetTicker(q.Text)
+		re := regexp.MustCompile("[^A-Za-z]")
+		symbol := re.ReplaceAllString(q.Text, "")
+		ticker := GetTicker(symbol)
 		if &ticker == nil {
 			return
 		}
