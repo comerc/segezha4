@@ -1,7 +1,7 @@
 package main
 
 import (
-	// "bytes"
+	"bytes"
 	"fmt"
 	"log"
 	"os"
@@ -18,7 +18,7 @@ func main() {
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
 		token     = os.Getenv("TOKEN")      // you must add it to your config vars
 		// ownerID   = os.Getenv("OWNER_ID")   // you must add it to your config vars
-		// chatID    = os.Getenv("CHAT_ID")    // you must add it to your config vars
+		chatID = os.Getenv("CHAT_ID") // you must add it to your config vars
 	)
 	webhook := &tb.Webhook{
 		Listen:   ":" + port,
@@ -106,7 +106,7 @@ func main() {
 		log.Println(articleCaseName)
 		log.Println(tickerSymbol)
 		// ticketName := r.ResultID
-		// to := tb.ChatID(parseInt(chatID))
+		to := tb.ChatID(parseInt(chatID))
 		// commands := make([]string, 0)
 		// for _, param := range strings.Split(r.Query, " ") {
 		// 	if strings.HasPrefix(param, "#") || strings.HasPrefix(param, "$") {
@@ -114,23 +114,23 @@ func main() {
 		// 	}
 		// 	commands = append(commands, param)
 		// }
-		// if len(commands) == 0 || contains(commands, "finviz") {
-		// 	screenshot := Screenshot(ticketName)
-		// 	photo := &tb.Photo{
-		// 		File: tb.FromReader(bytes.NewReader(screenshot)),
-		// 		Caption: fmt.Sprintf(
-		// 			"\\#%[1]s [finviz](https://finviz.com/quote.ashx?t=%[1]s)",
-		// 			ticketName,
-		// 		),
-		// 	}
-		// 	b.Send(
-		// 		to,
-		// 		photo,
-		// 		&tb.SendOptions{
-		// 			ParseMode: tb.ModeMarkdownV2,
-		// 		},
-		// 	)
-		// }
+		if articleCaseName == "finviz.com" {
+			screenshot := Screenshot(tickerSymbol)
+			photo := &tb.Photo{
+				File: tb.FromReader(bytes.NewReader(screenshot)),
+				Caption: fmt.Sprintf(
+					`\#%[1]s [finviz.com](https://finviz.com/quote.ashx?t=%[1]s)`,
+					tickerSymbol,
+				),
+			}
+			b.Send(
+				to,
+				photo,
+				&tb.SendOptions{
+					ParseMode: tb.ModeMarkdownV2,
+				},
+			)
+		}
 		// if (len(commands) == 0 || contains(commands, "ark")) && contains(ARKTickets, ticketName) {
 		// 	log.Println("OK")
 		// 	log.Println("====")
