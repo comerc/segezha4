@@ -117,12 +117,11 @@ func main() {
 		if articleCaseName == "finviz.com" {
 			screenshot := Screenshot(tickerSymbol)
 			photo := &tb.Photo{
-				File:    tb.FromReader(bytes.NewReader(screenshot)),
-				Caption: "1234",
-				// Caption: fmt.Sprintf(
-				// 	`\#%[1]s [finviz.com](https://finviz.com/quote.ashx?t=%[1]s)`,
-				// 	tickerSymbol,
-				// ),
+				File: tb.FromReader(bytes.NewReader(screenshot)),
+				Caption: fmt.Sprintf(
+					`\#%[1]s [finviz\.com](https://finviz.com/quote.ashx?t=%[1]s)`,
+					tickerSymbol,
+				),
 			}
 			b.Send(
 				to,
