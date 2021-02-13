@@ -32,17 +32,10 @@ func main() {
 		log.Fatal(err)
 	}
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
-		log.Println("****")
-		log.Println(q.Text)
-		log.Println(q.ID)
-		log.Println(q.From.ID)
-		log.Println("****")
 		re := regexp.MustCompile("[^A-Za-z]")
 		symbol := re.ReplaceAllString(q.Text, "")
 		ticker := GetExactTicker(symbol)
-		log.Println(ticker)
 		if ticker == nil {
-			log.Println("is nil")
 			return
 		}
 		results := make(tb.Results, 1+len(ArticleCases)) // []tb.Result
@@ -80,9 +73,9 @@ func main() {
 					url,
 				),
 				ParseMode:      tb.ModeMarkdownV2,
-				DisablePreview: articleCase.preview != true,
+				DisablePreview: articleCase.hasPreview != true,
 			})
-			result.SetResultID(articleCase.name)
+			result.SetResultID(articleCase.name + "=" + ticker.symbol)
 			results[i+1] = result
 		}
 		err = b.Answer(q, &tb.QueryResponse{
