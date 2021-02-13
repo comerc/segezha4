@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 
 	tb "gopkg.in/tucnak/telebot.v2"
@@ -53,7 +54,7 @@ func main() {
 			Text: fmt.Sprintf(`$%s \- [%s](%s)`,
 				ticker.symbol,
 				// strings.Replace(ticket.description, ".", "\\.", -1), // TODO: "\\-"
-				`dot \. defis \- `,
+				escape("dot . defis - "),
 				// ticker.description,
 				url,
 			),
@@ -153,4 +154,9 @@ func parseInt(s string) int64 {
 		log.Println(err)
 	}
 	return result
+}
+
+func escape(s string) string {
+	re := regexp.MustCompile("[.|-]")
+	return re.ReplaceAllString(s, `\$0`)
 }
