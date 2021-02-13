@@ -51,11 +51,9 @@ func main() {
 			ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.symbol),
 		}
 		result.SetContent(&tb.InputTextMessageContent{
-			Text: fmt.Sprintf(`$%s \- [%s](%s)`,
+			Text: fmt.Sprintf(`#%s \- [%s](%s)`,
 				ticker.symbol,
-				// strings.Replace(ticket.description, ".", "\\.", -1), // TODO: "\\-"
-				escape("dot . defis - "),
-				// ticker.description,
+				escape(ticker.description),
 				url,
 			),
 			ParseMode:      tb.ModeMarkdownV2,
@@ -64,15 +62,22 @@ func main() {
 		result.SetResultID("")
 		results[0] = result
 		for i, articleCase := range ArticleCases {
+			url := fmt.Sprintf(articleCase.url, ticker.symbol)
 			result := &tb.ArticleResult{
-				Title: articleCase.name,
-				Text:  "OK",
-				// HideURL:     true,
-				// URL:         articleCase.url,
-				// ThumbURL:    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/External_link_font_awesome.svg/240px-External_link_font_awesome.svg.png",
-				// ThumbWidth:  240,
-				// ThumbHeight: 240,
+				Title:       articleCase.name,
+				Description: ticker.symbol,
+				HideURL:     true,
+				URL:         url,
 			}
+			result.SetContent(&tb.InputTextMessageContent{
+				Text: fmt.Sprintf("#%s [%s](%s)",
+					ticker.symbol,
+					articleCase.name,
+					url,
+				),
+				ParseMode:      tb.ModeMarkdownV2,
+				DisablePreview: articleCase.preview != true,
+			})
 			result.SetResultID(articleCase.name)
 			results[i+1] = result
 		}
