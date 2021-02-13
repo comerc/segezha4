@@ -40,6 +40,7 @@ func main() {
 		re := regexp.MustCompile("[^A-Za-z]")
 		symbol := re.ReplaceAllString(q.Text, "")
 		ticker := GetTicker(symbol)
+		log.Println(ticker)
 		if &ticker == nil {
 			return
 		}
