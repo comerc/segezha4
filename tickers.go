@@ -6520,13 +6520,13 @@ func GetTickers(search string) []Ticker {
 }
 
 // GetExactTicker function
-func GetExactTicker(search string) Ticker {
-	var result Ticker
+func GetExactTicker(search string) *Ticker {
+	var result *Ticker
 	if len(search) > 0 {
 		search = strings.ToUpper(search)
 		for _, ticker := range tickers {
 			if ticker.symbol == search {
-				result = ticker
+				result = &ticker
 				break
 			}
 		}
