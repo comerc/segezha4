@@ -73,7 +73,7 @@ func main() {
 				URL:         url,
 			}
 			result.SetContent(&tb.InputTextMessageContent{
-				Text: fmt.Sprintf(`\#%s [%s](%s)`,
+				Text: fmt.Sprintf(`\#%s by [%s](%s)`,
 					ticker.symbol,
 					escape(articleCase.name),
 					url,
