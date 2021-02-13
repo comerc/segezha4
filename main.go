@@ -53,7 +53,7 @@ func main() {
 			ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.symbol),
 		}
 		result.SetContent(&tb.InputTextMessageContent{
-			Text: fmt.Sprintf(`$%s \- [%s](%s)`,
+			Text: fmt.Sprintf(`#%s \- [%s](%s)`,
 				ticker.symbol,
 				escape(ticker.description),
 				url,
@@ -72,9 +72,9 @@ func main() {
 				URL:         url,
 			}
 			result.SetContent(&tb.InputTextMessageContent{
-				Text: fmt.Sprintf(`$%s [%s](%s)`,
+				Text: fmt.Sprintf(`\#%s [%s](%s)`,
 					ticker.symbol,
-					articleCase.name,
+					escape(articleCase.name),
 					url,
 				),
 				ParseMode:      tb.ModeMarkdownV2,
