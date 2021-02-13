@@ -2,12 +2,10 @@ package main
 
 import (
 	// "bytes"
-	// "fmt"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
-
-	// "strings"
 
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -38,23 +36,45 @@ func main() {
 		log.Println(q.ID)
 		log.Println(q.From.ID)
 		log.Println("****")
-		if q.Text == "" {
+		ticker := GetTicker(q.Text)
+		if &ticker == nil {
 			return
 		}
-		results := make(tb.Results, len(ArticleCases)) // []tb.Result
-		for i, articleCase := range ArticleCases {
-			result := &tb.ArticleResult{
-				Title: articleCase.name,
-				Text:  "OK",
-				// HideURL:     true,
-				// URL:         articleCase.url,
-				// ThumbURL:    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/External_link_font_awesome.svg/240px-External_link_font_awesome.svg.png",
-				// ThumbWidth:  240,
-				// ThumbHeight: 240,
-			}
-			result.SetResultID(strconv.Itoa(i))
-			results[i] = result
+		results := make(tb.Results, 1+len(ArticleCases)) // []tb.Result
+		url := fmt.Sprintf("https://stockanalysis.com/stocks/%s/company/", ticker.symbol)
+		result := &tb.ArticleResult{
+			Title:    ticker.symbol,
+			HideURL:  true,
+			URL:      url,
+			ThumbURL: fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.symbol),
 		}
+		result.SetContent(&tb.InputTextMessageContent{
+			Text: fmt.Sprintf(`$%s \- [%s](%s)`,
+				ticker.symbol,
+				// strings.Replace(ticket.description, ".", "\\.", -1), // TODO: "\\-"
+				"dot . defis - ",
+				// ticker.description,
+				url,
+			),
+			ParseMode:      tb.ModeMarkdownV2,
+			DisablePreview: true,
+		})
+		result.SetResultID("")
+		results[0] = result
+
+		// for i, articleCase := range ArticleCases {
+		// 	result := &tb.ArticleResult{
+		// 		Title: articleCase.name,
+		// 		Text:  "OK",
+		// 		// HideURL:     true,
+		// 		// URL:         articleCase.url,
+		// 		// ThumbURL:    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/External_link_font_awesome.svg/240px-External_link_font_awesome.svg.png",
+		// 		// ThumbWidth:  240,
+		// 		// ThumbHeight: 240,
+		// 	}
+		// 	result.SetResultID(articleCase.name)
+		// 	results[i] = result
+		// }
 		err = b.Answer(q, &tb.QueryResponse{
 			Results:   results,
 			CacheTime: 60, // a minute
