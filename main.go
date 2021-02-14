@@ -111,7 +111,7 @@ func main() {
 		log.Println(r.From.ID)
 		log.Println("====")
 		resultID := strings.Split(r.ResultID, "=")
-		if len(r.ResultID) != 2 {
+		if len(resultID) != 2 {
 			// TODO: empty message
 			return
 		}
