@@ -18,7 +18,7 @@ func main() {
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
 		token     = os.Getenv("TOKEN")      // you must add it to your config vars
 		// ownerID   = os.Getenv("OWNER_ID")   // you must add it to your config vars
-		// chatID = os.Getenv("CHAT_ID") // you must add it to your config vars
+		chatID = os.Getenv("CHAT_ID") // you must add it to your config vars
 	)
 	webhook := &tb.Webhook{
 		Listen:   ":" + port,
@@ -32,6 +32,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println(b.Me.Recipient())
+
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		re := regexp.MustCompile("[^A-Za-z]")
 		symbol := re.ReplaceAllString(q.Text, "")
@@ -109,7 +111,7 @@ func main() {
 		log.Println(tickerSymbol)
 		// ticketName := r.ResultID
 		// TODO: to
-		// to := tb.ChatID(parseInt(chatID))
+		to := tb.ChatID(parseInt(chatID))
 		// commands := make([]string, 0)
 		// for _, param := range strings.Split(r.Query, " ") {
 		// 	if strings.HasPrefix(param, "#") || strings.HasPrefix(param, "$") {
@@ -131,7 +133,7 @@ func main() {
 				),
 			}
 			b.Send(
-				nil,
+				to,
 				photo,
 				&tb.SendOptions{
 					ParseMode: tb.ModeMarkdownV2,
@@ -151,7 +153,7 @@ func main() {
 				),
 			}
 			b.Send(
-				nil,
+				to,
 				photo,
 				&tb.SendOptions{
 					ParseMode: tb.ModeMarkdownV2,
