@@ -40,7 +40,7 @@ func main() {
 			return
 		}
 		results := make(tb.Results, 1+len(ArticleCases)) // []tb.Result
-		url := fmt.Sprintf("https://stockanalysis.com/stocks/%s/company/", ticker.symbol)
+		url := fmt.Sprintf("https://tradingview.com/symbols/%s", ticker.symbol)
 		result := &tb.ArticleResult{
 			Title:       ticker.symbol,
 			Description: ticker.description,
@@ -74,9 +74,9 @@ func main() {
 					url,
 				),
 				ParseMode:      tb.ModeMarkdownV2,
-				DisablePreview: articleCase.hasPreview != true,
+				DisablePreview: true,
 			})
-			result.SetResultID(ticker.symbol + "=" + articleCase.name)
+			result.SetResultID(ticker.symbol + "::" + articleCase.name + "::" + url)
 			results[i+1] = result
 		}
 		err = b.Answer(q, &tb.QueryResponse{
@@ -100,12 +100,14 @@ func main() {
 		if r.ResultID == "" {
 			return
 		}
-		resultID := strings.Split(r.ResultID, "=")
+		resultID := strings.Split(r.ResultID, "::")
 		tickerSymbol := resultID[0]
 		articleCaseName := resultID[1]
+		url := resultID[2]
 		log.Println(articleCaseName)
 		log.Println(tickerSymbol)
 		// ticketName := r.ResultID
+		// TODO: to
 		to := tb.ChatID(parseInt(chatID))
 		// commands := make([]string, 0)
 		// for _, param := range strings.Split(r.Query, " ") {
@@ -115,12 +117,14 @@ func main() {
 		// 	commands = append(commands, param)
 		// }
 		if articleCaseName == "finviz.com" {
-			screenshot := Screenshot(tickerSymbol)
+			screenshot := Screenshot(url)
 			photo := &tb.Photo{
 				File: tb.FromReader(bytes.NewReader(screenshot)),
 				Caption: fmt.Sprintf(
-					`\#%[1]s [finviz\.com](https://finviz.com/quote.ashx?t=%[1]s)`,
+					`\#%s [%s](%s)`,
 					tickerSymbol,
+					escape(articleCaseName),
+					url,
 				),
 			}
 			b.Send(
@@ -130,6 +134,25 @@ func main() {
 					ParseMode: tb.ModeMarkdownV2,
 				},
 			)
+		}
+		if articleCaseName == "stockscores.com" {
+			photo := &tb.Photo{
+				File: tb.FromURL(url),
+				Caption: fmt.Sprintf(
+					`\#%s [%s](%s)`,
+					tickerSymbol,
+					escape(articleCaseName),
+					url,
+				),
+			}
+			b.Send(
+				to,
+				photo,
+				&tb.SendOptions{
+					ParseMode: tb.ModeMarkdownV2,
+				},
+			)
+
 		}
 		// if (len(commands) == 0 || contains(commands, "ark")) && contains(ARKTickets, ticketName) {
 		// 	log.Println("OK")
