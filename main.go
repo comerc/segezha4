@@ -14,7 +14,7 @@ import (
 
 func greet(Updates chan tb.Update) {
 	u := <-Updates
-	fmt.Println(u.ID)
+	fmt.Println(u.Message.Chat.ID)
 }
 
 func main() {
