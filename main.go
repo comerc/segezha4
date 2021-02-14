@@ -76,7 +76,7 @@ func main() {
 				ParseMode:      tb.ModeMarkdownV2,
 				DisablePreview: true,
 			})
-			result.SetResultID(ticker.symbol + "::" + articleCase.name + "::" + url)
+			result.SetResultID(ticker.symbol + "==" + articleCase.name + "==" + url)
 			results[i+1] = result
 		}
 		err = b.Answer(q, &tb.QueryResponse{
@@ -100,7 +100,7 @@ func main() {
 		if r.ResultID == "" {
 			return
 		}
-		resultID := strings.Split(r.ResultID, "::")
+		resultID := strings.Split(r.ResultID, "==")
 		tickerSymbol := resultID[0]
 		articleCaseName := resultID[1]
 		url := resultID[2]
