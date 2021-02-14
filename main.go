@@ -60,10 +60,10 @@ func main() {
 		})
 		result.SetResultID("")
 		results[0] = result
-		for name, url := range ArticleCases {
-			url := fmt.Sprintf(url, ticker.symbol)
+		for key, value := range ArticleCases {
+			url := fmt.Sprintf(value, ticker.symbol)
 			result := &tb.ArticleResult{
-				Title:       name,
+				Title:       key,
 				Description: ticker.symbol,
 				HideURL:     true,
 				URL:         url,
@@ -71,25 +71,26 @@ func main() {
 			result.SetContent(&tb.InputTextMessageContent{
 				Text: fmt.Sprintf(`\#%s [%s](%s)`,
 					ticker.symbol,
-					escape(name),
+					escape(key),
 					url,
 				),
 				ParseMode:      tb.ModeMarkdownV2,
 				DisablePreview: true,
 			})
-			result.SetResultID(ticker.symbol + "=" + name)
+			result.SetResultID(ticker.symbol + "=" + key)
 			// results[i+1] = result
 			results = append(results, result)
 		}
-		err = b.Answer(q, &tb.QueryResponse{
-			Results:   results,
-			CacheTime: 60, // a minute
-			// SwitchPMText:      "SwitchPMText",
-			// SwitchPMParameter: "SwitchPMParameter",
-		})
-		if err != nil {
-			log.Println(err)
-		}
+		fmt.Println(results)
+		// err = b.Answer(q, &tb.QueryResponse{
+		// 	Results:   results,
+		// 	CacheTime: 60, // a minute
+		// 	// SwitchPMText:      "SwitchPMText",
+		// 	// SwitchPMParameter: "SwitchPMParameter",
+		// })
+		// if err != nil {
+		// 	log.Println(err)
+		// }
 	})
 	b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
 		// incoming inline queries
@@ -104,8 +105,8 @@ func main() {
 		}
 		resultID := strings.Split(r.ResultID, "=")
 		tickerSymbol := resultID[0]
-		name := resultID[1]
-		log.Println(name)
+		key := resultID[1]
+		log.Println(key)
 		log.Println(tickerSymbol)
 		// ticketName := r.ResultID
 		// TODO: to
@@ -117,15 +118,15 @@ func main() {
 		// 	}
 		// 	commands = append(commands, param)
 		// }
-		if name == "finviz.com" {
-			url := ArticleCases[name]
+		if key == "finviz.com" {
+			url := fmt.Sprintf(ArticleCases[key], tickerSymbol)
 			screenshot := Screenshot(url)
 			photo := &tb.Photo{
 				File: tb.FromReader(bytes.NewReader(screenshot)),
 				Caption: fmt.Sprintf(
 					`\#%s [%s](%s)`,
 					tickerSymbol,
-					escape(name),
+					escape(key),
 					url,
 				),
 			}
@@ -137,14 +138,14 @@ func main() {
 				},
 			)
 		}
-		if name == "stockscores.com" {
-			url := ArticleCases[name]
+		if key == "stockscores.com" {
+			url := fmt.Sprintf(ArticleCases[key], tickerSymbol)
 			photo := &tb.Photo{
 				File: tb.FromURL(url),
 				Caption: fmt.Sprintf(
 					`\#%s [%s](%s)`,
 					tickerSymbol,
-					escape(name),
+					escape(key),
 					url,
 				),
 			}
