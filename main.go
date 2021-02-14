@@ -12,10 +12,11 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// func greet(Updates chan tb.Update) {
-// 	u := <-Updates
-// 	fmt.Println(u.Message.Chat.ID)
-// }
+func greet(Updates chan tb.Update) {
+	u := <-Updates
+	fmt.Println(u)
+	// fmt.Println(u.Message.Chat.ID)
+}
 
 func main() {
 	var (
@@ -37,7 +38,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// go greet(b.Updates)
+	go greet(b.Updates)
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		re := regexp.MustCompile("[^A-Za-z]")
 		symbol := re.ReplaceAllString(q.Text, "")
