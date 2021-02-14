@@ -6508,7 +6508,7 @@ func GetTickers(search string) []Ticker {
 		search = strings.ToUpper(search)
 		for _, ticker := range tickers {
 			// TODO: поиск по ticker.description
-			if strings.HasPrefix(ticker.symbol, search) {
+			if strings.HasPrefix(strings.ToUpper(ticker.symbol), search) {
 				result = append(result, ticker)
 				if len(search) == 1 {
 					break
@@ -6525,7 +6525,7 @@ func GetExactTicker(search string) *Ticker {
 	if len(search) > 0 {
 		search = strings.ToUpper(search)
 		for _, ticker := range tickers {
-			if ticker.symbol == search {
+			if strings.ToUpper(ticker.symbol) == search {
 				result = &ticker
 				break
 			}

@@ -46,15 +46,16 @@ func main() {
 			return
 		}
 		results := make(tb.Results, 1+len(ArticleCases)) // []tb.Result
-		linkURL := fmt.Sprintf("https://tradingview.com/symbols/%s", ticker.symbol)
+		linkURL := fmt.Sprintf("https://ru.tradingview.com/symbols/%s", ticker.symbol)
 		result := &tb.ArticleResult{
 			Title:       ticker.symbol,
 			Description: ticker.description,
 			HideURL:     true,
 			URL:         linkURL,
-			ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.symbol),
+			ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.symbol), // from stockanalysis.com
+			// TODO: SVG to PNG from TradingView
 		}
-		// TODO: https://storage.googleapis.com/iex/api/logos/TSLA.png
+		// TODO:
 		result.SetContent(&tb.InputTextMessageContent{
 			Text: fmt.Sprintf(`\#%s \- [%s](%s)`,
 				ticker.symbol,
@@ -68,8 +69,12 @@ func main() {
 		results[0] = result
 		for i, articleCase := range ArticleCases {
 			linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+			title := articleCase.name
+			if articleCase.hasGift {
+				title += " 🎁"
+			}
 			result := &tb.ArticleResult{
-				Title:       articleCase.name,
+				Title:       title,
 				Description: ticker.symbol,
 				HideURL:     true,
 				URL:         linkURL,
