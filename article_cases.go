@@ -1,5 +1,9 @@
 package main
 
+import (
+	"strings"
+)
+
 // ArticleCase struct
 type ArticleCase struct {
 	name string
@@ -8,6 +12,12 @@ type ArticleCase struct {
 
 // TODO: чаще используемые перемещать наверх
 // TODO: конфигурировать через интерфейс
+
+// TODO: map
+// m := make(map[key_type]value_type)
+// m := new(map[key_type]value_type)
+// var m map[key_type]value_type
+// m := map[key_type]value_type{key1: val1, key2: val2}
 
 // ArticleCases slice
 var ArticleCases = []ArticleCase{
@@ -28,4 +38,19 @@ var ArticleCases = []ArticleCase{
 	{name: "stockrow.com", url: "https://stockrow.com/%s"},
 	{name: "stockanalysis.com", url: "https://stockanalysis.com/stocks/%s/"},
 	{name: "finasquare.com", url: "https://www.finasquare.com/stocks/%s/company-info/overview"},
+}
+
+// GetExactArticleCase function
+func GetExactArticleCase(search string) *ArticleCase {
+	var result *ArticleCase
+	if len(search) > 0 {
+		search = strings.ToUpper(search)
+		for _, articleCase := range ArticleCases {
+			if articleCase.name == search {
+				result = &articleCase
+				break
+			}
+		}
+	}
+	return result
 }

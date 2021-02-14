@@ -76,7 +76,7 @@ func main() {
 				ParseMode:      tb.ModeMarkdownV2,
 				DisablePreview: true,
 			})
-			result.SetResultID(ticker.symbol + "==" + articleCase.name + "==" + url)
+			result.SetResultID(ticker.symbol + "=" + articleCase.name)
 			results[i+1] = result
 		}
 		err = b.Answer(q, &tb.QueryResponse{
@@ -100,10 +100,9 @@ func main() {
 		if r.ResultID == "" {
 			return
 		}
-		resultID := strings.Split(r.ResultID, "==")
+		resultID := strings.Split(r.ResultID, "=")
 		tickerSymbol := resultID[0]
 		articleCaseName := resultID[1]
-		url := resultID[2]
 		log.Println(articleCaseName)
 		log.Println(tickerSymbol)
 		// ticketName := r.ResultID
@@ -117,14 +116,15 @@ func main() {
 		// 	commands = append(commands, param)
 		// }
 		if articleCaseName == "finviz.com" {
-			screenshot := Screenshot(url)
+			articleCase := GetExactArticleCase(articleCaseName)
+			screenshot := Screenshot(articleCase.url)
 			photo := &tb.Photo{
 				File: tb.FromReader(bytes.NewReader(screenshot)),
 				Caption: fmt.Sprintf(
 					`\#%s [%s](%s)`,
 					tickerSymbol,
 					escape(articleCaseName),
-					url,
+					articleCase.url,
 				),
 			}
 			b.Send(
@@ -136,13 +136,14 @@ func main() {
 			)
 		}
 		if articleCaseName == "stockscores.com" {
+			articleCase := GetExactArticleCase(articleCaseName)
 			photo := &tb.Photo{
-				File: tb.FromURL(url),
+				File: tb.FromURL(articleCase.url),
 				Caption: fmt.Sprintf(
 					`\#%s [%s](%s)`,
 					tickerSymbol,
 					escape(articleCaseName),
-					url,
+					articleCase.url,
 				),
 			}
 			b.Send(
