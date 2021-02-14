@@ -48,7 +48,7 @@ func GetExactArticleCase(search string) *ArticleCase {
 	if len(search) > 0 {
 		search = strings.ToUpper(search)
 		for _, articleCase := range ArticleCases {
-			if articleCase.name == search {
+			if strings.ToUpper(articleCase.name) == search {
 				result = &articleCase
 				break
 			}
