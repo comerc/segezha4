@@ -13,7 +13,6 @@ import (
 )
 
 func main() {
-	InitializeArticleCases()
 	var (
 		port      = os.Getenv("PORT")
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
@@ -60,6 +59,7 @@ func main() {
 		})
 		result.SetResultID("")
 		results[0] = result
+		var i = 0
 		for key, value := range ArticleCases {
 			url := fmt.Sprintf(value, ticker.symbol)
 			result := &tb.ArticleResult{
@@ -78,19 +78,18 @@ func main() {
 				DisablePreview: true,
 			})
 			result.SetResultID(ticker.symbol + "=" + key)
-			// results[i+1] = result
-			results = append(results, result)
+			i++
+			results[i] = result
 		}
-		fmt.Println(results)
-		// err = b.Answer(q, &tb.QueryResponse{
-		// 	Results:   results,
-		// 	CacheTime: 60, // a minute
-		// 	// SwitchPMText:      "SwitchPMText",
-		// 	// SwitchPMParameter: "SwitchPMParameter",
-		// })
-		// if err != nil {
-		// 	log.Println(err)
-		// }
+		err = b.Answer(q, &tb.QueryResponse{
+			Results:   results,
+			CacheTime: 60, // a minute
+			// SwitchPMText:      "SwitchPMText",
+			// SwitchPMParameter: "SwitchPMParameter",
+		})
+		if err != nil {
+			log.Println(err)
+		}
 	})
 	b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
 		// incoming inline queries
