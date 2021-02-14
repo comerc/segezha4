@@ -23,7 +23,7 @@ package main
 var ArticleCases = make(map[string]string)
 
 // InitializeArticleCases func
-func InitializeArticleCases() {
+func init() {
 	ArticleCases["finviz.com"] = "https://finviz.com/quote.ashx?t=%s"
 	ArticleCases["cathiesark.com"] = "https://cathiesark.com/ark-combined-holdings-of-%s"
 	ArticleCases["marketwatch.com"] = "https://marketwatch.com/investing/stock/%s"
