@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	InitializeArticleCases()
 	var (
 		port      = os.Getenv("PORT")
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
@@ -59,10 +60,10 @@ func main() {
 		})
 		result.SetResultID("")
 		results[0] = result
-		for i, articleCase := range ArticleCases {
-			url := fmt.Sprintf(articleCase.url, ticker.symbol)
+		for name, url := range ArticleCases {
+			url := fmt.Sprintf(url, ticker.symbol)
 			result := &tb.ArticleResult{
-				Title:       articleCase.name,
+				Title:       name,
 				Description: ticker.symbol,
 				HideURL:     true,
 				URL:         url,
@@ -70,14 +71,15 @@ func main() {
 			result.SetContent(&tb.InputTextMessageContent{
 				Text: fmt.Sprintf(`\#%s [%s](%s)`,
 					ticker.symbol,
-					escape(articleCase.name),
+					escape(name),
 					url,
 				),
 				ParseMode:      tb.ModeMarkdownV2,
 				DisablePreview: true,
 			})
-			result.SetResultID(ticker.symbol + "=" + articleCase.name)
-			results[i+1] = result
+			result.SetResultID(ticker.symbol + "=" + name)
+			// results[i+1] = result
+			results = append(results, result)
 		}
 		err = b.Answer(q, &tb.QueryResponse{
 			Results:   results,
@@ -102,8 +104,8 @@ func main() {
 		}
 		resultID := strings.Split(r.ResultID, "=")
 		tickerSymbol := resultID[0]
-		articleCaseName := resultID[1]
-		log.Println(articleCaseName)
+		name := resultID[1]
+		log.Println(name)
 		log.Println(tickerSymbol)
 		// ticketName := r.ResultID
 		// TODO: to
@@ -115,16 +117,16 @@ func main() {
 		// 	}
 		// 	commands = append(commands, param)
 		// }
-		if articleCaseName == "finviz.com" {
-			articleCase := GetExactArticleCase(articleCaseName)
-			screenshot := Screenshot(articleCase.url)
+		if name == "finviz.com" {
+			url := ArticleCases[name]
+			screenshot := Screenshot(url)
 			photo := &tb.Photo{
 				File: tb.FromReader(bytes.NewReader(screenshot)),
 				Caption: fmt.Sprintf(
 					`\#%s [%s](%s)`,
 					tickerSymbol,
-					escape(articleCaseName),
-					articleCase.url,
+					escape(name),
+					url,
 				),
 			}
 			b.Send(
@@ -135,15 +137,15 @@ func main() {
 				},
 			)
 		}
-		if articleCaseName == "stockscores.com" {
-			articleCase := GetExactArticleCase(articleCaseName)
+		if name == "stockscores.com" {
+			url := ArticleCases[name]
 			photo := &tb.Photo{
-				File: tb.FromURL(articleCase.url),
+				File: tb.FromURL(url),
 				Caption: fmt.Sprintf(
 					`\#%s [%s](%s)`,
 					tickerSymbol,
-					escape(articleCaseName),
-					articleCase.url,
+					escape(name),
+					url,
 				),
 			}
 			b.Send(
