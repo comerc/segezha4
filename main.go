@@ -18,7 +18,7 @@ func main() {
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
 		token     = os.Getenv("TOKEN")      // you must add it to your config vars
 		// ownerID   = os.Getenv("OWNER_ID")   // you must add it to your config vars
-		chatID = os.Getenv("CHAT_ID") // you must add it to your config vars
+		// chatID = os.Getenv("CHAT_ID") // you must add it to your config vars
 	)
 	webhook := &tb.Webhook{
 		Listen:   ":" + port,
@@ -40,44 +40,44 @@ func main() {
 			return
 		}
 		results := make(tb.Results, 1+len(ArticleCases)) // []tb.Result
-		url := fmt.Sprintf("https://tradingview.com/symbols/%s", ticker.symbol)
+		linkURL := fmt.Sprintf("https://tradingview.com/symbols/%s", ticker.symbol)
 		result := &tb.ArticleResult{
 			Title:       ticker.symbol,
 			Description: ticker.description,
 			HideURL:     true,
-			URL:         url,
+			URL:         linkURL,
 			ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.symbol),
 		}
+		// TODO: https://storage.googleapis.com/iex/api/logos/TSLA.png
 		result.SetContent(&tb.InputTextMessageContent{
 			Text: fmt.Sprintf(`\#%s \- [%s](%s)`,
 				ticker.symbol,
 				escape(ticker.description),
-				url,
+				linkURL,
 			),
 			ParseMode:      tb.ModeMarkdownV2,
 			DisablePreview: true,
 		})
 		result.SetResultID("")
 		results[0] = result
-		var i = 0
-		for key, value := range ArticleCases {
-			url := fmt.Sprintf(value, ticker.symbol)
+		for i, articleCase := range ArticleCases {
+			linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 			result := &tb.ArticleResult{
-				Title:       key,
+				Title:       articleCase.name,
 				Description: ticker.symbol,
 				HideURL:     true,
-				URL:         url,
+				URL:         linkURL,
 			}
 			result.SetContent(&tb.InputTextMessageContent{
 				Text: fmt.Sprintf(`\#%s [%s](%s)`,
 					ticker.symbol,
-					escape(key),
-					url,
+					escape(articleCase.name),
+					linkURL,
 				),
 				ParseMode:      tb.ModeMarkdownV2,
 				DisablePreview: true,
 			})
-			result.SetResultID(ticker.symbol + "=" + key)
+			result.SetResultID(ticker.symbol + "=" + articleCase.name)
 			i++
 			results[i] = result
 		}
@@ -100,16 +100,17 @@ func main() {
 		log.Println(r.From.ID)
 		log.Println("====")
 		if r.ResultID == "" {
+			// TODO: empty message
 			return
 		}
 		resultID := strings.Split(r.ResultID, "=")
 		tickerSymbol := resultID[0]
-		key := resultID[1]
-		log.Println(key)
+		articleCaseName := resultID[1]
+		log.Println(articleCaseName)
 		log.Println(tickerSymbol)
 		// ticketName := r.ResultID
 		// TODO: to
-		to := tb.ChatID(parseInt(chatID))
+		// to := tb.ChatID(parseInt(chatID))
 		// commands := make([]string, 0)
 		// for _, param := range strings.Split(r.Query, " ") {
 		// 	if strings.HasPrefix(param, "#") || strings.HasPrefix(param, "$") {
@@ -117,45 +118,46 @@ func main() {
 		// 	}
 		// 	commands = append(commands, param)
 		// }
-		if key == "finviz.com" {
-			url := fmt.Sprintf(ArticleCases[key], tickerSymbol)
-			screenshot := Screenshot(url)
+		articleCase := GetExactArticleCase(articleCaseName)
+		if articleCaseName == "finviz.com" {
+			linkURL := fmt.Sprintf(articleCase.linkURL, tickerSymbol)
+			screenshot := Screenshot(linkURL)
 			photo := &tb.Photo{
 				File: tb.FromReader(bytes.NewReader(screenshot)),
 				Caption: fmt.Sprintf(
 					`\#%s [%s](%s)`,
 					tickerSymbol,
-					escape(key),
-					url,
+					escape(articleCase.name),
+					linkURL,
 				),
 			}
 			b.Send(
-				to,
+				nil,
 				photo,
 				&tb.SendOptions{
 					ParseMode: tb.ModeMarkdownV2,
 				},
 			)
 		}
-		if key == "stockscores.com" {
-			url := fmt.Sprintf(ArticleCases[key], tickerSymbol)
+		if articleCase.imageURL != "" {
+			imageURL := fmt.Sprintf(articleCase.imageURL, tickerSymbol)
+			linkURL := fmt.Sprintf(articleCase.linkURL, tickerSymbol)
 			photo := &tb.Photo{
-				File: tb.FromURL(url),
+				File: tb.FromURL(imageURL),
 				Caption: fmt.Sprintf(
 					`\#%s [%s](%s)`,
 					tickerSymbol,
-					escape(key),
-					url,
+					escape(articleCase.name),
+					linkURL,
 				),
 			}
 			b.Send(
-				to,
+				nil,
 				photo,
 				&tb.SendOptions{
 					ParseMode: tb.ModeMarkdownV2,
 				},
 			)
-
 		}
 		// if (len(commands) == 0 || contains(commands, "ark")) && contains(ARKTickets, ticketName) {
 		// 	log.Println("OK")
