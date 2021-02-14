@@ -66,17 +66,16 @@ func main() {
 				Description: ticker.symbol,
 				HideURL:     true,
 				URL:         url,
-				Text:        ticker.symbol + "=" + articleCase.name,
 			}
-			// result.SetContent(&tb.InputTextMessageContent{
-			// 	Text: fmt.Sprintf(`\#%s by [%s](%s)`,
-			// 		ticker.symbol,
-			// 		escape(articleCase.name),
-			// 		url,
-			// 	),
-			// 	ParseMode:      tb.ModeMarkdownV2,
-			// 	DisablePreview: articleCase.hasPreview != true,
-			// })
+			result.SetContent(&tb.InputTextMessageContent{
+				Text: fmt.Sprintf(`\#%s [%s](%s)`,
+					ticker.symbol,
+					escape(articleCase.name),
+					url,
+				),
+				ParseMode:      tb.ModeMarkdownV2,
+				DisablePreview: articleCase.hasPreview != true,
+			})
 			result.SetResultID(ticker.symbol + "=" + articleCase.name)
 			results[i+1] = result
 		}
