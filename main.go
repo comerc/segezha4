@@ -78,7 +78,7 @@ func main() {
 				DisablePreview: true,
 			})
 			result.SetResultID(ticker.symbol + "=" + articleCase.name)
-			results[i] = result
+			results[i+1] = result
 		}
 		err = b.Answer(q, &tb.QueryResponse{
 			Results:   results,
