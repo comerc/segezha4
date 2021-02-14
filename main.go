@@ -12,11 +12,11 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-func greet(Updates chan tb.Update) {
-	u := <-Updates
-	fmt.Println(u)
-	// fmt.Println(u.Message.Chat.ID)
-}
+// func greet(Updates chan tb.Update) {
+// 	u := <-Updates
+// 	fmt.Println(u)
+// 	// fmt.Println(u.Message.Chat.ID)
+// }
 
 func main() {
 	var (
@@ -38,7 +38,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	go greet(b.Updates)
+	// go greet(b.Updates)
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		re := regexp.MustCompile("[^A-Za-z]")
 		symbol := re.ReplaceAllString(q.Text, "")
@@ -66,7 +66,7 @@ func main() {
 			ParseMode:      tb.ModeMarkdownV2,
 			DisablePreview: true,
 		})
-		result.SetResultID("")
+		result.SetResultID(ticker.symbol)
 		results[0] = result
 		for i, articleCase := range ArticleCases {
 			linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
@@ -110,11 +110,11 @@ func main() {
 		log.Println(r.Query)
 		log.Println(r.From.ID)
 		log.Println("====")
-		if r.ResultID == "" {
+		resultID := strings.Split(r.ResultID, "=")
+		if len(r.ResultID) != 2 {
 			// TODO: empty message
 			return
 		}
-		resultID := strings.Split(r.ResultID, "=")
 		tickerSymbol := resultID[0]
 		articleCaseName := resultID[1]
 		log.Println(articleCaseName)
