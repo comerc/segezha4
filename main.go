@@ -12,11 +12,11 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-func greet(Updates chan tb.Update) {
-	u := <-Updates
-	fmt.Println(u)
-	// fmt.Println(u.Message.Chat.ID)
-}
+// func greet(Updates chan tb.Update) {
+// 	u := <-Updates
+// 	fmt.Println(u)
+// 	// fmt.Println(u.Message.Chat.ID)
+// }
 
 func main() {
 	var (
@@ -24,7 +24,7 @@ func main() {
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
 		token     = os.Getenv("TOKEN")      // you must add it to your config vars
 		// ownerID   = os.Getenv("OWNER_ID")   // you must add it to your config vars
-		chatID = os.Getenv("CHAT_ID") // you must add it to your config vars
+		// chatID = os.Getenv("CHAT_ID") // you must add it to your config vars
 	)
 	webhook := &tb.Webhook{
 		Listen:   ":" + port,
@@ -46,7 +46,7 @@ func main() {
 	b.Handle("/start", func(m *tb.Message) {
 		b.Send(m.Sender, "Hello World!"+strconv.FormatInt(m.Chat.ID, 10))
 	})
-	go greet(b.Updates)
+	// go greet(b.Updates)
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		re := regexp.MustCompile("[^A-Za-z]")
 		symbol := re.ReplaceAllString(q.Text, "")
@@ -87,6 +87,7 @@ func main() {
 				Description: ticker.symbol,
 				HideURL:     true,
 				URL:         linkURL,
+				ThumbHeight: 1,
 			}
 			result.SetContent(&tb.InputTextMessageContent{
 				Text: fmt.Sprintf(`\#%s [%s](%s)`,
@@ -129,7 +130,8 @@ func main() {
 		log.Println(tickerSymbol)
 		// ticketName := r.ResultID
 		// TODO: to https://core.telegram.org/bots#deep-linking-example
-		to := tb.ChatID(parseInt(chatID))
+		// to := tb.ChatID(parseInt(chatID))
+		to := tb.ChatID(0)
 		// commands := make([]string, 0)
 		// for _, param := range strings.Split(r.Query, " ") {
 		// 	if strings.HasPrefix(param, "#") || strings.HasPrefix(param, "$") {
