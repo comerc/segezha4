@@ -112,7 +112,7 @@ func main() {
 		}
 	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
-		b.Send(m.Sender, "hello world")
+		b.Send(m.Sender, "hello world"+strconv.FormatInt(m.Chat.ID, 10))
 	})
 	b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
 		// incoming inline queries
