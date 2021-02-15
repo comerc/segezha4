@@ -34,10 +34,18 @@ func main() {
 		Token:  token,
 		Poller: webhook,
 	}
+	// pref := tb.Settings{
+	// 	URL: publicURL,
+	// 	Token:  token,
+	// 	Poller: &tb.LongPoller{Timeout: 10 * time.Second},
+	// }
 	b, err := tb.NewBot(pref)
 	if err != nil {
 		log.Fatal(err)
 	}
+	b.Handle("/start", func(m *tb.Message) {
+		b.Send(m.Sender, "Hello World!")
+	})
 	// go greet(b.Updates)
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		re := regexp.MustCompile("[^A-Za-z]")
@@ -120,7 +128,7 @@ func main() {
 		log.Println(articleCaseName)
 		log.Println(tickerSymbol)
 		// ticketName := r.ResultID
-		// TODO: to
+		// TODO: to https://core.telegram.org/bots#deep-linking-example
 		to := tb.ChatID(parseInt(chatID))
 		// commands := make([]string, 0)
 		// for _, param := range strings.Split(r.Query, " ") {
