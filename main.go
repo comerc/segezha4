@@ -85,7 +85,7 @@ func main() {
 				Description: ticker.symbol,
 				HideURL:     true,
 				URL:         linkURL,
-				ThumbHeight: 1,
+				// ThumbHeight: 1,
 			}
 			result.SetContent(&tb.InputTextMessageContent{
 				// Text: fmt.Sprintf(`\#%s [%s](%s)`,
@@ -120,7 +120,9 @@ func main() {
 		b.Send(m.Sender, "You entered "+m.Payload)
 	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
-		fmt.Println(m)
+
+		fmt.Println(b.Me.ID)
+		fmt.Println(m.Via.ID)
 		// b.Send(m.Sender, )
 
 		// err := b.Delete(
