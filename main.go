@@ -112,7 +112,18 @@ func main() {
 		}
 	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
-		b.Send(m.Sender, "hello world"+strconv.FormatInt(m.Chat.ID, 10))
+
+		err := b.Delete(
+			&tb.StoredMessage{
+				MessageID: strconv.Itoa(m.ID),
+				ChatID:    m.Chat.ID,
+			},
+		)
+		if err != nil {
+			log.Println(err)
+		}
+
+		// b.Send(m.Sender, "hello world"+strconv.FormatInt(m.Chat.ID, 10))
 	})
 	b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
 		// incoming inline queries
