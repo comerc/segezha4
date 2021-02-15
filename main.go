@@ -8,45 +8,46 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// func greet(Updates chan tb.Update) {
-// 	u := <-Updates
-// 	fmt.Println(u)
-// 	// fmt.Println(u.Message.Chat.ID)
-// }
+func greet(Updates chan tb.Update) {
+	u := <-Updates
+	fmt.Println(u)
+	// fmt.Println(u.Message.Chat.ID)
+}
 
 func main() {
 	var (
-		port      = os.Getenv("PORT")
+		// port      = os.Getenv("PORT")
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
 		token     = os.Getenv("TOKEN")      // you must add it to your config vars
 		// ownerID   = os.Getenv("OWNER_ID")   // you must add it to your config vars
 		chatID = os.Getenv("CHAT_ID") // you must add it to your config vars
 	)
-	webhook := &tb.Webhook{
-		Listen:   ":" + port,
-		Endpoint: &tb.WebhookEndpoint{PublicURL: publicURL},
-	}
-	pref := tb.Settings{
-		Token:  token,
-		Poller: webhook,
-	}
-	// pref := tb.Settings{
-	// 	URL: publicURL,
-	// 	Token:  token,
-	// 	Poller: &tb.LongPoller{Timeout: 10 * time.Second},
+	// webhook := &tb.Webhook{
+	// 	Listen:   ":" + port,
+	// 	Endpoint: &tb.WebhookEndpoint{PublicURL: publicURL},
 	// }
+	// pref := tb.Settings{
+	// 	Token:  token,
+	// 	Poller: webhook,
+	// }
+	pref := tb.Settings{
+		URL:    publicURL,
+		Token:  token,
+		Poller: &tb.LongPoller{Timeout: 10 * time.Second},
+	}
 	b, err := tb.NewBot(pref)
 	if err != nil {
 		log.Fatal(err)
 	}
 	b.Handle("/start", func(m *tb.Message) {
-		b.Send(m.Sender, "Hello World!")
+		b.Send(m.Sender, "Hello World!"+strconv.FormatInt(m.Chat.ID, 10))
 	})
-	// go greet(b.Updates)
+	go greet(b.Updates)
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		re := regexp.MustCompile("[^A-Za-z]")
 		symbol := re.ReplaceAllString(q.Text, "")
