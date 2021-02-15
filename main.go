@@ -90,10 +90,14 @@ func main() {
 				ThumbHeight: 1,
 			}
 			result.SetContent(&tb.InputTextMessageContent{
-				Text: fmt.Sprintf(`\#%s [%s](%s)`,
-					ticker.symbol,
-					escape(articleCase.name),
+				// Text: fmt.Sprintf(`\#%s [%s](%s)`,
+				// 	ticker.symbol,
+				// 	escape(articleCase.name),
+				// 	linkURL,
+				// ),
+				Text: fmt.Sprintf(`\/%s %s`,
 					linkURL,
+					ticker.symbol,
 				),
 				ParseMode:      tb.ModeMarkdownV2,
 				DisablePreview: true,
@@ -112,16 +116,18 @@ func main() {
 		}
 	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
+		fmt.Println(m)
+		// b.Send(m.Sender, )
 
-		err := b.Delete(
-			&tb.StoredMessage{
-				MessageID: strconv.Itoa(m.ID),
-				ChatID:    m.Chat.ID,
-			},
-		)
-		if err != nil {
-			log.Println(err)
-		}
+		// err := b.Delete(
+		// 	&tb.StoredMessage{
+		// 		MessageID: strconv.Itoa(m.ID),
+		// 		ChatID:    m.Chat.ID,
+		// 	},
+		// )
+		// if err != nil {
+		// 	log.Println(err)
+		// }
 
 		// b.Send(m.Sender, "hello world"+strconv.FormatInt(m.Chat.ID, 10))
 	})
