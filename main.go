@@ -97,7 +97,7 @@ func main() {
 					articleCase.name,
 					ticker.symbol,
 				),
-				ParseMode:      tb.ModeMarkdownV2,
+				// ParseMode:      tb.ModeMarkdownV2,
 				DisablePreview: true,
 			})
 			result.SetResultID(ticker.symbol + "=" + articleCase.name)
