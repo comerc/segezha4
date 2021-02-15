@@ -94,7 +94,7 @@ func main() {
 				// 	linkURL,
 				// ),
 				Text: fmt.Sprintf("/%s %s",
-					escape(articleCase.name),
+					articleCase.name,
 					ticker.symbol,
 				),
 				ParseMode:      tb.ModeMarkdownV2,
