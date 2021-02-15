@@ -93,7 +93,7 @@ func main() {
 				// 	escape((articleCase.name),
 				// 	linkURL,
 				// ),
-				Text: fmt.Sprintf("/%s %s",
+				Text: fmt.Sprintf("/info %s %s",
 					articleCase.name,
 					ticker.symbol,
 				),
