@@ -22,7 +22,7 @@ func main() {
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
 		token     = os.Getenv("TOKEN")      // you must add it to your config vars
 		// ownerID   = os.Getenv("OWNER_ID")   // you must add it to your config vars
-		chatID = os.Getenv("CHAT_ID") // you must add it to your config vars
+		// chatID = os.Getenv("CHAT_ID") // you must add it to your config vars
 	)
 	webhook := &tb.Webhook{
 		Listen:   ":" + port,
