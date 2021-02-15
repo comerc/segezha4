@@ -21,7 +21,7 @@ func greet(Updates chan tb.Update) {
 
 func main() {
 	var (
-		// port      = os.Getenv("PORT")
+		port      = os.Getenv("PORT")
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
 		token     = os.Getenv("TOKEN")      // you must add it to your config vars
 		// ownerID   = os.Getenv("OWNER_ID")   // you must add it to your config vars
@@ -36,7 +36,7 @@ func main() {
 	// 	Poller: webhook,
 	// }
 	pref := tb.Settings{
-		URL:    publicURL,
+		URL:    publicURL + ":" + port,
 		Token:  token,
 		Poller: &tb.LongPoller{Timeout: 10 * time.Second},
 	}
