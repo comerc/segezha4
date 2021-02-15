@@ -24,7 +24,7 @@ func main() {
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
 		token     = os.Getenv("TOKEN")      // you must add it to your config vars
 		// ownerID   = os.Getenv("OWNER_ID")   // you must add it to your config vars
-		// chatID = os.Getenv("CHAT_ID") // you must add it to your config vars
+		chatID = os.Getenv("CHAT_ID") // you must add it to your config vars
 	)
 	webhook := &tb.Webhook{
 		Listen:   ":" + port,
@@ -111,6 +111,9 @@ func main() {
 			log.Println(err)
 		}
 	})
+	b.Handle(tb.OnText, func(m *tb.Message) {
+		b.Send(m.Sender, "hello world")
+	})
 	b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
 		// incoming inline queries
 		log.Println("====")
@@ -130,8 +133,7 @@ func main() {
 		log.Println(tickerSymbol)
 		// ticketName := r.ResultID
 		// TODO: to https://core.telegram.org/bots#deep-linking-example
-		// to := tb.ChatID(parseInt(chatID))
-		to := tb.ChatID(0)
+		to := tb.ChatID(parseInt(chatID))
 		// commands := make([]string, 0)
 		// for _, param := range strings.Split(r.Query, " ") {
 		// 	if strings.HasPrefix(param, "#") || strings.HasPrefix(param, "$") {
