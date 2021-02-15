@@ -8,7 +8,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -27,19 +26,19 @@ func main() {
 		// ownerID   = os.Getenv("OWNER_ID")   // you must add it to your config vars
 		chatID = os.Getenv("CHAT_ID") // you must add it to your config vars
 	)
-	// webhook := &tb.Webhook{
-	// 	Listen:   ":" + port,
-	// 	Endpoint: &tb.WebhookEndpoint{PublicURL: publicURL},
-	// }
-	// pref := tb.Settings{
-	// 	Token:  token,
-	// 	Poller: webhook,
-	// }
-	pref := tb.Settings{
-		URL:    publicURL + ":" + port,
-		Token:  token,
-		Poller: &tb.LongPoller{Timeout: 10 * time.Second},
+	webhook := &tb.Webhook{
+		Listen:   ":" + port,
+		Endpoint: &tb.WebhookEndpoint{PublicURL: publicURL},
 	}
+	pref := tb.Settings{
+		Token:  token,
+		Poller: webhook,
+	}
+	// pref := tb.Settings{
+	// 	URL:    publicURL + ":" + port,
+	// 	Token:  token,
+	// 	Poller: &tb.LongPoller{Timeout: 10 * time.Second},
+	// }
 	b, err := tb.NewBot(pref)
 	if err != nil {
 		log.Fatal(err)
