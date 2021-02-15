@@ -1,13 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"log"
 	"os"
 	"regexp"
 	"strconv"
-	"strings"
 
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -115,6 +113,12 @@ func main() {
 			log.Println(err)
 		}
 	})
+	b.Handle("/text", func(m *tb.Message) {
+		b.Send(m.Sender, "You entered "+m.Text)
+	})
+	b.Handle("/payload", func(m *tb.Message) {
+		b.Send(m.Sender, "You entered "+m.Payload)
+	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
 		fmt.Println(m)
 		// b.Send(m.Sender, )
@@ -131,90 +135,90 @@ func main() {
 
 		// b.Send(m.Sender, "hello world"+strconv.FormatInt(m.Chat.ID, 10))
 	})
-	b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
-		// incoming inline queries
-		log.Println("====")
-		log.Println(r.MessageID)
-		log.Println(r.ResultID)
-		log.Println(r.Query)
-		log.Println(r.From.ID)
-		log.Println("====")
-		resultID := strings.Split(r.ResultID, "=")
-		if len(resultID) != 2 {
-			// TODO: empty message
-			return
-		}
-		tickerSymbol := resultID[0]
-		articleCaseName := resultID[1]
-		log.Println(articleCaseName)
-		log.Println(tickerSymbol)
-		// ticketName := r.ResultID
-		// TODO: to https://core.telegram.org/bots#deep-linking-example
-		to := tb.ChatID(parseInt(chatID))
-		// commands := make([]string, 0)
-		// for _, param := range strings.Split(r.Query, " ") {
-		// 	if strings.HasPrefix(param, "#") || strings.HasPrefix(param, "$") {
-		// 		continue
-		// 	}
-		// 	commands = append(commands, param)
-		// }
-		articleCase := GetExactArticleCase(articleCaseName)
-		if articleCaseName == "finviz.com" {
-			linkURL := fmt.Sprintf(articleCase.linkURL, tickerSymbol)
-			screenshot := Screenshot(linkURL)
-			photo := &tb.Photo{
-				File: tb.FromReader(bytes.NewReader(screenshot)),
-				Caption: fmt.Sprintf(
-					`\#%s [%s](%s)`,
-					tickerSymbol,
-					escape(articleCase.name),
-					linkURL,
-				),
-			}
-			b.Send(
-				to,
-				photo,
-				&tb.SendOptions{
-					ParseMode: tb.ModeMarkdownV2,
-				},
-			)
-		}
-		if articleCase.imageURL != "" {
-			imageURL := fmt.Sprintf(articleCase.imageURL, tickerSymbol)
-			linkURL := fmt.Sprintf(articleCase.linkURL, tickerSymbol)
-			photo := &tb.Photo{
-				File: tb.FromURL(imageURL),
-				Caption: fmt.Sprintf(
-					`\#%s [%s](%s)`,
-					tickerSymbol,
-					escape(articleCase.name),
-					linkURL,
-				),
-			}
-			b.Send(
-				to,
-				photo,
-				&tb.SendOptions{
-					ParseMode: tb.ModeMarkdownV2,
-				},
-			)
-		}
-		// if (len(commands) == 0 || contains(commands, "ark")) && contains(ARKTickets, ticketName) {
-		// 	log.Println("OK")
-		// 	log.Println("====")
-		// 	b.Send(
-		// 		to,
-		// 		fmt.Sprintf(
-		// 			"\\#%s [ARK](https://cathiesark.com/ark-combined-holdings-of-%s)",
-		// 			ticketName,
-		// 			strings.ToLower(ticketName),
-		// 		),
-		// 		&tb.SendOptions{
-		// 			ParseMode: tb.ModeMarkdownV2,
-		// 		},
-		// 	)
-		// }
-	})
+	// b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
+	// 	// incoming inline queries
+	// 	log.Println("====")
+	// 	log.Println(r.MessageID)
+	// 	log.Println(r.ResultID)
+	// 	log.Println(r.Query)
+	// 	log.Println(r.From.ID)
+	// 	log.Println("====")
+	// 	resultID := strings.Split(r.ResultID, "=")
+	// 	if len(resultID) != 2 {
+	// 		// TODO: empty message
+	// 		return
+	// 	}
+	// 	tickerSymbol := resultID[0]
+	// 	articleCaseName := resultID[1]
+	// 	log.Println(articleCaseName)
+	// 	log.Println(tickerSymbol)
+	// 	// ticketName := r.ResultID
+	// 	// TODO: to https://core.telegram.org/bots#deep-linking-example
+	// 	to := tb.ChatID(parseInt(chatID))
+	// 	// commands := make([]string, 0)
+	// 	// for _, param := range strings.Split(r.Query, " ") {
+	// 	// 	if strings.HasPrefix(param, "#") || strings.HasPrefix(param, "$") {
+	// 	// 		continue
+	// 	// 	}
+	// 	// 	commands = append(commands, param)
+	// 	// }
+	// 	articleCase := GetExactArticleCase(articleCaseName)
+	// 	if articleCaseName == "finviz.com" {
+	// 		linkURL := fmt.Sprintf(articleCase.linkURL, tickerSymbol)
+	// 		screenshot := Screenshot(linkURL)
+	// 		photo := &tb.Photo{
+	// 			File: tb.FromReader(bytes.NewReader(screenshot)),
+	// 			Caption: fmt.Sprintf(
+	// 				`\#%s [%s](%s)`,
+	// 				tickerSymbol,
+	// 				escape(articleCase.name),
+	// 				linkURL,
+	// 			),
+	// 		}
+	// 		b.Send(
+	// 			to,
+	// 			photo,
+	// 			&tb.SendOptions{
+	// 				ParseMode: tb.ModeMarkdownV2,
+	// 			},
+	// 		)
+	// 	}
+	// 	if articleCase.imageURL != "" {
+	// 		imageURL := fmt.Sprintf(articleCase.imageURL, tickerSymbol)
+	// 		linkURL := fmt.Sprintf(articleCase.linkURL, tickerSymbol)
+	// 		photo := &tb.Photo{
+	// 			File: tb.FromURL(imageURL),
+	// 			Caption: fmt.Sprintf(
+	// 				`\#%s [%s](%s)`,
+	// 				tickerSymbol,
+	// 				escape(articleCase.name),
+	// 				linkURL,
+	// 			),
+	// 		}
+	// 		b.Send(
+	// 			to,
+	// 			photo,
+	// 			&tb.SendOptions{
+	// 				ParseMode: tb.ModeMarkdownV2,
+	// 			},
+	// 		)
+	// 	}
+	// 	// if (len(commands) == 0 || contains(commands, "ark")) && contains(ARKTickets, ticketName) {
+	// 	// 	log.Println("OK")
+	// 	// 	log.Println("====")
+	// 	// 	b.Send(
+	// 	// 		to,
+	// 	// 		fmt.Sprintf(
+	// 	// 			"\\#%s [ARK](https://cathiesark.com/ark-combined-holdings-of-%s)",
+	// 	// 			ticketName,
+	// 	// 			strings.ToLower(ticketName),
+	// 	// 		),
+	// 	// 		&tb.SendOptions{
+	// 	// 			ParseMode: tb.ModeMarkdownV2,
+	// 	// 		},
+	// 	// 	)
+	// 	// }
+	// })
 	b.Start()
 }
 
