@@ -92,11 +92,11 @@ func main() {
 			result.SetContent(&tb.InputTextMessageContent{
 				// Text: fmt.Sprintf(`\#%s [%s](%s)`,
 				// 	ticker.symbol,
-				// 	escape(articleCase.name),
+				// 	escape((articl)eCase.name),
 				// 	linkURL,
 				// ),
 				Text: fmt.Sprintf(`\/%s %s`,
-					linkURL,
+					escape(linkURL),
 					ticker.symbol,
 				),
 				ParseMode:      tb.ModeMarkdownV2,
