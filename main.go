@@ -95,33 +95,40 @@ func main() {
 		log.Println(m.Chat)
 		log.Println(m.Sender)
 		log.Println("****")
-		mode := ""
-		if m.Via != nil && m.Via.ID == b.Me.ID {
-			mode = "inline mode"
-		} else if m.Chat.Type == tb.ChatPrivate {
-			mode = "command mode"
-		}
-		if mode == "" {
-			return
-		}
-		log.Println(mode)
+		// mode := ""
+		// if m.Via != nil && m.Via.ID == b.Me.ID {
+		// 	mode = "inline mode"
+		// } else if m.Chat.Type == tb.ChatPrivate {
+		// 	mode = "command mode"
+		// }
+		// if mode == "" {
+		// 	return
+		// }
+		// log.Println(mode)
 		if strings.HasPrefix(m.Text, "/info ") {
-			params := strings.Split(m.Payload, " ")
-			// TODO: много тикеров за один раз
-			if len(params) < 2 {
-				log.Println("Invalid params")
+			re := regexp.MustCompile(",")
+			payload := re.ReplaceAllString(m.Payload, " ")
+			arguments := strings.Split(payload, " ")
+			symbols := arguments[1:]
+			if len(symbols) == 0 {
+				log.Println("Empty symbols")
+				return
 			}
-			articleCaseName := params[0]
-			tickerSymbol := params[1]
+			log.Println(symbols)
+			articleCaseName := arguments[0]
+			symbol := symbols[0]
+			if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
+				symbol = symbol[1:]
+			}
 			articleCase := GetExactArticleCase(articleCaseName)
 			if articleCaseName == "finviz.com" {
-				linkURL := fmt.Sprintf(articleCase.linkURL, tickerSymbol)
+				linkURL := fmt.Sprintf(articleCase.linkURL, symbol)
 				screenshot := Screenshot(linkURL)
 				photo := &tb.Photo{
 					File: tb.FromReader(bytes.NewReader(screenshot)),
 					Caption: fmt.Sprintf(
 						`\#%s [%s](%s)`,
-						tickerSymbol,
+						symbol,
 						escape(articleCase.name),
 						linkURL,
 					),
@@ -129,13 +136,13 @@ func main() {
 				sendInformer(b, m, photo)
 			}
 			if articleCase.imageURL != "" {
-				imageURL := fmt.Sprintf(articleCase.imageURL, tickerSymbol)
-				linkURL := fmt.Sprintf(articleCase.linkURL, tickerSymbol)
+				imageURL := fmt.Sprintf(articleCase.imageURL, symbol)
+				linkURL := fmt.Sprintf(articleCase.linkURL, symbol)
 				photo := &tb.Photo{
 					File: tb.FromURL(imageURL),
 					Caption: fmt.Sprintf(
 						`\#%s [%s](%s)`,
-						tickerSymbol,
+						symbol,
 						escape(articleCase.name),
 						linkURL,
 					),
@@ -143,20 +150,6 @@ func main() {
 				sendInformer(b, m, photo)
 			}
 		}
-		// fmt.Println(m.Chat)
-		// b.Send(m.Sender, )
-
-		// err := b.Delete(
-		// 	&tb.StoredMessage{
-		// 		MessageID: strconv.Itoa(m.ID),
-		// 		ChatID:    m.Chat.ID,
-		// 	},
-		// )
-		// if err != nil {
-		// 	log.Println(err)
-		// }
-
-		// b.Send(m.Sender, "hello world"+strconv.FormatInt(m.Chat.ID, 10))
 	})
 	// b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
 	// 	// incoming inline queries
@@ -171,10 +164,10 @@ func main() {
 	// 		// TODO: empty message
 	// 		return
 	// 	}
-	// 	tickerSymbol := resultID[0]
+	// 	symbol := resultID[0]
 	// 	articleCaseName := resultID[1]
 	// 	log.Println(articleCaseName)
-	// 	log.Println(tickerSymbol)
+	// 	log.Println(symbol)
 	// 	// ticketName := r.ResultID
 	// 	// TODO: to https://core.telegram.org/bots#deep-linking-example
 	// 	to := tb.ChatID(parseInt(chatID))
@@ -187,13 +180,13 @@ func main() {
 	// 	// }
 	// 	articleCase := GetExactArticleCase(articleCaseName)
 	// 	if articleCaseName == "finviz.com" {
-	// 		linkURL := fmt.Sprintf(articleCase.linkURL, tickerSymbol)
+	// 		linkURL := fmt.Sprintf(articleCase.linkURL, symbol)
 	// 		screenshot := Screenshot(linkURL)
 	// 		photo := &tb.Photo{
 	// 			File: tb.FromReader(bytes.NewReader(screenshot)),
 	// 			Caption: fmt.Sprintf(
 	// 				`\#%s [%s](%s)`,
-	// 				tickerSymbol,
+	// 				symbol,
 	// 				escape(articleCase.name),
 	// 				linkURL,
 	// 			),
@@ -207,13 +200,13 @@ func main() {
 	// 		)
 	// 	}
 	// 	if articleCase.imageURL != "" {
-	// 		imageURL := fmt.Sprintf(articleCase.imageURL, tickerSymbol)
-	// 		linkURL := fmt.Sprintf(articleCase.linkURL, tickerSymbol)
+	// 		imageURL := fmt.Sprintf(articleCase.imageURL, symbol)
+	// 		linkURL := fmt.Sprintf(articleCase.linkURL, symbol)
 	// 		photo := &tb.Photo{
 	// 			File: tb.FromURL(imageURL),
 	// 			Caption: fmt.Sprintf(
 	// 				`\#%s [%s](%s)`,
-	// 				tickerSymbol,
+	// 				symbol,
 	// 				escape(articleCase.name),
 	// 				linkURL,
 	// 			),
