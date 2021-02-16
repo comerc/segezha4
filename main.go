@@ -120,15 +120,19 @@ func main() {
 				if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
 					symbol = symbol[1:]
 				}
+				ticker := GetExactTicker(symbol)
+				if ticker == nil {
+					continue
+				}
 				articleCase := GetExactArticleCase(articleCaseName)
 				if articleCaseName == "finviz.com" {
-					linkURL := fmt.Sprintf(articleCase.linkURL, symbol)
+					linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 					screenshot := Screenshot(linkURL)
 					photo := &tb.Photo{
 						File: tb.FromReader(bytes.NewReader(screenshot)),
 						Caption: fmt.Sprintf(
 							`\#%s [%s](%s)`,
-							symbol,
+							ticker.symbol,
 							escape(articleCase.name),
 							linkURL,
 						),
@@ -136,13 +140,13 @@ func main() {
 					sendInformer(b, m, photo)
 				}
 				if articleCase.imageURL != "" {
-					imageURL := fmt.Sprintf(articleCase.imageURL, symbol)
-					linkURL := fmt.Sprintf(articleCase.linkURL, symbol)
+					imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
+					linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 					photo := &tb.Photo{
 						File: tb.FromURL(imageURL),
 						Caption: fmt.Sprintf(
 							`\#%s [%s](%s)`,
-							symbol,
+							ticker.symbol,
 							escape(articleCase.name),
 							linkURL,
 						),
@@ -262,16 +266,16 @@ func escape(s string) string {
 }
 
 func sendInformer(b *tb.Bot, m *tb.Message, photo *tb.Photo) {
-	err := b.Delete(
-		&tb.StoredMessage{
-			MessageID: strconv.Itoa(m.ID),
-			ChatID:    m.Chat.ID,
-		},
-	)
-	if err != nil {
-		log.Println(err)
-	}
-	b.Send(
+	// err := b.Delete(
+	// 	&tb.StoredMessage{
+	// 		MessageID: strconv.Itoa(m.ID),
+	// 		ChatID:    m.Chat.ID,
+	// 	},
+	// )
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+	_, err := b.Send(
 		tb.ChatID(m.Chat.ID),
 		photo,
 		&tb.SendOptions{
