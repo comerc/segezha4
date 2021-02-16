@@ -2,9 +2,7 @@ package main
 
 import (
 	"fmt"
-	"io"
 	"log"
-	"net/http"
 	"os"
 	"regexp"
 	"strconv"
@@ -18,15 +16,14 @@ import (
 // 	// fmt.Println(u.Message.Chat.ID)
 // }
 
-func hello(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "Hello World!!!!")
-}
+// func hello(w http.ResponseWriter, r *http.Request) {
+// 	io.WriteString(w, "Hello World!!!!")
+// }
 
 func main() {
-	port2 := "8080" // os.Getenv("PORT")
-	http.HandleFunc("/", hello)
-	http.ListenAndServe(":"+port2, nil)
-
+	// port2 := "8080" // os.Getenv("PORT")
+	// http.HandleFunc("/", hello)
+	// http.ListenAndServe(":"+port2, nil)
 	var (
 		port      = os.Getenv("PORT")
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
