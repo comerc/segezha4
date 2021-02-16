@@ -6507,7 +6507,6 @@ func GetTickers(search string) []Ticker {
 	if len(search) > 0 {
 		search = strings.ToUpper(search)
 		for _, ticker := range tickers {
-			// TODO: поиск по ticker.description
 			if strings.HasPrefix(strings.ToUpper(ticker.symbol), search) {
 				result = append(result, ticker)
 				if len(search) == 1 {
