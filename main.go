@@ -116,38 +116,39 @@ func main() {
 			}
 			log.Println(symbols)
 			articleCaseName := arguments[0]
-			symbol := symbols[0]
-			if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
-				symbol = symbol[1:]
-			}
-			articleCase := GetExactArticleCase(articleCaseName)
-			if articleCaseName == "finviz.com" {
-				linkURL := fmt.Sprintf(articleCase.linkURL, symbol)
-				screenshot := Screenshot(linkURL)
-				photo := &tb.Photo{
-					File: tb.FromReader(bytes.NewReader(screenshot)),
-					Caption: fmt.Sprintf(
-						`\#%s [%s](%s)`,
-						symbol,
-						escape(articleCase.name),
-						linkURL,
-					),
+			for _, symbol := range symbols {
+				if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
+					symbol = symbol[1:]
 				}
-				sendInformer(b, m, photo)
-			}
-			if articleCase.imageURL != "" {
-				imageURL := fmt.Sprintf(articleCase.imageURL, symbol)
-				linkURL := fmt.Sprintf(articleCase.linkURL, symbol)
-				photo := &tb.Photo{
-					File: tb.FromURL(imageURL),
-					Caption: fmt.Sprintf(
-						`\#%s [%s](%s)`,
-						symbol,
-						escape(articleCase.name),
-						linkURL,
-					),
+				articleCase := GetExactArticleCase(articleCaseName)
+				if articleCaseName == "finviz.com" {
+					linkURL := fmt.Sprintf(articleCase.linkURL, symbol)
+					screenshot := Screenshot(linkURL)
+					photo := &tb.Photo{
+						File: tb.FromReader(bytes.NewReader(screenshot)),
+						Caption: fmt.Sprintf(
+							`\#%s [%s](%s)`,
+							symbol,
+							escape(articleCase.name),
+							linkURL,
+						),
+					}
+					sendInformer(b, m, photo)
 				}
-				sendInformer(b, m, photo)
+				if articleCase.imageURL != "" {
+					imageURL := fmt.Sprintf(articleCase.imageURL, symbol)
+					linkURL := fmt.Sprintf(articleCase.linkURL, symbol)
+					photo := &tb.Photo{
+						File: tb.FromURL(imageURL),
+						Caption: fmt.Sprintf(
+							`\#%s [%s](%s)`,
+							symbol,
+							escape(articleCase.name),
+							linkURL,
+						),
+					}
+					sendInformer(b, m, photo)
+				}
 			}
 		}
 	})
