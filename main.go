@@ -24,6 +24,7 @@ func main() {
 		// ownerID   = os.Getenv("OWNER_ID")   // you must add it to your config vars
 		// chatID = os.Getenv("CHAT_ID") // you must add it to your config vars
 	)
+	log.Println("port:" + port)
 	webhook := &tb.Webhook{
 		Listen:   ":" + port,
 		Endpoint: &tb.WebhookEndpoint{PublicURL: publicURL},
@@ -41,6 +42,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// TODO: реализовать румтур
 	b.Handle("/start", func(m *tb.Message) {
 		b.Send(m.Sender, "Hello World!"+strconv.FormatInt(m.Chat.ID, 10))
 	})
@@ -60,9 +62,8 @@ func main() {
 			HideURL:     true,
 			URL:         linkURL,
 			ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.symbol), // from stockanalysis.com
-			// TODO: SVG to PNG from TradingView
+			// TODO: SVG to PNG from TradingView (реализовать вебсервис)
 		}
-		// TODO:
 		result.SetContent(&tb.InputTextMessageContent{
 			Text: fmt.Sprintf(`\#%s \- [%s](%s)`,
 				ticker.symbol,
@@ -120,9 +121,10 @@ func main() {
 		b.Send(m.Sender, "You entered "+m.Payload)
 	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
-
-		fmt.Println(b.Me.ID)
-		fmt.Println(m.Via.ID)
+		if b.Me.ID != m.Via.ID {
+			return
+		}
+		// fmt.Println(m.Chat)
 		// b.Send(m.Sender, )
 
 		// err := b.Delete(
