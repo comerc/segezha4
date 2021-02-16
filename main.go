@@ -88,9 +88,16 @@ func main() {
 		}
 	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
-		if b.Me.ID != m.Via.ID {
-			return
-		}
+		log.Println("****")
+		log.Println(m.Text)
+		log.Println(b.Me)
+		log.Println(m.Via)
+		log.Println(m.Chat)
+		log.Println(m.Sender)
+		log.Println("****")
+		// if b.Me.ID != m.Via.ID {
+		// 	return
+		// }
 		// а когда Send?
 		if strings.HasPrefix(m.Text, "/info ") {
 			params := strings.Split(m.Payload, " ")
@@ -113,10 +120,8 @@ func main() {
 						linkURL,
 					),
 				}
-				log.Println(m.Chat.ID)
 				b.Send(
-					// tb.ChatID(m.Chat.ID),
-					m.Sender,
+					tb.ChatID(m.Chat.ID),
 					photo,
 					&tb.SendOptions{
 						ParseMode: tb.ModeMarkdownV2,
@@ -136,7 +141,7 @@ func main() {
 					),
 				}
 				b.Send(
-					m.Sender,
+					tb.ChatID(m.Chat.ID),
 					photo,
 					&tb.SendOptions{
 						ParseMode: tb.ModeMarkdownV2,
