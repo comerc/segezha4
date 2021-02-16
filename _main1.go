@@ -49,7 +49,6 @@
 // 	if err != nil {
 // 		log.Fatal(err)
 // 	}
-// 	// TODO: реализовать румтур
 // 	b.Handle("/start", func(m *tb.Message) {
 // 		b.Send(m.Sender, "Hello World!"+strconv.FormatInt(m.Chat.ID, 10))
 // 	})
