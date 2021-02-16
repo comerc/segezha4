@@ -12,6 +12,10 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: реализовать румтур
+// TODO: поиск по ticker.description
+// TODO: svg to png
+
 func main() {
 	var (
 		port      = os.Getenv("PORT")
@@ -23,6 +27,7 @@ func main() {
 		Endpoint: &tb.WebhookEndpoint{PublicURL: publicURL},
 	}
 	pref := tb.Settings{
+		URL:    "https://api.bots.mn/telegram/",
 		Token:  token,
 		Poller: webhook,
 	}
@@ -88,23 +93,6 @@ func main() {
 		}
 	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
-		log.Println("****")
-		log.Println(m.Text)
-		log.Println(b.Me)
-		log.Println(m.Via)
-		log.Println(m.Chat)
-		log.Println(m.Sender)
-		log.Println("****")
-		// mode := ""
-		// if m.Via != nil && m.Via.ID == b.Me.ID {
-		// 	mode = "inline mode"
-		// } else if m.Chat.Type == tb.ChatPrivate {
-		// 	mode = "command mode"
-		// }
-		// if mode == "" {
-		// 	return
-		// }
-		// log.Println(mode)
 		if strings.HasPrefix(m.Text, "/info ") {
 			re := regexp.MustCompile(",")
 			payload := re.ReplaceAllString(m.Payload, " ")
@@ -114,7 +102,6 @@ func main() {
 				log.Println("Empty symbols")
 				return
 			}
-			log.Println(symbols)
 			articleCaseName := arguments[0]
 			articleCase := GetExactArticleCase(articleCaseName)
 			if articleCase == nil {
@@ -161,90 +148,6 @@ func main() {
 			deleteCommand(b, m)
 		}
 	})
-	// b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
-	// 	// incoming inline queries
-	// 	log.Println("====")
-	// 	log.Println(r.MessageID)
-	// 	log.Println(r.ResultID)
-	// 	log.Println(r.Query)
-	// 	log.Println(r.From.ID)
-	// 	log.Println("====")
-	// 	resultID := strings.Split(r.ResultID, "=")
-	// 	if len(resultID) != 2 {
-	// 		// TODO: empty message
-	// 		return
-	// 	}
-	// 	symbol := resultID[0]
-	// 	articleCaseName := resultID[1]
-	// 	log.Println(articleCaseName)
-	// 	log.Println(symbol)
-	// 	// ticketName := r.ResultID
-	// 	// TODO: to https://core.telegram.org/bots#deep-linking-example
-	// 	to := tb.ChatID(parseInt(chatID))
-	// 	// commands := make([]string, 0)
-	// 	// for _, param := range strings.Split(r.Query, " ") {
-	// 	// 	if strings.HasPrefix(param, "#") || strings.HasPrefix(param, "$") {
-	// 	// 		continue
-	// 	// 	}
-	// 	// 	commands = append(commands, param)
-	// 	// }
-	// 	articleCase := GetExactArticleCase(articleCaseName)
-	// 	if articleCaseName == "finviz.com" {
-	// 		linkURL := fmt.Sprintf(articleCase.linkURL, symbol)
-	// 		screenshot := Screenshot(linkURL)
-	// 		photo := &tb.Photo{
-	// 			File: tb.FromReader(bytes.NewReader(screenshot)),
-	// 			Caption: fmt.Sprintf(
-	// 				`\#%s [%s](%s)`,
-	// 				symbol,
-	// 				escape(articleCase.name),
-	// 				linkURL,
-	// 			),
-	// 		}
-	// 		b.Send(
-	// 			to,
-	// 			photo,
-	// 			&tb.SendOptions{
-	// 				ParseMode: tb.ModeMarkdownV2,
-	// 			},
-	// 		)
-	// 	}
-	// 	if articleCase.imageURL != "" {
-	// 		imageURL := fmt.Sprintf(articleCase.imageURL, symbol)
-	// 		linkURL := fmt.Sprintf(articleCase.linkURL, symbol)
-	// 		photo := &tb.Photo{
-	// 			File: tb.FromURL(imageURL),
-	// 			Caption: fmt.Sprintf(
-	// 				`\#%s [%s](%s)`,
-	// 				symbol,
-	// 				escape(articleCase.name),
-	// 				linkURL,
-	// 			),
-	// 		}
-	// 		b.Send(
-	// 			to,
-	// 			photo,
-	// 			&tb.SendOptions{
-	// 				ParseMode: tb.ModeMarkdownV2,
-	// 			},
-	// 		)
-	// 	}
-	// 	// if (len(commands) == 0 || contains(commands, "ark")) && contains(ARKTickets, ticketName) {
-	// 	// 	log.Println("OK")
-	// 	// 	log.Println("====")
-	// 	// 	b.Send(
-	// 	// 		to,
-	// 	// 		fmt.Sprintf(
-	// 	// 			"\\#%s [ARK](https://cathiesark.com/ark-combined-holdings-of-%s)",
-	// 	// 			ticketName,
-	// 	// 			strings.ToLower(ticketName),
-	// 	// 		),
-	// 	// 		&tb.SendOptions{
-	// 	// 			ParseMode: tb.ModeMarkdownV2,
-	// 	// 		},
-	// 	// 	)
-	// 	// }
-	// })
 	b.Start()
 }
 
