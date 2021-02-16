@@ -105,7 +105,6 @@ func main() {
 			return
 		}
 		log.Println(mode)
-		// а когда Send?
 		if strings.HasPrefix(m.Text, "/info ") {
 			params := strings.Split(m.Payload, " ")
 			// TODO: много тикеров за один раз
@@ -127,13 +126,7 @@ func main() {
 						linkURL,
 					),
 				}
-				b.Send(
-					tb.ChatID(m.Chat.ID),
-					photo,
-					&tb.SendOptions{
-						ParseMode: tb.ModeMarkdownV2,
-					},
-				)
+				sendInformer(b, m, photo)
 			}
 			if articleCase.imageURL != "" {
 				imageURL := fmt.Sprintf(articleCase.imageURL, tickerSymbol)
@@ -147,13 +140,7 @@ func main() {
 						linkURL,
 					),
 				}
-				b.Send(
-					tb.ChatID(m.Chat.ID),
-					photo,
-					&tb.SendOptions{
-						ParseMode: tb.ModeMarkdownV2,
-					},
-				)
+				sendInformer(b, m, photo)
 			}
 		}
 		// fmt.Println(m.Chat)
@@ -278,4 +265,26 @@ func parseInt(s string) int64 {
 func escape(s string) string {
 	re := regexp.MustCompile("[.|-]")
 	return re.ReplaceAllString(s, `\$0`)
+}
+
+func sendInformer(b *tb.Bot, m *tb.Message, photo *tb.Photo) {
+	err := b.Delete(
+		&tb.StoredMessage{
+			MessageID: strconv.Itoa(m.ID),
+			ChatID:    m.Chat.ID,
+		},
+	)
+	if err != nil {
+		log.Println(err)
+	}
+	b.Send(
+		tb.ChatID(m.Chat.ID),
+		photo,
+		&tb.SendOptions{
+			ParseMode: tb.ModeMarkdownV2,
+		},
+	)
+	if err != nil {
+		log.Println(err)
+	}
 }
