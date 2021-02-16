@@ -95,9 +95,17 @@ func main() {
 		log.Println(m.Chat)
 		log.Println(m.Sender)
 		log.Println("****")
-		// if b.Me.ID != m.Via.ID {
-		// 	return
-		// }
+		mode := ""
+		if m.Via != nil && m.Via.ID == b.Me.ID {
+			mode = "inline mode"
+		}
+		if m.Chat.Type == tb.ChatPrivate {
+			mode = "command mode"
+		}
+		if mode == "" {
+			return
+		}
+		log.Println(mode)
 		// а когда Send?
 		if strings.HasPrefix(m.Text, "/info ") {
 			params := strings.Split(m.Payload, " ")
