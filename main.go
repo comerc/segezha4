@@ -98,8 +98,7 @@ func main() {
 		mode := ""
 		if m.Via != nil && m.Via.ID == b.Me.ID {
 			mode = "inline mode"
-		}
-		if m.Chat.Type == tb.ChatPrivate {
+		} else if m.Chat.Type == tb.ChatPrivate {
 			mode = "command mode"
 		}
 		if mode == "" {
