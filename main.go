@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"regexp"
 	"strconv"
@@ -16,7 +18,15 @@ import (
 // 	// fmt.Println(u.Message.Chat.ID)
 // }
 
+func hello(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "Hello World!!!!")
+}
+
 func main() {
+	port2 := "8080" // os.Getenv("PORT")
+	http.HandleFunc("/", hello)
+	http.ListenAndServe(":"+port2, nil)
+
 	var (
 		port      = os.Getenv("PORT")
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
@@ -63,6 +73,9 @@ func main() {
 			URL:         linkURL,
 			ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.symbol), // from stockanalysis.com
 			// TODO: SVG to PNG from TradingView (реализовать вебсервис)
+			// https://github.com/sinistersig/svg-png-go/blob/master/main.go
+			// https://github.com/canhlinh/svg2png
+			// https://stackoverflow.com/questions/42993407/how-to-create-and-export-svg-to-png-jpeg-in-golang
 		}
 		result.SetContent(&tb.InputTextMessageContent{
 			Text: fmt.Sprintf(`\#%s \- [%s](%s)`,
