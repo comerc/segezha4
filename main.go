@@ -116,6 +116,11 @@ func main() {
 			}
 			log.Println(symbols)
 			articleCaseName := arguments[0]
+			articleCase := GetExactArticleCase(articleCaseName)
+			if articleCase == nil {
+				log.Println("Invalid command")
+				return
+			}
 			for _, symbol := range symbols {
 				if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
 					symbol = symbol[1:]
@@ -124,7 +129,6 @@ func main() {
 				if ticker == nil {
 					continue
 				}
-				articleCase := GetExactArticleCase(articleCaseName)
 				if articleCaseName == "finviz.com" {
 					linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 					screenshot := Screenshot(linkURL)
@@ -154,6 +158,7 @@ func main() {
 					sendInformer(b, m, photo)
 				}
 			}
+			deleteCommand(b, m)
 		}
 	})
 	// b.Handle(tb.OnChosenInlineResult, func(r *tb.ChosenInlineResult) {
@@ -265,16 +270,19 @@ func escape(s string) string {
 	return re.ReplaceAllString(s, `\$0`)
 }
 
+func deleteCommand(b *tb.Bot, m *tb.Message) {
+	err := b.Delete(
+		&tb.StoredMessage{
+			MessageID: strconv.Itoa(m.ID),
+			ChatID:    m.Chat.ID,
+		},
+	)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
 func sendInformer(b *tb.Bot, m *tb.Message, photo *tb.Photo) {
-	// err := b.Delete(
-	// 	&tb.StoredMessage{
-	// 		MessageID: strconv.Itoa(m.ID),
-	// 		ChatID:    m.Chat.ID,
-	// 	},
-	// )
-	// if err != nil {
-	// 	log.Println(err)
-	// }
 	_, err := b.Send(
 		tb.ChatID(m.Chat.ID),
 		photo,
