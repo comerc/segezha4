@@ -89,6 +89,7 @@ func main() {
 		}
 	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
+		log.Println(m.Text)
 		if strings.HasPrefix(m.Text, "/info ") {
 			re := regexp.MustCompile(",")
 			payload := re.ReplaceAllString(m.Payload, " ")
