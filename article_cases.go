@@ -17,6 +17,7 @@ type ArticleCase struct {
 
 // ArticleCases slice
 var ArticleCases = []ArticleCase{
+	{name: "tradingview.com", linkURL: "https://ru.tradingview.com/symbols/%s"},
 	{name: "finviz.com", linkURL: "https://finviz.com/quote.ashx?t=%s", hasGift: true},
 	{name: "cathiesark.com", linkURL: "https://cathiesark.com/ark-combined-holdings-of-%s"},
 	{name: "marketwatch.com", linkURL: "https://marketwatch.com/investing/stock/%s"},
