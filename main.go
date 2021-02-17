@@ -111,32 +111,33 @@ func main() {
 				if ticker == nil {
 					continue
 				}
-				if articleCaseName == ArticleCases[0].name {
-					linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-					text := fmt.Sprintf(`\#%s \- [%s](%s) (to %s)`,
-						ticker.symbol,
-						escape(ticker.description),
-						linkURL,
-						getUserLink(m.Sender),
-					)
-					_, err := b.Send(
-						tb.ChatID(m.Chat.ID),
-						text,
-						&tb.SendOptions{
-							ParseMode:             tb.ModeMarkdownV2,
-							DisableWebPagePreview: true,
-						},
-					)
-					if err != nil {
-						log.Println(err)
-					}
-				} else if articleCaseName == "finviz.com" {
+				// if articleCaseName == ArticleCases[0].name {
+				// 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+				// 	text := fmt.Sprintf(`\#%s \- [%s](%s) \(to %s\)`,
+				// 		ticker.symbol,
+				// 		escape(ticker.description),
+				// 		linkURL,
+				// 		getUserLink(m.Sender),
+				// 	)
+				// 	_, err := b.Send(
+				// 		tb.ChatID(m.Chat.ID),
+				// 		text,
+				// 		&tb.SendOptions{
+				// 			ParseMode:             tb.ModeMarkdownV2,
+				// 			DisableWebPagePreview: true,
+				// 		},
+				// 	)
+				// 	if err != nil {
+				// 		log.Println(err)
+				// 	}
+				// } else
+				if articleCaseName == "finviz.com" {
 					linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 					screenshot := Screenshot(linkURL)
 					photo := &tb.Photo{
 						File: tb.FromReader(bytes.NewReader(screenshot)),
 						Caption: fmt.Sprintf(
-							`\#%s [%s](%s) (to %s)`,
+							`\#%s [%s](%s) \(to %s\)`,
 							ticker.symbol,
 							escape(articleCase.name),
 							linkURL,
@@ -159,7 +160,7 @@ func main() {
 					photo := &tb.Photo{
 						File: tb.FromURL(imageURL),
 						Caption: fmt.Sprintf(
-							`\#%s [%s](%s) (to %s)`,
+							`\#%s [%s](%s) \(to %s\)`,
 							ticker.symbol,
 							escape(articleCase.name),
 							linkURL,
@@ -178,7 +179,7 @@ func main() {
 					}
 				} else {
 					linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-					text := fmt.Sprintf(`\#%s \- [%s](%s) (to %s)`,
+					text := fmt.Sprintf(`\#%s \- [%s](%s) \(to %s\)`,
 						ticker.symbol,
 						escape(articleCase.name),
 						linkURL,
