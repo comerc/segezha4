@@ -12,13 +12,13 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// TODO: если #BABA? - stockscores, #BABA! - finviz, #BABA?! - shortvalue
 // TODO: если в сообщении пользователя только команда - удалять его после обработки
 // TODO: реализовать румтур
 // TODO: поиск по ticker.description
 // TODO: README
 // TODO: svg to png
 // TODO: добавить тайм-фрейм #BABA?15M
+// TODO: #BABA?! - shortvalue
 
 func main() {
 	var (
@@ -132,7 +132,7 @@ func main() {
 			}
 		} else {
 			// simple comand mode
-			re := regexp.MustCompile(`(^|[ ])#([A-Za-z]+)([\?|!])`)
+			re := regexp.MustCompile(`(^|[ ])#([A-Za-z]+)(\?!|\?|!)`)
 			matches := re.FindAllStringSubmatch(m.Text, -1)
 			for _, match := range matches {
 				symbol := match[2]
@@ -143,13 +143,17 @@ func main() {
 				}
 				// TODO: var modes map[string]myFunc https://golangbot.com/first-class-functions/
 				switch mode {
-				case "!":
-					articleCase := GetExactArticleCase("finviz.com")
-					sendScreenshot(b, m, articleCase, ticker)
+				case "?!":
+					articleCase := GetExactArticleCase("shortvolume.com")
+					sendImage(b, m, articleCase, ticker)
 					log.Println(symbol + mode)
 				case "?":
 					articleCase := GetExactArticleCase("stockscores.com")
 					sendImage(b, m, articleCase, ticker)
+					log.Println(symbol + mode)
+				case "!":
+					articleCase := GetExactArticleCase("finviz.com")
+					sendScreenshot(b, m, articleCase, ticker)
 					log.Println(symbol + mode)
 				default:
 					log.Println("Invalid simple comand mode")
