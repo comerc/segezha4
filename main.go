@@ -12,12 +12,13 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: если #BABA? - stockscores, #BABA! - finviz, #BABA?! - shortvalue
+// TODO: если в сообщении пользователя только команда - удалять его после обработки
 // TODO: реализовать румтур
 // TODO: поиск по ticker.description
-// TODO: svg to png
-// TODO: если #BABA?M5 - stockscores, #BABA! - finviz, #BABA?! - shortvalue
-// TODO: если в сообщении пользователя только команда - удалять его после обработки
 // TODO: README
+// TODO: svg to png
+// TODO: добавить тайм-фрейм #BABA?15M
 
 func main() {
 	var (
@@ -206,6 +207,21 @@ func main() {
 			)
 			if err != nil {
 				log.Println(err)
+			}
+		} else {
+			re := regexp.MustCompile(`(^|[ ])#([A-Z]+)([\?|!])`)
+			matches := re.FindAllStringSubmatch(m.Text, -1)
+			for _, match := range matches {
+				symbol := match[2]
+				mode := match[3]
+				switch mode {
+				case "!":
+					log.Println(symbol + mode)
+				case "?":
+					log.Println(symbol + mode)
+				default:
+					log.Println("Invalid mode")
+				}
 			}
 		}
 	})
