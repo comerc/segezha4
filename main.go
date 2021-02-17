@@ -113,91 +113,12 @@ func main() {
 				if ticker == nil {
 					continue
 				}
-				// if articleCaseName == ArticleCases[0].name {
-				// 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-				// 	text := fmt.Sprintf(`\#%s \- [%s](%s) to %s`,
-				// 		ticker.symbol,
-				// 		escape(ticker.description),
-				// 		linkURL,
-				// 		getUserLink(m.Sender),
-				// 	)
-				// 	_, err := b.Send(
-				// 		tb.ChatID(m.Chat.ID),
-				// 		text,
-				// 		&tb.SendOptions{
-				// 			ParseMode:             tb.ModeMarkdownV2,
-				// 			DisableWebPagePreview: true,
-				// 		},
-				// 	)
-				// 	if err != nil {
-				// 		log.Println(err)
-				// 	}
-				// } else
 				if articleCaseName == "finviz.com" {
-					linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-					screenshot := Screenshot(linkURL)
-					photo := &tb.Photo{
-						File: tb.FromReader(bytes.NewReader(screenshot)),
-						Caption: fmt.Sprintf(
-							`\#%s [%s](%s) to %s`,
-							ticker.symbol,
-							escape(articleCase.name),
-							linkURL,
-							getUserLink(m.Sender),
-						),
-					}
-					_, err := b.Send(
-						tb.ChatID(m.Chat.ID),
-						photo,
-						&tb.SendOptions{
-							ParseMode: tb.ModeMarkdownV2,
-						},
-					)
-					if err != nil {
-						log.Println(err)
-					}
+					sendScreenshot(b, m, articleCase, ticker)
 				} else if articleCase.imageURL != "" {
-					imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
-					linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-					photo := &tb.Photo{
-						File: tb.FromURL(imageURL),
-						Caption: fmt.Sprintf(
-							`\#%s [%s](%s) to %s`,
-							ticker.symbol,
-							escape(articleCase.name),
-							linkURL,
-							getUserLink(m.Sender),
-						),
-					}
-					_, err := b.Send(
-						tb.ChatID(m.Chat.ID),
-						photo,
-						&tb.SendOptions{
-							ParseMode: tb.ModeMarkdownV2,
-						},
-					)
-					if err != nil {
-						log.Println(err)
-					}
+					sendImage(b, m, articleCase, ticker)
 				} else {
-					linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-					text := fmt.Sprintf(`\#%s \- [%s](%s) to %s`,
-						ticker.symbol,
-						escape(articleCase.name),
-						linkURL,
-						getUserLink(m.Sender),
-					)
-					_, err := b.Send(
-						tb.ChatID(m.Chat.ID),
-						text,
-						&tb.SendOptions{
-							ParseMode:             tb.ModeMarkdownV2,
-							DisableWebPagePreview: true,
-						},
-					)
-					if err != nil {
-						log.Println(err)
-					}
+					sendLink(b, m, articleCase, ticker)
 				}
 			}
 			err := b.Delete(
@@ -216,11 +137,19 @@ func main() {
 			for _, match := range matches {
 				symbol := match[2]
 				mode := match[3]
+				ticker := GetExactTicker(symbol)
+				if ticker == nil {
+					continue
+				}
 				// TODO: var modes map[string]myFunc https://golangbot.com/first-class-functions/
 				switch mode {
 				case "!":
+					articleCase := GetExactArticleCase("finviz.com")
+					sendScreenshot(b, m, articleCase, ticker)
 					log.Println(symbol + mode)
 				case "?":
+					articleCase := GetExactArticleCase("stockscores.com")
+					sendImage(b, m, articleCase, ticker)
 					log.Println(symbol + mode)
 				default:
 					log.Println("Invalid simple comand mode")
@@ -283,4 +212,81 @@ func getUserLink(u *tb.User) string {
 		return fmt.Sprintf("@%s", u.Username)
 	}
 	return fmt.Sprintf("[%s](tg://user?id=%d)", u.FirstName, u.ID)
+}
+
+func sendScreenshot(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
+	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	screenshot := Screenshot(linkURL)
+	photo := &tb.Photo{
+		File: tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: fmt.Sprintf(
+			`\#%s [%s](%s) to %s`,
+			ticker.symbol,
+			escape(articleCase.name),
+			linkURL,
+			getUserLink(m.Sender),
+		),
+	}
+	_, err := b.Send(
+		tb.ChatID(m.Chat.ID),
+		photo,
+		&tb.SendOptions{
+			ParseMode: tb.ModeMarkdownV2,
+		},
+	)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
+	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
+	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	photo := &tb.Photo{
+		File: tb.FromURL(imageURL),
+		Caption: fmt.Sprintf(
+			`\#%s [%s](%s) to %s`,
+			ticker.symbol,
+			escape(articleCase.name),
+			linkURL,
+			getUserLink(m.Sender),
+		),
+	}
+	_, err := b.Send(
+		tb.ChatID(m.Chat.ID),
+		photo,
+		&tb.SendOptions{
+			ParseMode: tb.ModeMarkdownV2,
+		},
+	)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func sendLink(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
+	linkText := func() string {
+		if articleCase.name == ArticleCases[0].name {
+			return ticker.description
+		}
+		return articleCase.name
+	}()
+	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	text := fmt.Sprintf(`\#%s \- [%s](%s) to %s`,
+		ticker.symbol,
+		escape(linkText),
+		linkURL,
+		getUserLink(m.Sender),
+	)
+	_, err := b.Send(
+		tb.ChatID(m.Chat.ID),
+		text,
+		&tb.SendOptions{
+			ParseMode:             tb.ModeMarkdownV2,
+			DisableWebPagePreview: true,
+		},
+	)
+	if err != nil {
+		log.Println(err)
+	}
 }
