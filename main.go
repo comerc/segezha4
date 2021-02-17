@@ -18,7 +18,6 @@ import (
 // TODO: если #BABA?M5 - stockscores, #BABA! - finviz, #BABA?! - shortvalue
 // TODO: если в сообщении пользователя только команда - удалять его после обработки
 // TODO: README
-// TODO: вернуть возврат ссылок для inline mode
 
 func main() {
 	var (
@@ -46,37 +45,29 @@ func main() {
 		if ticker == nil {
 			return
 		}
-		results := make(tb.Results, 1+len(ArticleCases)) // []tb.Result
-		linkURL := fmt.Sprintf("https://ru.tradingview.com/symbols/%s", ticker.symbol)
-		result := &tb.ArticleResult{
-			Title:       ticker.symbol,
-			Description: ticker.description,
-			HideURL:     true,
-			URL:         linkURL,
-			ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.symbol), // from stockanalysis.com
-		}
-		result.SetContent(&tb.InputTextMessageContent{
-			Text: fmt.Sprintf(`\#%s \- [%s](%s)`,
-				ticker.symbol,
-				escape(ticker.description),
-				linkURL,
-			),
-			ParseMode:      tb.ModeMarkdownV2,
-			DisablePreview: true,
-		})
-		result.SetResultID(ticker.symbol)
-		results[0] = result
+		results := make(tb.Results, len(ArticleCases)) // []tb.Result
 		for i, articleCase := range ArticleCases {
 			linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-			title := articleCase.name
-			if articleCase.hasGift {
-				title += " 🎁"
-			}
-			result := &tb.ArticleResult{
-				Title:       title,
-				Description: ticker.symbol,
-				HideURL:     true,
-				URL:         linkURL,
+			var result *tb.ArticleResult
+			if i == 0 {
+				result = &tb.ArticleResult{
+					Title:       ticker.symbol,
+					Description: ticker.description,
+					HideURL:     true,
+					URL:         linkURL,
+					ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.symbol), // from stockanalysis.com
+				}
+			} else {
+				title := articleCase.name
+				if articleCase.hasGift {
+					title += " 🎁"
+				}
+				result = &tb.ArticleResult{
+					Title:       title,
+					Description: ticker.symbol,
+					HideURL:     true,
+					URL:         linkURL,
+				}
 			}
 			result.SetContent(&tb.InputTextMessageContent{
 				Text: fmt.Sprintf("/info %s %s",
@@ -120,7 +111,24 @@ func main() {
 				if ticker == nil {
 					continue
 				}
-				if articleCaseName == "finviz.com" {
+				if articleCaseName == ArticleCases[0].name {
+					linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+					text := fmt.Sprintf(`\#%s \- [%s](%s)`,
+						ticker.symbol,
+						escape(ticker.description),
+						linkURL,
+					)
+					_, err := b.Send(
+						tb.ChatID(m.Chat.ID),
+						text,
+						&tb.SendOptions{
+							ParseMode: tb.ModeMarkdownV2,
+						},
+					)
+					if err != nil {
+						log.Println(err)
+					}
+				} else if articleCaseName == "finviz.com" {
 					linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 					screenshot := Screenshot(linkURL)
 					photo := &tb.Photo{
@@ -143,8 +151,7 @@ func main() {
 					if err != nil {
 						log.Println(err)
 					}
-				}
-				if articleCase.imageURL != "" {
+				} else if articleCase.imageURL != "" {
 					imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
 					linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 					photo := &tb.Photo{
@@ -160,6 +167,23 @@ func main() {
 					_, err := b.Send(
 						tb.ChatID(m.Chat.ID),
 						photo,
+						&tb.SendOptions{
+							ParseMode: tb.ModeMarkdownV2,
+						},
+					)
+					if err != nil {
+						log.Println(err)
+					}
+				} else {
+					linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+					text := fmt.Sprintf(`\#%s \- [%s](%s)`,
+						ticker.symbol,
+						escape(articleCase.name),
+						linkURL,
+					)
+					_, err := b.Send(
+						tb.ChatID(m.Chat.ID),
+						text,
 						&tb.SendOptions{
 							ParseMode: tb.ModeMarkdownV2,
 						},
@@ -231,8 +255,8 @@ func escape(s string) string {
 // }
 
 func getUserLink(u *tb.User) string {
-	// if u.Username != "" {
-	// 	return fmt.Sprintf("@%s", u.Username)
-	// }
+	if u.Username != "" {
+		return fmt.Sprintf("@%s", u.Username)
+	}
 	return fmt.Sprintf("[%s](tg://user?id=%d)", u.FirstName, u.ID)
 }
