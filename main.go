@@ -231,8 +231,8 @@ func escape(s string) string {
 // }
 
 func getUserLink(u *tb.User) string {
-	if u.Username != "" {
-		return fmt.Sprintf("@%s", u.Username)
-	}
+	// if u.Username != "" {
+	// 	return fmt.Sprintf("@%s", u.Username)
+	// }
 	return fmt.Sprintf("[%s](tg://user?id=%d)", u.FirstName, u.ID)
 }
