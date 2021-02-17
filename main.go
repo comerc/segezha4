@@ -210,18 +210,20 @@ func main() {
 				log.Println(err)
 			}
 		} else {
+			// simple comand mode
 			re := regexp.MustCompile(`(^|[ ])#([A-Z]+)([\?|!])`)
 			matches := re.FindAllStringSubmatch(m.Text, -1)
 			for _, match := range matches {
 				symbol := match[2]
 				mode := match[3]
+				// TODO: var modes map[string]myFunc https://golangbot.com/first-class-functions/
 				switch mode {
 				case "!":
 					log.Println(symbol + mode)
 				case "?":
 					log.Println(symbol + mode)
 				default:
-					log.Println("Invalid mode")
+					log.Println("Invalid simple comand mode")
 				}
 			}
 		}
