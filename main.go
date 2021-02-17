@@ -211,7 +211,7 @@ func main() {
 			}
 		} else {
 			// simple comand mode
-			re := regexp.MustCompile(`(^|[ ])#([A-Z]+)([\?|!])`)
+			re := regexp.MustCompile(`(^|[ ])#([A-Za-z]+)([\?|!])`)
 			matches := re.FindAllStringSubmatch(m.Text, -1)
 			for _, match := range matches {
 				symbol := match[2]
