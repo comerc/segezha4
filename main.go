@@ -122,7 +122,8 @@ func main() {
 						tb.ChatID(m.Chat.ID),
 						text,
 						&tb.SendOptions{
-							ParseMode: tb.ModeMarkdownV2,
+							ParseMode:             tb.ModeMarkdownV2,
+							DisableWebPagePreview: true,
 						},
 					)
 					if err != nil {
@@ -185,7 +186,8 @@ func main() {
 						tb.ChatID(m.Chat.ID),
 						text,
 						&tb.SendOptions{
-							ParseMode: tb.ModeMarkdownV2,
+							ParseMode:             tb.ModeMarkdownV2,
+							DisableWebPagePreview: true,
 						},
 					)
 					if err != nil {
