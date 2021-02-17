@@ -15,6 +15,10 @@ import (
 // TODO: реализовать румтур
 // TODO: поиск по ticker.description
 // TODO: svg to png
+// TODO: если #BABA?M5 - stockscores, #BABA! - finviz, #BABA?! - shortvalue
+// TODO: если в сообщении пользователя только команда - удалять его после обработки
+// TODO: README
+// TODO: вернуть возврат ссылок для inline mode
 
 func main() {
 	var (
@@ -122,13 +126,23 @@ func main() {
 					photo := &tb.Photo{
 						File: tb.FromReader(bytes.NewReader(screenshot)),
 						Caption: fmt.Sprintf(
-							`\#%s [%s](%s)`,
+							`\#%s [%s](%s) by %s`,
 							ticker.symbol,
 							escape(articleCase.name),
 							linkURL,
+							getUserLink(m.Sender),
 						),
 					}
-					sendInformer(b, m, photo)
+					_, err := b.Send(
+						tb.ChatID(m.Chat.ID),
+						photo,
+						&tb.SendOptions{
+							ParseMode: tb.ModeMarkdownV2,
+						},
+					)
+					if err != nil {
+						log.Println(err)
+					}
 				}
 				if articleCase.imageURL != "" {
 					imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
@@ -136,16 +150,34 @@ func main() {
 					photo := &tb.Photo{
 						File: tb.FromURL(imageURL),
 						Caption: fmt.Sprintf(
-							`\#%s [%s](%s)`,
+							`\#%s [%s](%s) by %s`,
 							ticker.symbol,
 							escape(articleCase.name),
 							linkURL,
+							getUserLink(m.Sender),
 						),
 					}
-					sendInformer(b, m, photo)
+					_, err := b.Send(
+						tb.ChatID(m.Chat.ID),
+						photo,
+						&tb.SendOptions{
+							ParseMode: tb.ModeMarkdownV2,
+						},
+					)
+					if err != nil {
+						log.Println(err)
+					}
 				}
 			}
-			deleteCommand(b, m)
+			err := b.Delete(
+				&tb.StoredMessage{
+					MessageID: strconv.Itoa(m.ID),
+					ChatID:    m.Chat.ID,
+				},
+			)
+			if err != nil {
+				log.Println(err)
+			}
 		}
 	})
 	b.Start()
@@ -173,27 +205,34 @@ func escape(s string) string {
 	return re.ReplaceAllString(s, `\$0`)
 }
 
-func deleteCommand(b *tb.Bot, m *tb.Message) {
-	err := b.Delete(
-		&tb.StoredMessage{
-			MessageID: strconv.Itoa(m.ID),
-			ChatID:    m.Chat.ID,
-		},
-	)
-	if err != nil {
-		log.Println(err)
-	}
-}
+// func deleteCommand(b *tb.Bot, m *tb.Message) {
+// 	err := b.Delete(
+// 		&tb.StoredMessage{
+// 			MessageID: strconv.Itoa(m.ID),
+// 			ChatID:    m.Chat.ID,
+// 		},
+// 	)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+// }
 
-func sendInformer(b *tb.Bot, m *tb.Message, photo *tb.Photo) {
-	_, err := b.Send(
-		tb.ChatID(m.Chat.ID),
-		photo,
-		&tb.SendOptions{
-			ParseMode: tb.ModeMarkdownV2,
-		},
-	)
-	if err != nil {
-		log.Println(err)
+// func sendInformer(b *tb.Bot, m *tb.Message, photo *tb.Photo) {
+// 	_, err := b.Send(
+// 		tb.ChatID(m.Chat.ID),
+// 		photo,
+// 		&tb.SendOptions{
+// 			ParseMode: tb.ModeMarkdownV2,
+// 		},
+// 	)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+// }
+
+func getUserLink(u *tb.User) string {
+	if u.Username != "" {
+		return fmt.Sprintf("@%s", u.Username)
 	}
+	return fmt.Sprintf("[%s](tg://user?id=%d)", u.FirstName, u.ID)
 }
