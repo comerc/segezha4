@@ -113,10 +113,11 @@ func main() {
 				}
 				if articleCaseName == ArticleCases[0].name {
 					linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-					text := fmt.Sprintf(`\#%s \- [%s](%s)`,
+					text := fmt.Sprintf(`\#%s \- [%s](%s) to %s`,
 						ticker.symbol,
 						escape(ticker.description),
 						linkURL,
+						getUserLink(m.Sender),
 					)
 					_, err := b.Send(
 						tb.ChatID(m.Chat.ID),
@@ -177,10 +178,11 @@ func main() {
 					}
 				} else {
 					linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-					text := fmt.Sprintf(`\#%s \- [%s](%s)`,
+					text := fmt.Sprintf(`\#%s \- [%s](%s) to %s`,
 						ticker.symbol,
 						escape(articleCase.name),
 						linkURL,
+						getUserLink(m.Sender),
 					)
 					_, err := b.Send(
 						tb.ChatID(m.Chat.ID),
