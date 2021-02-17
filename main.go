@@ -77,7 +77,7 @@ func main() {
 				DisablePreview: true,
 			})
 			result.SetResultID(ticker.symbol + "=" + articleCase.name)
-			results[i+1] = result
+			results[i] = result
 		}
 		err = b.Answer(q, &tb.QueryResponse{
 			Results:   results,
@@ -134,7 +134,7 @@ func main() {
 					photo := &tb.Photo{
 						File: tb.FromReader(bytes.NewReader(screenshot)),
 						Caption: fmt.Sprintf(
-							`\#%s [%s](%s) by %s`,
+							`\#%s [%s](%s) to %s`,
 							ticker.symbol,
 							escape(articleCase.name),
 							linkURL,
@@ -157,7 +157,7 @@ func main() {
 					photo := &tb.Photo{
 						File: tb.FromURL(imageURL),
 						Caption: fmt.Sprintf(
-							`\#%s [%s](%s) by %s`,
+							`\#%s [%s](%s) to %s`,
 							ticker.symbol,
 							escape(articleCase.name),
 							linkURL,
