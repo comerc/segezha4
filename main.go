@@ -148,7 +148,10 @@ func main() {
 				switch mode {
 				case "?!":
 					articleCase := GetExactArticleCase("shortvolume.com")
-					sendImage(b, m, articleCase, ticker)
+					err := sendImage(b, m, articleCase, ticker)
+					if err != nil {
+						sendLink(b, m, articleCase, ticker)
+					}
 					log.Println(symbol + mode)
 					// 	articleCase := GetExactArticleCase("marketwatch.com")
 					// 	sendScreenshotForPage(b, m, articleCase, ticker)
@@ -158,7 +161,10 @@ func main() {
 					// log.Println(symbol + mode)
 				case "?":
 					articleCase := GetExactArticleCase("stockscores.com")
-					sendImage(b, m, articleCase, ticker)
+					err := sendImage(b, m, articleCase, ticker)
+					if err != nil {
+						sendLink(b, m, articleCase, ticker)
+					}
 					log.Println(symbol + mode)
 					// articleCase := GetExactArticleCase("stockscores.com")
 					// sendScreenshotForImage(b, m, articleCase, ticker)
@@ -281,7 +287,7 @@ func sendScreenshotForImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, 
 	}
 }
 
-func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
+func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) error {
 	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 	photo := &tb.Photo{
@@ -304,6 +310,7 @@ func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticke
 	if err != nil {
 		log.Println(err)
 	}
+	return err
 }
 
 func sendLink(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
