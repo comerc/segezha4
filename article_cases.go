@@ -65,7 +65,10 @@ var ArticleCases = []ArticleCase{
 	{name: "gurufocus.com", linkURL: "https://gurufocus.com/stock/%s/summary", screenshotMode: ScreenshotModePage},
 	{name: "stockrow.com", linkURL: "https://stockrow.com/%s", screenshotMode: ScreenshotModePage},
 	{name: "stockanalysis.com", linkURL: "https://stockanalysis.com/stocks/%s/", screenshotMode: ScreenshotModePage},
-	{name: "finasquare.com", linkURL: "https://www.finasquare.com/stocks/%s/company-info/overview", screenshotMode: ScreenshotModePage},
+	{name: "finasquare.com", linkURL: "https://www.finasquare.com/stocks/%s/company-info/overview",
+		height:         600,
+		screenshotMode: ScreenshotModePage,
+	},
 }
 
 // GetExactArticleCase function
