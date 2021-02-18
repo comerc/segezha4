@@ -43,10 +43,10 @@ func makeScreenshotForPage(linkURL string, top, height int, quality int64, res *
 				return err
 			}
 
-			width, height := int64(math.Ceil(contentSize.Width)), int64(math.Ceil(contentSize.Height))
+			w, h := int64(math.Ceil(contentSize.Width)), int64(math.Ceil(contentSize.Height))
 
 			// force viewport emulation
-			err = emulation.SetDeviceMetricsOverride(width, height, 1, false).
+			err = emulation.SetDeviceMetricsOverride(w, h, 1, false).
 				WithScreenOrientation(&emulation.ScreenOrientation{
 					Type:  emulation.OrientationTypePortraitPrimary,
 					Angle: 0,

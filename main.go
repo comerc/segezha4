@@ -146,13 +146,13 @@ func main() {
 				}
 				// TODO: var modes map[string]myFunc https://golangbot.com/first-class-functions/
 				switch mode {
-				case "?!":
-					// articleCase := GetExactArticleCase("shortvolume.com")
-					// sendImage(b, m, articleCase, ticker)
-					// log.Println(symbol + mode)
-					articleCase := GetExactArticleCase("marketwatch.com")
-					sendScreenshotForPage(b, m, articleCase, ticker)
-					log.Println(symbol + mode)
+				// case "?!":
+				// 	// articleCase := GetExactArticleCase("shortvolume.com")
+				// 	// sendImage(b, m, articleCase, ticker)
+				// 	// log.Println(symbol + mode)
+				// 	articleCase := GetExactArticleCase("marketwatch.com")
+				// 	sendScreenshotForPage(b, m, articleCase, ticker)
+				// 	log.Println(symbol + mode)
 				case "?":
 					articleCase := GetExactArticleCase("stockscores.com")
 					sendScreenshotForImage(b, m, articleCase, ticker)
