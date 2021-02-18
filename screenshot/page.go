@@ -21,7 +21,7 @@ func MakeScreenshotForPage(linkURL string, x, y, width, height float64) []byte {
 
 	// capture entire browser viewport, returning png with quality=90
 
-	if err := chromedp.Run(ctx, makeScreenshotForPage(linkURL, x, y, width, height, 90, &buf)); err != nil {
+	if err := chromedp.Run(ctx, makeScreenshotForPage(linkURL, x, y, width, height, 100, &buf)); err != nil {
 		log.Fatal(err)
 	}
 
