@@ -240,7 +240,7 @@ func escape(s string) string {
 
 func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-	screenshot := ss.MakeScreenshotForPage(linkURL, 0, articleCase.y, 0, articleCase.height)
+	screenshot := ss.MakeScreenshotForPage(linkURL, articleCase.x, articleCase.y, articleCase.width, articleCase.height)
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(

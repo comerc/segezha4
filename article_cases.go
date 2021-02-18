@@ -36,7 +36,9 @@ var ArticleCases = []ArticleCase{
 		y:              215,
 		height:         845 - 91, /* (banner) */
 	},
-	{name: "cathiesark.com", linkURL: "https://cathiesark.com/ark-combined-holdings-of-%s"},
+	{name: "cathiesark.com", linkURL: "https://cathiesark.com/ark-combined-holdings-of-%s",
+		screenshotMode: ScreenshotModePage,
+	},
 	{name: "marketwatch.com", linkURL: "https://marketwatch.com/investing/stock/%s",
 		screenshotMode: ScreenshotModePage,
 		// y: 345,
