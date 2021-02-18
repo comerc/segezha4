@@ -9,16 +9,18 @@ import (
 	"strconv"
 	"strings"
 
+	ss "github.com/comerc/segezha4/screenshot"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// TODO: если в сообщении пользователя только команда - удалять его после обработки
 // TODO: реализовать румтур
 // TODO: поиск по ticker.description
 // TODO: README
 // TODO: svg to png
 // TODO: добавить тайм-фрейм #BABA?15M
-// TODO: #BABA?! - shortvalue
+// TODO: добавить медленную скользящую #BABA?50EMA
+// TODO: #BABA?! - marketwatch
+// TODO: не вставлять "to User" для simple comand mode
 
 func main() {
 	var (
@@ -60,7 +62,7 @@ func main() {
 				}
 			} else {
 				title := articleCase.name
-				if articleCase.hasGift {
+				if articleCase.screenshotMode != "" {
 					title += " 🎁"
 				}
 				result = &tb.ArticleResult{
@@ -113,11 +115,12 @@ func main() {
 				if ticker == nil {
 					continue
 				}
-				if articleCaseName == "finviz.com" {
-					sendScreenshot(b, m, articleCase, ticker)
-				} else if articleCase.imageURL != "" {
-					sendImage(b, m, articleCase, ticker)
-				} else {
+				switch articleCase.screenshotMode {
+				case ScreenshotModePage:
+					sendScreenshotForPage(b, m, articleCase, ticker)
+				case ScreenshotModeImage:
+					sendScreenshotForImage(b, m, articleCase, ticker)
+				default:
 					sendLink(b, m, articleCase, ticker)
 				}
 			}
@@ -144,16 +147,19 @@ func main() {
 				// TODO: var modes map[string]myFunc https://golangbot.com/first-class-functions/
 				switch mode {
 				case "?!":
-					articleCase := GetExactArticleCase("shortvolume.com")
-					sendImage(b, m, articleCase, ticker)
+					// articleCase := GetExactArticleCase("shortvolume.com")
+					// sendImage(b, m, articleCase, ticker)
+					// log.Println(symbol + mode)
+					articleCase := GetExactArticleCase("marketwatch.com")
+					sendScreenshotForPage(b, m, articleCase, ticker)
 					log.Println(symbol + mode)
 				case "?":
 					articleCase := GetExactArticleCase("stockscores.com")
-					sendImage(b, m, articleCase, ticker)
+					sendScreenshotForImage(b, m, articleCase, ticker)
 					log.Println(symbol + mode)
 				case "!":
 					articleCase := GetExactArticleCase("finviz.com")
-					sendScreenshot(b, m, articleCase, ticker)
+					sendScreenshotForPage(b, m, articleCase, ticker)
 					log.Println(symbol + mode)
 				default:
 					log.Println("Invalid simple comand mode")
@@ -218,9 +224,9 @@ func getUserLink(u *tb.User) string {
 	return fmt.Sprintf("[%s](tg://user?id=%d)", u.FirstName, u.ID)
 }
 
-func sendScreenshot(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
+func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-	screenshot := Screenshot(linkURL)
+	screenshot := ss.MakeScreenshotForPage(linkURL, articleCase.top, articleCase.height)
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
@@ -243,11 +249,11 @@ func sendScreenshot(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *
 	}
 }
 
-func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
-	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
+func sendScreenshotForImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	screenshot := ss.MakeScreenshotForImage(linkURL, articleCase.top, articleCase.height)
 	photo := &tb.Photo{
-		File: tb.FromURL(imageURL),
+		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
 			`\#%s [%s](%s) to %s`,
 			ticker.symbol,
@@ -267,6 +273,31 @@ func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticke
 		log.Println(err)
 	}
 }
+
+// func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
+// 	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
+// 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+// 	photo := &tb.Photo{
+// 		File: tb.FromURL(imageURL),
+// 		Caption: fmt.Sprintf(
+// 			`\#%s [%s](%s) to %s`,
+// 			ticker.symbol,
+// 			escape(articleCase.name),
+// 			linkURL,
+// 			getUserLink(m.Sender),
+// 		),
+// 	}
+// 	_, err := b.Send(
+// 		tb.ChatID(m.Chat.ID),
+// 		photo,
+// 		&tb.SendOptions{
+// 			ParseMode: tb.ModeMarkdownV2,
+// 		},
+// 	)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+// }
 
 func sendLink(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
 	linkText := func() string {
