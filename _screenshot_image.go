@@ -11,7 +11,7 @@
 // 	"github.com/chromedp/chromedp"
 // )
 
-// const w, h = 2850, 1440
+// const w, h = 1920, 1080
 
 // func main() {
 // 	// create context
@@ -21,9 +21,14 @@
 // 	// capture screenshot of an element
 // 	var buf []byte
 
-// 	imageURL := fmt.Sprintf("https://www.stockscores.com/chart.asp?TickerSymbol=ZM&TimeRange=%d&Interval=d&Volume=1&ChartType=CandleStick&Stockscores=None&ChartWidth=%d&ChartHeight=%d&LogScale=None&Band=None&avgType1=EMA&movAvg1=20&avgType2=EMA&movAvg2=100&Indicator1=RSI&Indicator2=None&Indicator3=MACD&Indicator4=AccDist&endDate=2021-2-17&CompareWith=&entryPrice=&stopLossPrice=&candles=redgreen",
-// 		365, w, 967,
+// 	imageURL := fmt.Sprintf("https://www.stockscores.com/chart.asp?TickerSymbol=PRDO&TimeRange=120&Interval=d&Volume=1&ChartType=CandleStick&Stockscores=None&ChartWidth=%d&ChartHeight=%d&LogScale=None&Band=None&avgType1=EMA&movAvg1=20&avgType2=EMA&movAvg2=100&Indicator1=RSI&Indicator2=None&Indicator3=MACD&Indicator4=AccDist&CompareWith=&entryPrice=&stopLossPrice=&candles=redgreen",
+// 		w,
+// 		600,
 // 	)
+
+// 	// imageURL := fmt.Sprintf("https://www.stockscores.com/chart.asp?TickerSymbol=ZM&TimeRange=%d&Interval=d&Volume=1&ChartType=CandleStick&Stockscores=None&ChartWidth=%d&ChartHeight=%d&LogScale=None&Band=None&avgType1=EMA&movAvg1=20&avgType2=EMA&movAvg2=100&Indicator1=RSI&Indicator2=None&Indicator3=MACD&Indicator4=AccDist&endDate=2021-2-17&CompareWith=&entryPrice=&stopLossPrice=&candles=redgreen",
+// 	// 	365, w, 967,
+// 	// )
 
 // 	// if err := chromedp.Run(ctx, elementScreenshot(`https://www.gurufocus.com/stock/TAK/summary`, `#__layout`, &buf)); err != nil {
 // 	// if err := chromedp.Run(ctx, elementScreenshot(`https://stockrow.com/ZM`, `#root div.capital-structure`, &buf)); err != nil {
