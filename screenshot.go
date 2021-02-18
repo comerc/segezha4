@@ -5,15 +5,13 @@ import (
 	"log"
 	"math"
 
-	// "time"
-
 	"github.com/chromedp/cdproto/emulation"
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/chromedp"
 )
 
-// Screenshot description
-func Screenshot(linkURL string) []byte {
+// MakePageScreenshot description
+func MakePageScreenshot(linkURL string, top, height int) []byte {
 	// create context
 	ctx, cancel := chromedp.NewContext(context.Background())
 	defer cancel()
@@ -21,62 +19,23 @@ func Screenshot(linkURL string) []byte {
 	// capture screenshot of an element
 	var buf []byte
 
-	// if err := chromedp.Run(ctx, elementScreenshot(`https://www.gurufocus.com/stock/TAK/summary`, `#__layout`, &buf)); err != nil {
-	// if err := chromedp.Run(ctx, elementScreenshot(`https://stockrow.com/ZM`, `#root div.capital-structure`, &buf)); err != nil {
-	// if err := chromedp.Run(ctx, elementScreenshot(`https://finviz.com/quote.ashx?t=zm`, `body > div.content > div.container > table.snapshot-table2`, &buf)); err != nil {
-	// 	// if err := chromedp.Run(ctx, elementScreenshot(`https://www.marketbeat.com/stocks/NASDAQ/FB/institutional-ownership/`, `#article`, &buf)); err != nil {
-	// 	log.Fatal(err)
-	// }
-	// if err := ioutil.WriteFile("elementScreenshot.png", buf, 0644); err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	// capture entire browser viewport, returning png with quality=90
 
-	// if err := chromedp.Run(ctx, fullScreenshot(`https://stockrow.com/ZM`, 90, &buf)); err != nil {
-	// if err := chromedp.Run(ctx, fullScreenshot(`https://www.gurufocus.com/stock/TAK/summary`, 90, &buf)); err != nil {
-	// if err := chromedp.Run(ctx, fullScreenshot(`https://www.marketwatch.com/investing/stock/zm`, 90, &buf)); err != nil {
-	// if err := chromedp.Run(ctx, fullScreenshot(`https://www.marketbeat.com/stocks/NASDAQ/FB/institutional-ownership/`, 90, &buf)); err != nil {
-	if err := chromedp.Run(ctx, fullScreenshot(linkURL, 90, &buf)); err != nil {
+	if err := chromedp.Run(ctx, makePageScreenshot(linkURL, top, height, 90, &buf)); err != nil {
 		log.Fatal(err)
 	}
 
 	return buf
-	// if err := ioutil.WriteFile("fullScreenshot.png", buf, 0644); err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// log.Printf("wrote elementScreenshot.png and fullScreenshot.png")
 }
 
-// elementScreenshot takes a screenshot of a specific element.
-func elementScreenshot(urlstr, sel string, res *[]byte) chromedp.Tasks {
-	return chromedp.Tasks{
-		// emulation.SetUserAgentOverride("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3830.0 Safari/537.36"),
-		chromedp.Navigate(urlstr),
-		// chromedp.Sleep(8 * time.Second),
-		// chromedp.WaitReady(`body > div > footer`),
-		// chromedp.WaitVisible(`#optinform-modal`),
-		// chromedp.Click(`#optinform-modal a`, chromedp.NodeVisible),
-		// chromedp.WaitReady(sel, chromedp.ByID),
-		chromedp.WaitVisible(sel),
-		chromedp.Screenshot(sel, res, chromedp.NodeVisible),
-	}
-}
-
-// fullScreenshot takes a screenshot of the entire browser viewport.
+// makePageScreenshot takes a screenshot of the entire browser viewport.
 //
 // Liberally copied from puppeteer's source.
 //
 // Note: this will override the viewport emulation settings.
-func fullScreenshot(urlstr string, quality int64, res *[]byte) chromedp.Tasks {
+func makePageScreenshot(linkURL string, top, height int, quality int64, res *[]byte) chromedp.Tasks {
 	return chromedp.Tasks{
-		chromedp.Navigate(urlstr),
-		// chromedp.Sleep(8 * time.Second),
-		// chromedp.Click(`#root div.close-modal`, chromedp.NodeVisible),
-
-		// chromedp.WaitVisible(`#optinform-modal`),
-		// chromedp.Click(`#optinform-modal a`, chromedp.NodeVisible),
+		chromedp.Navigate(linkURL),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			// get layout metrics
 			_, _, contentSize, err := page.GetLayoutMetrics().Do(ctx)
@@ -102,11 +61,55 @@ func fullScreenshot(urlstr string, quality int64, res *[]byte) chromedp.Tasks {
 				WithQuality(quality).
 				WithClip(&page.Viewport{
 					X:      contentSize.X,
-					Y:      215, // contentSize.Y,
+					Y:      float64(top), // contentSize.Y,
 					Width:  contentSize.Width,
-					Height: 845 - 91, // contentSize.Height,
+					Height: float64(height), // contentSize.Height,
 					Scale:  1,
 				}).Do(ctx)
+			if err != nil {
+				return err
+			}
+			return nil
+		}),
+	}
+}
+
+// MakeImageScreenshot description
+func MakeImageScreenshot(linkURL string, width, height int) []byte {
+	// create context
+	ctx, cancel := chromedp.NewContext(context.Background())
+	defer cancel()
+
+	// capture screenshot of an element
+	var buf []byte
+
+	// capture entire browser viewport, returning png with quality=90
+
+	if err := chromedp.Run(ctx, makeImageScreenshot(linkURL, width, height, 90, &buf)); err != nil {
+		log.Fatal(err)
+	}
+
+	return buf
+}
+
+// makeImageScreenshot takes a screenshot of the entire browser viewport.
+//
+// Liberally copied from puppeteer's source.
+//
+// Note: this will override the viewport emulation settings.
+func makeImageScreenshot(linkURL string, width, height int, quality int64, res *[]byte) chromedp.Tasks {
+	return chromedp.Tasks{
+		chromedp.Navigate(linkURL),
+		chromedp.ActionFunc(func(ctx context.Context) error {
+			// force viewport emulation
+			err := emulation.SetDeviceMetricsOverride(int64(width), int64(height), 1, false).
+				Do(ctx)
+			if err != nil {
+				return err
+			}
+			// capture screenshot
+			*res, err = page.CaptureScreenshot().
+				Do(ctx)
 			if err != nil {
 				return err
 			}
