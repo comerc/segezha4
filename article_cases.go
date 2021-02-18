@@ -33,7 +33,7 @@ var ArticleCases = []ArticleCase{
 		imageURL: "https://shortvolume.com/chart_engine/draw_chart.php?Symbol=%s&TimeRange=100"},
 	{name: "marketbeat.com", linkURL: "https://marketbeat.com/stocks/%s"},
 	{name: "earningswhispers.com", linkURL: "https://earningswhispers.com/stocks/%s"},
-	// {name: "tipranks.com", linkURL: "https://tipranks.com/stocks/%s/forecast"},
+	{name: "tipranks.com", linkURL: "https://tipranks.com/stocks/%s/forecast"},
 	{name: "barchart.com", linkURL: "https://barchart.com/stocks/quotes/%s/overview"},
 	{name: "gurufocus.com", linkURL: "https://gurufocus.com/stock/%s/summary"},
 	{name: "stockrow.com", linkURL: "https://stockrow.com/%s"},
