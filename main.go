@@ -125,15 +125,15 @@ func main() {
 					sendLink(b, m, articleCase, ticker)
 				}
 			}
-			err := b.Delete(
-				&tb.StoredMessage{
-					MessageID: strconv.Itoa(m.ID),
-					ChatID:    m.Chat.ID,
-				},
-			)
-			if err != nil {
-				log.Println(err)
-			}
+			// err := b.Delete(
+			// 	&tb.StoredMessage{
+			// 		MessageID: strconv.Itoa(m.ID),
+			// 		ChatID:    m.Chat.ID,
+			// 	},
+			// )
+			// if err != nil {
+			// 	log.Println(err)
+			// }
 		} else {
 			// simple comand mode
 			re := regexp.MustCompile(`(^|[ ])#([A-Za-z]+)(\?!|\?|!)`)
