@@ -230,12 +230,12 @@ func escape(s string) string {
 // 	}
 // }
 
-func getUserLink(u *tb.User) string {
-	if u.Username != "" {
-		return fmt.Sprintf("@%s", u.Username)
-	}
-	return fmt.Sprintf("[%s](tg://user?id=%d)", u.FirstName, u.ID)
-}
+// func getUserLink(u *tb.User) string {
+// 	if u.Username != "" {
+// 		return fmt.Sprintf("@%s", u.Username)
+// 	}
+// 	return fmt.Sprintf("[%s](tg://user?id=%d)", u.FirstName, u.ID)
+// }
 
 func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
@@ -243,11 +243,11 @@ func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, t
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s [%s](%s) to %s`,
+			`\#%s [%s](%s)`,
 			ticker.symbol,
 			escape(articleCase.name),
 			linkURL,
-			getUserLink(m.Sender),
+			// getUserLink(m.Sender),
 		),
 	}
 	_, err := b.Send(
@@ -269,11 +269,11 @@ func sendScreenshotForImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, 
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s [%s](%s) to %s`,
+			`\#%s [%s](%s)`,
 			ticker.symbol,
 			escape(articleCase.name),
 			linkURL,
-			getUserLink(m.Sender),
+			// getUserLink(m.Sender),
 		),
 	}
 	_, err := b.Send(
@@ -294,11 +294,11 @@ func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticke
 	photo := &tb.Photo{
 		File: tb.FromURL(imageURL),
 		Caption: fmt.Sprintf(
-			`\#%s [%s](%s) to %s`,
+			`\#%s [%s](%s)`,
 			ticker.symbol,
 			escape(articleCase.name),
 			linkURL,
-			getUserLink(m.Sender),
+			// getUserLink(m.Sender),
 		),
 	}
 	_, err := b.Send(
@@ -322,11 +322,11 @@ func sendLink(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker
 		return articleCase.name
 	}()
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-	text := fmt.Sprintf(`\#%s \- [%s](%s) to %s`,
+	text := fmt.Sprintf(`\#%s \- [%s](%s)`,
 		ticker.symbol,
 		escape(linkText),
 		linkURL,
-		getUserLink(m.Sender),
+		// getUserLink(m.Sender),
 	)
 	_, err := b.Send(
 		tb.ChatID(m.Chat.ID),
