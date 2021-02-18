@@ -40,7 +40,7 @@ var ArticleCases = []ArticleCase{
 		x:              64,
 		y:              170,
 		width:          800 - 64,
-		height:         912,
+		height:         913,
 		screenshotMode: ScreenshotModePage,
 	},
 	{name: "cathiesark.com", linkURL: "https://cathiesark.com/ark-combined-holdings-of-%s",
