@@ -66,7 +66,7 @@ var ArticleCases = []ArticleCase{
 		x:              64,
 		y:              170,
 		width:          800 - 64,
-		height:         920,
+		height:         910,
 		screenshotMode: ScreenshotModePage,
 	},
 	{name: "barchart.com", linkURL: "https://barchart.com/stocks/quotes/%s/overview", screenshotMode: ScreenshotModePage},
