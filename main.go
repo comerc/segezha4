@@ -120,7 +120,8 @@ func main() {
 				case ScreenshotModePage:
 					sendScreenshotForPage(b, m, articleCase, ticker)
 				case ScreenshotModeImage:
-					sendScreenshotForImage(b, m, articleCase, ticker)
+					sendImage(b, m, articleCase, ticker)
+					// sendScreenshotForImage(b, m, articleCase, ticker)
 				default:
 					sendLink(b, m, articleCase, ticker)
 				}
