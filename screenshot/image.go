@@ -38,6 +38,10 @@ func makeScreenshotForImage(linkURL string, width, height int, quality int64, re
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			// force viewport emulation
 			err := emulation.SetDeviceMetricsOverride(int64(width), int64(height), 1, false).
+				WithScreenOrientation(&emulation.ScreenOrientation{
+					Type:  emulation.OrientationTypeLandscapePrimary,
+					Angle: 0,
+				}).
 				Do(ctx)
 			if err != nil {
 				return err
