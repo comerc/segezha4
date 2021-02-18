@@ -10,7 +10,7 @@ import (
 )
 
 // MakeScreenshotForImage description
-func MakeScreenshotForImage(linkURL string, width, height int) []byte {
+func MakeScreenshotForImage(linkURL string, width, height float64) []byte {
 	// create context
 	ctx, cancel := chromedp.NewContext(context.Background())
 	defer cancel()
@@ -32,7 +32,7 @@ func MakeScreenshotForImage(linkURL string, width, height int) []byte {
 // Liberally copied from puppeteer's source.
 //
 // Note: this will override the viewport emulation settings.
-func makeScreenshotForImage(linkURL string, width, height int, quality int64, res *[]byte) chromedp.Tasks {
+func makeScreenshotForImage(linkURL string, width, height float64, quality int64, res *[]byte) chromedp.Tasks {
 	return chromedp.Tasks{
 		chromedp.Navigate(linkURL),
 		chromedp.ActionFunc(func(ctx context.Context) error {

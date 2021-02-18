@@ -11,7 +11,7 @@ import (
 )
 
 // MakeScreenshotForPage description
-func MakeScreenshotForPage(linkURL string, top, height int) []byte {
+func MakeScreenshotForPage(linkURL string, x, y, width, height float64) []byte {
 	// create context
 	ctx, cancel := chromedp.NewContext(context.Background())
 	defer cancel()
@@ -21,7 +21,7 @@ func MakeScreenshotForPage(linkURL string, top, height int) []byte {
 
 	// capture entire browser viewport, returning png with quality=90
 
-	if err := chromedp.Run(ctx, makeScreenshotForPage(linkURL, top, height, 90, &buf)); err != nil {
+	if err := chromedp.Run(ctx, makeScreenshotForPage(linkURL, x, y, width, height, 90, &buf)); err != nil {
 		log.Fatal(err)
 	}
 
@@ -33,7 +33,7 @@ func MakeScreenshotForPage(linkURL string, top, height int) []byte {
 // Liberally copied from puppeteer's source.
 //
 // Note: this will override the viewport emulation settings.
-func makeScreenshotForPage(linkURL string, top, height int, quality int64, res *[]byte) chromedp.Tasks {
+func makeScreenshotForPage(linkURL string, x, y, width, height float64, quality int64, res *[]byte) chromedp.Tasks {
 	return chromedp.Tasks{
 		chromedp.Navigate(linkURL),
 		chromedp.ActionFunc(func(ctx context.Context) error {
@@ -56,14 +56,27 @@ func makeScreenshotForPage(linkURL string, top, height int, quality int64, res *
 				return err
 			}
 
+			if x == 0 {
+				x = contentSize.X
+			}
+			if y == 0 {
+				y = contentSize.Y
+			}
+			if width == 0 {
+				width = contentSize.Width
+			}
+			if height == 0 {
+				height = contentSize.Height
+			}
+
 			// capture screenshot
 			*res, err = page.CaptureScreenshot().
 				WithQuality(quality).
 				WithClip(&page.Viewport{
-					X:      contentSize.X,
-					Y:      float64(top), // contentSize.Y,
-					Width:  contentSize.Width,
-					Height: float64(height), // contentSize.Height,
+					X:      x,
+					Y:      y,
+					Width:  width,
+					Height: height,
 					Scale:  1,
 				}).Do(ctx)
 			if err != nil {

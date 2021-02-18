@@ -239,7 +239,7 @@ func escape(s string) string {
 
 func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-	screenshot := ss.MakeScreenshotForPage(linkURL, articleCase.top, articleCase.height)
+	screenshot := ss.MakeScreenshotForPage(linkURL, 0, articleCase.y, 0, articleCase.height)
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
@@ -265,7 +265,7 @@ func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, t
 func sendScreenshotForImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
 	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-	screenshot := ss.MakeScreenshotForImage(imageURL, articleCase.top, articleCase.height)
+	screenshot := ss.MakeScreenshotForImage(imageURL, articleCase.width, articleCase.height)
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(

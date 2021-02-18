@@ -19,9 +19,10 @@ type ArticleCase struct {
 	linkURL        string
 	imageURL       string
 	screenshotMode ScreenshotMode
-	top            int
-	width          int
-	height         int
+	x              float64
+	y              float64
+	width          float64
+	height         float64
 }
 
 // TODO: чаще используемые перемещать наверх
@@ -31,12 +32,13 @@ type ArticleCase struct {
 var ArticleCases = []ArticleCase{
 	{name: "tradingview.com", linkURL: "https://ru.tradingview.com/symbols/%s"},
 	{name: "finviz.com", linkURL: "https://finviz.com/quote.ashx?t=%s", screenshotMode: ScreenshotModePage,
-		top: 215, height: 845 - 91, /* (banner) */
+		y: 215, height: 845 - 91, /* (banner) */
 	},
 	{name: "cathiesark.com", linkURL: "https://cathiesark.com/ark-combined-holdings-of-%s"},
-	{name: "marketwatch.com", linkURL: "https://marketwatch.com/investing/stock/%s"},
-	// screenshotMode: ScreenshotModePage,
-	// top: 345, height: 565,
+	{name: "marketwatch.com", linkURL: "https://marketwatch.com/investing/stock/%s",
+		screenshotMode: ScreenshotModePage,
+		// y: 345, height: 565,
+	},
 	{name: "stockscores.com", linkURL: "https://stockscores.com/charts/charts/?ticker=%s",
 		// screenshotMode: ScreenshotModeImage,
 		// width:          1200,
