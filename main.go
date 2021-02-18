@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	ss "github.com/comerc/segezha4/screenshot"
 	tb "gopkg.in/tucnak/telebot.v2"
@@ -288,7 +289,7 @@ func sendScreenshotForImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, 
 }
 
 func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) error {
-	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
+	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol, time.Now().Unix())
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 	photo := &tb.Photo{
 		File: tb.FromURL(imageURL),
