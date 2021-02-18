@@ -146,13 +146,16 @@ func main() {
 				}
 				// TODO: var modes map[string]myFunc https://golangbot.com/first-class-functions/
 				switch mode {
-				// case "?!":
-				// 	// articleCase := GetExactArticleCase("shortvolume.com")
-				// 	// sendImage(b, m, articleCase, ticker)
-				// 	// log.Println(symbol + mode)
-				// 	articleCase := GetExactArticleCase("marketwatch.com")
-				// 	sendScreenshotForPage(b, m, articleCase, ticker)
-				// 	log.Println(symbol + mode)
+				case "?!":
+					// 	// articleCase := GetExactArticleCase("shortvolume.com")
+					// 	// sendImage(b, m, articleCase, ticker)
+					// 	// log.Println(symbol + mode)
+					// 	articleCase := GetExactArticleCase("marketwatch.com")
+					// 	sendScreenshotForPage(b, m, articleCase, ticker)
+					// 	log.Println(symbol + mode)
+					articleCase := GetExactArticleCase("shortvolume.com")
+					sendScreenshotForImage(b, m, articleCase, ticker)
+					log.Println(symbol + mode)
 				case "?":
 					articleCase := GetExactArticleCase("stockscores.com")
 					sendScreenshotForImage(b, m, articleCase, ticker)
@@ -250,8 +253,9 @@ func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, t
 }
 
 func sendScreenshotForImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
+	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-	screenshot := ss.MakeScreenshotForImage(linkURL, articleCase.top, articleCase.height)
+	screenshot := ss.MakeScreenshotForImage(imageURL, articleCase.top, articleCase.height)
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
