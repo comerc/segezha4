@@ -10,6 +10,7 @@ import (
 
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
+	"github.com/nfnt/resize"
 )
 
 func init() {
@@ -42,15 +43,12 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 	src := image.NewRGBA(r1)
 	draw.Draw(src, img1.Bounds(), img1, image.Point{0, 0}, draw.Src)
 	draw.Draw(src, r2, img2, image.Point{0, 0}, draw.Src)
-
-	// // new size of image
-	// dr := image.Rect(0, 0, src.Bounds().Max.X/2, src.Bounds().Max.Y/2)
-	// // perform resizing
-	// res := scaleTo(src, dr, draw.BiLinear)
-
+	// resize to width 800 using Bicubic resampling
+	// and preserve aspect ratio
+	res := resize.Resize(800, 0, src, resize.Bicubic)
 	// encode
 	out := &bytes.Buffer{}
-	if err := png.Encode(out, src); err != nil {
+	if err := png.Encode(out, res); err != nil {
 		log.Fatal(err)
 	}
 	// var opt jpeg.Options
@@ -80,17 +78,3 @@ func makeScreenshotForMarketBeat(linkURL string, res1, res2 *[]byte) chromedp.Ta
 		chromedp.Screenshot("#SECChart", res2, chromedp.NodeVisible),
 	}
 }
-
-//
-// for RGBA images
-//
-
-// src   - source image
-// rect  - size we want
-// scale - scaler
-// func scaleTo(src image.Image,
-// 	rect image.Rectangle, scale draw.Scaler) image.Image {
-// 	dst := image.NewRGBA(rect)
-// 	scale.Scale(dst, rect, src, src.Bounds(), draw.Over, nil)
-// 	return dst
-// }
