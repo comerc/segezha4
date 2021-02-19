@@ -5,16 +5,16 @@ import (
 	"context"
 	"image"
 	"image/draw"
-	"image/png"
+	"image/jpeg"
 	"log"
 
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
 )
 
-func init() {
-	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
-}
+// func init() {
+// 	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
+// }
 
 // MakeScreenshotForMarketBeat description
 func MakeScreenshotForMarketBeat(linkURL string) []byte {
@@ -42,11 +42,14 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 	draw.Draw(rgba, img1.Bounds(), img1, image.Point{0, 0}, draw.Src)
 	draw.Draw(rgba, r2, img2, image.Point{0, 0}, draw.Src)
 	// encode
-	buffer := &bytes.Buffer{}
-	if err := png.Encode(buffer, rgba); err != nil {
-		log.Fatal(err)
-	}
-	return buffer.Bytes()
+	out := &bytes.Buffer{}
+	// if err := png.Encode(out, rgba); err != nil {
+	// 	log.Fatal(err)
+	// }
+	var opt jpeg.Options
+	opt.Quality = 85
+	jpeg.Encode(out, rgba, &opt)
+	return out.Bytes()
 }
 
 func makeScreenshotForMarketBeat(linkURL string, res1, res2 *[]byte) chromedp.Tasks {
