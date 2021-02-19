@@ -122,6 +122,8 @@ func main() {
 				case ScreenshotModeImage:
 					sendImage(b, m, articleCase, ticker)
 					// sendScreenshotForImage(b, m, articleCase, ticker)
+				case ScreenshotModeMarketBeat:
+					sendScreenshotForMarketBeat(b, m, articleCase, ticker)
 				default:
 					sendLink(b, m, articleCase, ticker)
 				}
@@ -241,6 +243,31 @@ func escape(s string) string {
 func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 	screenshot := ss.MakeScreenshotForPage(linkURL, articleCase.x, articleCase.y, articleCase.width, articleCase.height)
+	photo := &tb.Photo{
+		File: tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: fmt.Sprintf(
+			`\#%s [%s](%s)`,
+			ticker.symbol,
+			escape(articleCase.name),
+			linkURL,
+			// getUserLink(m.Sender),
+		),
+	}
+	_, err := b.Send(
+		tb.ChatID(m.Chat.ID),
+		photo,
+		&tb.SendOptions{
+			ParseMode: tb.ModeMarkdownV2,
+		},
+	)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func sendScreenshotForMarketBeat(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
+	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(

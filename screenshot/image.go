@@ -15,16 +15,10 @@ func MakeScreenshotForImage(linkURL string, width, height float64) []byte {
 	// create context
 	ctx, cancel := chromedp.NewContext(context.Background())
 	defer cancel()
-
-	// capture screenshot of an element
 	var buf []byte
-
-	// capture entire browser viewport, returning png with quality=90
-
 	if err := chromedp.Run(ctx, makeScreenshotForImage(linkURL, width, height, 100, &buf)); err != nil {
 		log.Fatal(err)
 	}
-
 	return buf
 }
 

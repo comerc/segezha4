@@ -9,9 +9,11 @@
 
 // func main() {
 // 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
-// 	linkURL := "https://tipranks.com/stocks/ZM/forecast"
-// 	buf := ss.MakeScreenshotForPage(linkURL, 0, 0, 0, 0)
-// 	if err := ioutil.WriteFile("fullScreenshot.png", buf, 0644); err != nil {
+// 	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
+// 	linkURL := "https://www.marketbeat.com/stocks/ZM"
+// 	buf := ss.MakeScreenshotForMarketBeat(linkURL)
+// 	if err := ioutil.WriteFile("screenshot.png", buf, 0644); err != nil {
 // 		log.Fatal(err)
 // 	}
+
 // }
