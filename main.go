@@ -55,14 +55,14 @@ func main() {
 			var result *tb.ArticleResult
 			if i == 0 {
 				result = &tb.ArticleResult{
-					Title:       fmt.Sprintf("%s > %s", articleCase.name, ticker.symbol),
+					Title:       fmt.Sprintf("%s #%s", articleCase.name, ticker.symbol),
 					Description: ticker.description,
 					HideURL:     true,
 					URL:         linkURL,
 					ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.symbol), // from stockanalysis.com
 				}
 			} else {
-				title := fmt.Sprintf("%s > %s", articleCase.name, ticker.symbol)
+				title := fmt.Sprintf("%s #%s", articleCase.name, ticker.symbol)
 				if articleCase.screenshotMode != "" {
 					title += " 🎁"
 				}
@@ -246,9 +246,9 @@ func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, t
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s %s [%s](%s)`,
+			`\#%s %s[%s](%s)`,
 			ticker.symbol,
-			escape(articleCase.description),
+			by(escape(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -274,7 +274,7 @@ func sendScreenshotForMarketBeat(b *tb.Bot, m *tb.Message, articleCase *ArticleC
 		Caption: fmt.Sprintf(
 			`\#%s %s [%s](%s) `,
 			ticker.symbol,
-			escape(articleCase.description),
+			by(escape(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -299,9 +299,9 @@ func sendScreenshotForImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, 
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s %s [%s](%s)`,
+			`\#%s %s[%s](%s)`,
 			ticker.symbol,
-			escape(articleCase.description),
+			by(escape(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -325,9 +325,9 @@ func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticke
 	photo := &tb.Photo{
 		File: tb.FromURL(imageURL),
 		Caption: fmt.Sprintf(
-			`\#%s %s [%s](%s)`,
+			`\#%s %s[%s](%s)`,
 			ticker.symbol,
-			escape(articleCase.description),
+			by(escape(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -354,9 +354,9 @@ func sendLink(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker
 		return articleCase.description
 	}()
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
-	text := fmt.Sprintf(`\#%s %s [%s](%s)`,
+	text := fmt.Sprintf(`\#%s %s[%s](%s)`,
 		ticker.symbol,
-		escape(description),
+		by(escape(description)),
 		escape(articleCase.name),
 		linkURL,
 		// getUserLink(m.Sender),
@@ -372,4 +372,11 @@ func sendLink(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+func by(s string) string {
+	if s == "" {
+		return "by "
+	}
+	return s + " by "
 }
