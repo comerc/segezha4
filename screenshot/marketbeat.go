@@ -12,9 +12,10 @@ import (
 	"github.com/chromedp/chromedp/device"
 )
 
-// func init() {
-// 	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
-// }
+func init() {
+	image.RegisterFormat("jpeg", "jpeg", jpeg.Decode, jpeg.DecodeConfig)
+	// image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
+}
 
 // MakeScreenshotForMarketBeat description
 func MakeScreenshotForMarketBeat(linkURL string) []byte {
