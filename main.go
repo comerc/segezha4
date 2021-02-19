@@ -269,9 +269,11 @@ func sendScreenshotForMarketBeat(b *tb.Bot, m *tb.Message, articleCase *ArticleC
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 	screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
 	photo := &tb.Photo{
-		File: tb.FromReader(bytes.NewReader(screenshot)),
+		File:   tb.FromReader(bytes.NewReader(screenshot)),
+		Width:  1480,
+		Height: 1400,
 		Caption: fmt.Sprintf(
-			`\#%s [%s](%s) insider trades & institutional ownership`,
+			`\#%s insider trades & institutional ownership by [%s](%s) `,
 			ticker.symbol,
 			escape(articleCase.name),
 			linkURL,
