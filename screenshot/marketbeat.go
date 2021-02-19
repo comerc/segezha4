@@ -5,7 +5,7 @@ import (
 	"context"
 	"image"
 	"image/draw"
-	"image/jpeg"
+	"image/png"
 	"log"
 
 	"github.com/chromedp/chromedp"
@@ -13,8 +13,8 @@ import (
 )
 
 func init() {
-	image.RegisterFormat("jpeg", "jpeg", jpeg.Decode, jpeg.DecodeConfig)
-	// image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
+	// image.RegisterFormat("jpeg", "jpeg", jpeg.Decode, jpeg.DecodeConfig)
+	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
 }
 
 // MakeScreenshotForMarketBeat description
@@ -44,12 +44,12 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 	draw.Draw(rgba, r2, img2, image.Point{0, 0}, draw.Src)
 	// encode
 	out := &bytes.Buffer{}
-	// if err := png.Encode(out, rgba); err != nil {
-	// 	log.Fatal(err)
-	// }
-	var opt jpeg.Options
-	opt.Quality = 85
-	jpeg.Encode(out, rgba, &opt)
+	if err := png.Encode(out, rgba); err != nil {
+		log.Fatal(err)
+	}
+	// var opt jpeg.Options
+	// opt.Quality = 85
+	// jpeg.Encode(out, rgba, &opt)
 	return out.Bytes()
 }
 
