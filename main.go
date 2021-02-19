@@ -271,7 +271,7 @@ func sendScreenshotForMarketBeat(b *tb.Bot, m *tb.Message, articleCase *ArticleC
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s [%s](%s)`,
+			`\#%s [%s](%s) insider trades & institutional ownership`,
 			ticker.symbol,
 			escape(articleCase.name),
 			linkURL,
