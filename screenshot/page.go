@@ -36,7 +36,7 @@ func MakeScreenshotForPage(linkURL string, x, y, width, height float64) []byte {
 // Note: this will override the viewport emulation settings.
 func makeScreenshotForPage(linkURL string, x, y, width, height float64, quality int64, res *[]byte) chromedp.Tasks {
 	return chromedp.Tasks{
-		chromedp.Emulate(device.IPad),
+		chromedp.Emulate(device.KindleFireHDX),
 		chromedp.Navigate(linkURL),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			// get layout metrics
