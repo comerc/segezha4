@@ -8,6 +8,7 @@ import (
 	"github.com/chromedp/cdproto/emulation"
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/chromedp"
+	"github.com/chromedp/chromedp/device"
 )
 
 // MakeScreenshotForPage description
@@ -35,6 +36,7 @@ func MakeScreenshotForPage(linkURL string, x, y, width, height float64) []byte {
 // Note: this will override the viewport emulation settings.
 func makeScreenshotForPage(linkURL string, x, y, width, height float64, quality int64, res *[]byte) chromedp.Tasks {
 	return chromedp.Tasks{
+		chromedp.Emulate(device.IPadPro),
 		chromedp.Navigate(linkURL),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			// get layout metrics
