@@ -58,13 +58,13 @@ var ArticleCases = []ArticleCase{
 	{name: "cathiesark.com", linkURL: "https://cathiesark.com/ark-combined-holdings-of-%s", screenshotMode: ScreenshotModePage},
 	{name: "marketwatch.com", linkURL: "https://marketwatch.com/investing/stock/%s", screenshotMode: ScreenshotModePage}, // y: 345,
 	// height: 565,
-	{name: "marketbeat.com", linkURL: "https://marketbeat.com/stocks/%s"},
-	{name: "barchart.com", linkURL: "https://barchart.com/stocks/quotes/%s/overview"},
-	{name: "gurufocus.com", linkURL: "https://gurufocus.com/stock/%s/summary"},
-	{name: "finasquare.com", linkURL: "https://www.finasquare.com/stocks/%s/company-info/overview"},
-	{name: "stockrow.com", linkURL: "https://stockrow.com/%s"},
-	{name: "stockanalysis.com", linkURL: "https://stockanalysis.com/stocks/%s/"},
-	{name: "earningswhispers.com", linkURL: "https://earningswhispers.com/stocks/%s"},
+	{name: "marketbeat.com", linkURL: "https://marketbeat.com/stocks/%s", screenshotMode: ScreenshotModePage},
+	{name: "barchart.com", linkURL: "https://barchart.com/stocks/quotes/%s/overview", screenshotMode: ScreenshotModePage},
+	{name: "gurufocus.com", linkURL: "https://gurufocus.com/stock/%s/summary", screenshotMode: ScreenshotModePage},
+	{name: "finasquare.com", linkURL: "https://www.finasquare.com/stocks/%s/company-info/overview", screenshotMode: ScreenshotModePage},
+	{name: "stockrow.com", linkURL: "https://stockrow.com/%s", screenshotMode: ScreenshotModePage},
+	{name: "stockanalysis.com", linkURL: "https://stockanalysis.com/stocks/%s/", screenshotMode: ScreenshotModePage},
+	{name: "earningswhispers.com", linkURL: "https://earningswhispers.com/stocks/%s", screenshotMode: ScreenshotModePage},
 }
 
 // GetExactArticleCase function
