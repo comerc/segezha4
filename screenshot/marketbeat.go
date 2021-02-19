@@ -55,7 +55,7 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 
 func makeScreenshotForMarketBeat(linkURL string, res1, res2 *[]byte) chromedp.Tasks {
 	return chromedp.Tasks{
-		chromedp.Emulate(device.KindleFireHDX),
+		chromedp.Emulate(device.IPad),
 		chromedp.Navigate(linkURL),
 		chromedp.WaitReady(`body > div > footer`),
 		chromedp.WaitVisible("#optinform-modal a"),
