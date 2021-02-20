@@ -17,7 +17,7 @@ func MakeScreenshotForImage(linkURL string, width, height float64) []byte {
 	defer cancel()
 	var buf []byte
 	if err := chromedp.Run(ctx, makeScreenshotForImage(linkURL, width, height, 100, &buf)); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	return buf
 }

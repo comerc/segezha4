@@ -24,6 +24,17 @@ import (
 // TODO: не вставлять "to User" для simple comand mode
 
 func main() {
+	// b1 := true
+	// if b1 {
+	// 	log.Println("dev")
+	// 	return
+	// }
+	// dev := flag.Bool("dev", false, "dev mode")
+	// if dev != nil {
+	// 	log.Println(dev)
+	// 	return
+	// }
+
 	var (
 		port      = os.Getenv("PORT")
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
@@ -272,7 +283,7 @@ func sendScreenshotForMarketBeat(b *tb.Bot, m *tb.Message, articleCase *ArticleC
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s %s [%s](%s) `,
+			`\#%s %s[%s](%s) `,
 			ticker.symbol,
 			by(escape(articleCase.description)),
 			escape(articleCase.name),
