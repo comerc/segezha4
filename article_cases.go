@@ -76,7 +76,7 @@ var ArticleCases = []ArticleCase{
 		screenshotMode: ScreenshotModeMarketBeat,
 	},
 	{name: "barchart.com", linkURL: "https://barchart.com/stocks/quotes/%s/overview", title: "Overview"},
-	{name: "gurufocus.com", linkURL: "https://gurufocus.com/stock/%s/summary"},
+	{name: "gurufocus.com", linkURL: "https://gurufocus.com/stock/%s/summary", title: "Overview"},
 	{name: "finasquare.com", linkURL: "https://www.finasquare.com/stocks/%s/company-info/overview", title: "Overview"},
 	{name: "stockrow.com", linkURL: "https://stockrow.com/%s", title: "Overview"},
 	{name: "stockanalysis.com", linkURL: "https://stockanalysis.com/stocks/%s/", title: "Overview"},
