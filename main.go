@@ -62,13 +62,13 @@ func main() {
 					ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.symbol), // from stockanalysis.com
 				}
 			} else {
-				description := fmt.Sprintf("%s #%s", articleCase.name, ticker.symbol)
+				title := articleCase.title
 				if articleCase.screenshotMode != "" {
-					description += " 🎁"
+					title += " 🎁"
 				}
 				result = &tb.ArticleResult{
-					Title:       articleCase.title,
-					Description: description,
+					Title:       title,
+					Description: fmt.Sprintf("%s #%s", articleCase.name, ticker.symbol),
 					HideURL:     true,
 					URL:         linkURL,
 				}
