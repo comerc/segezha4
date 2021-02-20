@@ -15,7 +15,7 @@ import (
 )
 
 // TODO: реализовать румтур
-// TODO: поиск по ticker.description
+// TODO: поиск по ticker.title
 // TODO: README
 // TODO: svg to png
 // TODO: добавить тайм-фрейм #BABA?15M
@@ -24,17 +24,6 @@ import (
 // TODO: не вставлять "to User" для simple comand mode
 
 func main() {
-	// b1 := true
-	// if b1 {
-	// 	log.Println("dev")
-	// 	return
-	// }
-	// dev := flag.Bool("dev", false, "dev mode")
-	// if dev != nil {
-	// 	log.Println(dev)
-	// 	return
-	// }
-
 	var (
 		port      = os.Getenv("PORT")
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
@@ -66,20 +55,20 @@ func main() {
 			var result *tb.ArticleResult
 			if i == 0 {
 				result = &tb.ArticleResult{
-					Title:       fmt.Sprintf("%s #%s", articleCase.name, ticker.symbol),
-					Description: ticker.description,
+					Title:       ticker.title,
+					Description: fmt.Sprintf("%s #%s", articleCase.name, ticker.symbol),
 					HideURL:     true,
 					URL:         linkURL,
 					ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.symbol), // from stockanalysis.com
 				}
 			} else {
-				title := fmt.Sprintf("%s #%s", articleCase.name, ticker.symbol)
+				description := fmt.Sprintf("%s #%s", articleCase.name, ticker.symbol)
 				if articleCase.screenshotMode != "" {
-					title += " 🎁"
+					description += " 🎁"
 				}
 				result = &tb.ArticleResult{
-					Title:       title,
-					Description: articleCase.description,
+					Title:       articleCase.title,
+					Description: description,
 					HideURL:     true,
 					URL:         linkURL,
 				}
@@ -259,7 +248,7 @@ func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, t
 		Caption: fmt.Sprintf(
 			`\#%s %s[%s](%s)`,
 			ticker.symbol,
-			by(escape(articleCase.description)),
+			by(escape(articleCase.title)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -285,7 +274,7 @@ func sendScreenshotForMarketBeat(b *tb.Bot, m *tb.Message, articleCase *ArticleC
 		Caption: fmt.Sprintf(
 			`\#%s %s[%s](%s) `,
 			ticker.symbol,
-			by(escape(articleCase.description)),
+			by(escape(articleCase.title)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -312,7 +301,7 @@ func sendScreenshotForImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, 
 		Caption: fmt.Sprintf(
 			`\#%s %s[%s](%s)`,
 			ticker.symbol,
-			by(escape(articleCase.description)),
+			by(escape(articleCase.title)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -338,7 +327,7 @@ func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticke
 		Caption: fmt.Sprintf(
 			`\#%s %s[%s](%s)`,
 			ticker.symbol,
-			by(escape(articleCase.description)),
+			by(escape(articleCase.title)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -358,16 +347,16 @@ func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticke
 }
 
 func sendLink(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
-	description := func() string {
+	title := func() string {
 		if articleCase.name == ArticleCases[0].name {
-			return ticker.description
+			return ticker.title
 		}
-		return articleCase.description
+		return articleCase.title
 	}()
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 	text := fmt.Sprintf(`\#%s %s[%s](%s)`,
 		ticker.symbol,
-		by(escape(description)),
+		by(escape(title)),
 		escape(articleCase.name),
 		linkURL,
 		// getUserLink(m.Sender),
