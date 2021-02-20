@@ -28,4 +28,10 @@ https://github.com/heroku/heroku-buildpack-google-chrome
 ## BUGS
 
 - "Bad Request: can't parse entities: Can't find end of Italic entity at byte offset 70 (400)"
-- \#AYX? не отдаёт скриншоты
+- при отсутствии тикера выдавать текстовое сообщение
+- marketbeat #BABA - только Institutional Ownership > надо подписывать графики
+
+## CHANGELOG
+
+- FIXED \#AYX? не отдаёт скриншоты
+- marketbeat #BABA - только Institutional Ownership > один график
