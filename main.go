@@ -116,15 +116,19 @@ func main() {
 				if ticker == nil {
 					continue
 				}
+				var result bool
 				switch articleCase.screenshotMode {
 				case ScreenshotModePage:
-					sendScreenshotForPage(b, m, articleCase, ticker)
+					result = sendScreenshotForPage(b, m, articleCase, ticker)
 				case ScreenshotModeImage:
-					sendImage(b, m, articleCase, ticker)
-					// sendScreenshotForImage(b, m, articleCase, ticker)
+					result = sendImage(b, m, articleCase, ticker)
+					// result = sendScreenshotForImage(b, m, articleCase, ticker)
 				case ScreenshotModeMarketBeat:
-					sendScreenshotForMarketBeat(b, m, articleCase, ticker)
+					result = sendScreenshotForMarketBeat(b, m, articleCase, ticker)
 				default:
+					result = false
+				}
+				if !result {
 					sendLink(b, m, articleCase, ticker)
 				}
 			}
@@ -144,41 +148,38 @@ func main() {
 			for _, match := range matches {
 				symbol := match[2]
 				mode := match[3]
+				log.Println(symbol + mode)
 				ticker := GetExactTicker(symbol)
 				if ticker == nil {
 					continue
 				}
+				var (
+					articleCase *ArticleCase
+					result      bool
+				)
 				// TODO: var modes map[string]myFunc https://golangbot.com/first-class-functions/
 				switch mode {
 				case "?!":
-					articleCase := GetExactArticleCase("shortvolume.com")
-					err := sendImage(b, m, articleCase, ticker)
-					if err != nil {
-						sendLink(b, m, articleCase, ticker)
-					}
-					log.Println(symbol + mode)
-					// 	articleCase := GetExactArticleCase("marketwatch.com")
-					// 	sendScreenshotForPage(b, m, articleCase, ticker)
-					// 	log.Println(symbol + mode)
-					// articleCase := GetExactArticleCase("shortvolume.com")
-					// sendScreenshotForImage(b, m, articleCase, ticker)
-					// log.Println(symbol + mode)
+					articleCase = GetExactArticleCase("shortvolume.com")
+					result = sendImage(b, m, articleCase, ticker)
+					// 	articleCase = GetExactArticleCase("marketwatch.com")
+					// 	result = sendScreenshotForPage(b, m, articleCase, ticker)
+					// articleCase = GetExactArticleCase("shortvolume.com")
+					// result = sendScreenshotForImage(b, m, articleCase, ticker)
 				case "?":
-					articleCase := GetExactArticleCase("stockscores.com")
-					err := sendImage(b, m, articleCase, ticker)
-					if err != nil {
-						sendLink(b, m, articleCase, ticker)
-					}
-					log.Println(symbol + mode)
-					// articleCase := GetExactArticleCase("stockscores.com")
-					// sendScreenshotForImage(b, m, articleCase, ticker)
-					// log.Println(symbol + mode)
+					articleCase = GetExactArticleCase("stockscores.com")
+					result = sendImage(b, m, articleCase, ticker)
+					// articleCase = GetExactArticleCase("stockscores.com")
+					// result = sendScreenshotForImage(b, m, articleCase, ticker)
 				case "!":
-					articleCase := GetExactArticleCase("finviz.com")
-					sendScreenshotForPage(b, m, articleCase, ticker)
-					log.Println(symbol + mode)
+					articleCase = GetExactArticleCase("finviz.com")
+					result = sendScreenshotForPage(b, m, articleCase, ticker)
 				default:
-					log.Println("Invalid simple comand mode")
+					articleCase = &ArticleCases[0]
+					result = false
+				}
+				if !result {
+					sendLink(b, m, articleCase, ticker)
 				}
 			}
 		}
@@ -240,9 +241,12 @@ func escape(s string) string {
 // 	return fmt.Sprintf("[%s](tg://user?id=%d)", u.FirstName, u.ID)
 // }
 
-func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
+func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 	screenshot := ss.MakeScreenshotForPage(linkURL, articleCase.x, articleCase.y, articleCase.width, articleCase.height)
+	if len(screenshot) == 0 {
+		return false
+	}
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
@@ -263,12 +267,17 @@ func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, t
 	)
 	if err != nil {
 		log.Println(err)
+		return false
 	}
+	return true
 }
 
-func sendScreenshotForMarketBeat(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
+func sendScreenshotForMarketBeat(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 	screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
+	if len(screenshot) == 0 {
+		return false
+	}
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
@@ -289,13 +298,18 @@ func sendScreenshotForMarketBeat(b *tb.Bot, m *tb.Message, articleCase *ArticleC
 	)
 	if err != nil {
 		log.Println(err)
+		return false
 	}
+	return true
 }
 
-func sendScreenshotForImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {
+func sendScreenshotForImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
 	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 	screenshot := ss.MakeScreenshotForImage(imageURL, articleCase.width, articleCase.height)
+	if len(screenshot) == 0 {
+		return false
+	}
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
@@ -316,10 +330,12 @@ func sendScreenshotForImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, 
 	)
 	if err != nil {
 		log.Println(err)
+		return false
 	}
+	return true
 }
 
-func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) error {
+func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
 	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol, time.Now().Unix())
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 	photo := &tb.Photo{
@@ -342,8 +358,9 @@ func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticke
 	)
 	if err != nil {
 		log.Println(err)
+		return false
 	}
-	return err
+	return true
 }
 
 func sendLink(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) {

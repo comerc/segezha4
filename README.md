@@ -29,9 +29,26 @@ https://github.com/heroku/heroku-buildpack-google-chrome
 
 - "Bad Request: can't parse entities: Can't find end of Italic entity at byte offset 70 (400)"
 - при отсутствии тикера выдавать текстовое сообщение
-- marketbeat #BABA - только Institutional Ownership > надо подписывать графики
+- marketbeat #BABA - только Institutional Ownership > надо подписывать графики и total
+- /info marketbeat.com M - Error R14 (Memory quota exceeded)
+- параллельно обрабатывать запросы на несколько бумажек или несколько на marketbeat
 
 ## CHANGELOG
 
 - FIXED \#AYX? не отдаёт скриншоты
 - marketbeat #BABA - только Institutional Ownership > один график
+
+## QUESTIONS
+
+- Зачем фигурные скобки? Видимо для параллельного кода
+
+```go
+{ // show time to resize
+tp := time.Now()
+// perform resizing
+res = scaleTo(src, dr, sc.Scaler)
+// report time to scaling to console
+log.Printf("scaling using %q takes %v time",
+sc.Name, time.Now().Sub(tp))
+}
+```

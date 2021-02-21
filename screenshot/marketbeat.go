@@ -52,10 +52,12 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 		if err != nil {
 			log.Println(err)
 		}
+		buf1 = nil
 		img2, _, err := image.Decode(bytes.NewReader(buf2))
 		if err != nil {
 			log.Println(err)
 		}
+		buf2 = nil
 		//starting position of the second image (bottom left)
 		sp2 := image.Point{0, img1.Bounds().Dy()}
 		//new rectangle for the second image
@@ -72,6 +74,7 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 			if err != nil {
 				log.Println(err)
 			}
+			buf1 = nil
 			src = img1
 		}
 		if len(buf2) > 0 {
@@ -79,6 +82,7 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 			if err != nil {
 				log.Println(err)
 			}
+			buf2 = nil
 			src = img2
 		}
 	}
@@ -90,6 +94,8 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 	if err := png.Encode(out, res); err != nil {
 		log.Println(err)
 	}
+	src = nil
+	res = nil
 	// var opt jpeg.Options
 	// opt.Quality = 85
 	// jpeg.Encode(out, rgba, &opt)
@@ -108,12 +114,28 @@ func makeScreenshot(ctx context.Context, linkSel, chartSel interface{}, res *[]b
 	if len(nodes) == 0 {
 		return nil
 	}
-	sel := fmt.Sprintf("%v > #svg > #yTextGroup > g.footnote", chartSel)
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.Click(linkSel, chromedp.NodeVisible),
 			chromedp.WaitReady(`body > div > footer`),
 			chromedp.WaitVisible(chartSel),
+		}
+	}()); err != nil {
+		return err
+	}
+	sel := fmt.Sprintf("%v > #svg > #yTextGroup > g.footnote", chartSel)
+	if err := chromedp.Run(ctx, func() chromedp.Tasks {
+		return chromedp.Tasks{
+			chromedp.Nodes(sel, &nodes, chromedp.AtLeast(0)),
+		}
+	}()); err != nil {
+		return err
+	}
+	if len(nodes) == 0 {
+		return nil
+	}
+	if err := chromedp.Run(ctx, func() chromedp.Tasks {
+		return chromedp.Tasks{
 			chromedp.SetAttributeValue(sel, "style", "display:none"),
 			chromedp.Screenshot(chartSel, res, chromedp.NodeVisible),
 		}
