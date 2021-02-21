@@ -21,7 +21,7 @@ import (
 // TODO: добавить тайм-фрейм #BABA?15M
 // TODO: добавить медленную скользящую #BABA?50EMA
 // TODO: #BABA?! - marketwatch
-// TODO: не вставлять "to User" для simple comand mode
+// TODO: не вставлять "to User" для simple command mode
 
 func main() {
 	var (
@@ -99,13 +99,13 @@ func main() {
 			arguments := strings.Split(payload, " ")
 			symbols := arguments[1:]
 			if len(symbols) == 0 {
-				log.Println("Empty symbols")
+				sendError(b, m, "Empty symbols")
 				return
 			}
 			articleCaseName := arguments[0]
 			articleCase := GetExactArticleCase(articleCaseName)
 			if articleCase == nil {
-				log.Println("Invalid command")
+				sendError(b, m, "Invalid command")
 				return
 			}
 			for _, symbol := range symbols {
@@ -114,6 +114,7 @@ func main() {
 				}
 				ticker := GetExactTicker(symbol)
 				if ticker == nil {
+					sendError(b, m, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
 					continue
 				}
 				var result bool
@@ -142,13 +143,13 @@ func main() {
 			// 	log.Println(err)
 			// }
 		} else {
-			// simple comand mode
+			// simple command mode
 			re := regexp.MustCompile(`(^|[ ])#([A-Za-z]+)(\?!|\?|!)`)
 			matches := re.FindAllStringSubmatch(m.Text, -1)
 			for _, match := range matches {
 				symbol := match[2]
 				mode := match[3]
-				log.Println(symbol + mode)
+				// log.Println(symbol + mode)
 				ticker := GetExactTicker(symbol)
 				if ticker == nil {
 					sendError(b, m, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
@@ -176,7 +177,7 @@ func main() {
 					articleCase = GetExactArticleCase("finviz.com")
 					result = sendScreenshotForPage(b, m, articleCase, ticker)
 				default:
-					log.Println("Invalid simple comand mode")
+					log.Println("Invalid simple command mode")
 					result = true
 				}
 				if !result {
