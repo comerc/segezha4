@@ -151,6 +151,7 @@ func main() {
 				log.Println(symbol + mode)
 				ticker := GetExactTicker(symbol)
 				if ticker == nil {
+					sendError(b, m, "Ticker not found")
 					continue
 				}
 				var (
@@ -175,8 +176,8 @@ func main() {
 					articleCase = GetExactArticleCase("finviz.com")
 					result = sendScreenshotForPage(b, m, articleCase, ticker)
 				default:
-					articleCase = &ArticleCases[0]
-					result = false
+					log.Println("Invalid simple comand mode")
+					result = true
 				}
 				if !result {
 					sendLink(b, m, articleCase, ticker)
@@ -378,6 +379,20 @@ func sendLink(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker
 		linkURL,
 		// getUserLink(m.Sender),
 	)
+	_, err := b.Send(
+		tb.ChatID(m.Chat.ID),
+		text,
+		&tb.SendOptions{
+			ParseMode:             tb.ModeMarkdownV2,
+			DisableWebPagePreview: true,
+		},
+	)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func sendError(b *tb.Bot, m *tb.Message, text string) {
 	_, err := b.Send(
 		tb.ChatID(m.Chat.ID),
 		text,
