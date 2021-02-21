@@ -32,7 +32,7 @@ type ArticleCase struct {
 
 // ArticleCases slice
 var ArticleCases = []ArticleCase{
-	{name: "tradingview.com", linkURL: "https://ru.tradingview.com/symbols/%s"},
+	{name: "tradingview.com", linkURL: "https://tradingview.com/symbols/%s"},
 	{name: "finviz.com", linkURL: "https://finviz.com/quote.ashx?t=%s",
 		description:    "Financial Visualizations",
 		screenshotMode: ScreenshotModePage,
