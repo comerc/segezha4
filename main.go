@@ -151,7 +151,7 @@ func main() {
 				log.Println(symbol + mode)
 				ticker := GetExactTicker(symbol)
 				if ticker == nil {
-					sendError(b, m, "Ticker not found")
+					sendError(b, m, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
 					continue
 				}
 				var (
