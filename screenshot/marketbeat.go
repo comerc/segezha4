@@ -113,6 +113,7 @@ func takeScreenshot(ctx context.Context, linkSel, chartSel interface{}, titleRes
 	titleSel := "#article > #form1 > #cphPrimaryContent_pnlCompany > #shareableArticle > div:nth-child(2) > div > div"
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
+			chromedp.SetAttributeValue(titleSel, "style", "padding:8px"),
 			chromedp.Screenshot(titleSel, titleRes, chromedp.NodeVisible),
 		}
 	}()); err != nil {
