@@ -28,8 +28,6 @@ https://github.com/heroku/heroku-buildpack-google-chrome
 ## BUGS
 
 - "Bad Request: can't parse entities: Can't find end of Italic entity at byte offset 70 (400)"
-- при отсутствии тикера выдавать текстовое сообщение
-- marketbeat #BABA - только Institutional Ownership > надо подписывать графики и total
 - /info marketbeat.com M - Error R14 (Memory quota exceeded)
 - параллельно обрабатывать запросы на несколько бумажек или несколько на marketbeat
 
@@ -37,6 +35,8 @@ https://github.com/heroku/heroku-buildpack-google-chrome
 
 - FIXED \#AYX? не отдаёт скриншоты
 - marketbeat #BABA - только Institutional Ownership > один график
+- при отсутствии тикера выдавать текстовое сообщение
+- marketbeat #BABA - только Institutional Ownership > надо подписывать графики и total
 
 ## QUESTIONS
 

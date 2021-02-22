@@ -21,7 +21,7 @@ import (
 // TODO: добавить тайм-фрейм #BABA?15M
 // TODO: добавить медленную скользящую #BABA?50EMA
 // TODO: #BABA?! - marketwatch
-// TODO: не вставлять "to User" для simple command mode
+// TODO: bold для тикеров
 
 func main() {
 	var (
@@ -254,7 +254,7 @@ func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, t
 		Caption: fmt.Sprintf(
 			`\#%s %s[%s](%s)`,
 			ticker.symbol,
-			by(escape(articleCase.description)),
+			escape(by(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -283,9 +283,9 @@ func sendScreenshotForMarketBeat(b *tb.Bot, m *tb.Message, articleCase *ArticleC
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s %s[%s](%s) `,
+			`\#%s %s[%s](%s)`,
 			ticker.symbol,
-			by(escape(articleCase.description)),
+			escape(by(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -317,7 +317,7 @@ func sendScreenshotForImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, 
 		Caption: fmt.Sprintf(
 			`\#%s %s[%s](%s)`,
 			ticker.symbol,
-			by(escape(articleCase.description)),
+			escape(by(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -345,7 +345,7 @@ func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticke
 		Caption: fmt.Sprintf(
 			`\#%s %s[%s](%s)`,
 			ticker.symbol,
-			by(escape(articleCase.description)),
+			escape(by(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -375,7 +375,7 @@ func sendLink(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 	text := fmt.Sprintf(`\#%s %s[%s](%s)`,
 		ticker.symbol,
-		by(escape(description)),
+		escape(by(description)),
 		escape(articleCase.name),
 		linkURL,
 		// getUserLink(m.Sender),
