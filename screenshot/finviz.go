@@ -16,16 +16,18 @@ import (
 func MakeScreenshotForFinviz(linkURL string) []byte {
 	ctx, cancel := chromedp.NewContext(context.Background())
 	defer cancel()
+	selChart := "body > div > #app > #chart > #charts"
+	selTable := "body > div.content > div.container > table.snapshot-table2"
 	var buf1, buf2 []byte
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.Emulate(device.IPadPro),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body"),
-			chromedp.SetAttributeValue("body > div > #app > #chart > #charts", "style", "padding:20px"),
-			chromedp.SetAttributeValue("body > div.content > div.container > table.snapshot-table2", "style", "padding:20px"),
-			chromedp.Screenshot("body > div > #app > #chart > #charts", &buf1, chromedp.NodeVisible),
-			chromedp.Screenshot("body > div.content > div.container > table.snapshot-table2", &buf2, chromedp.NodeVisible),
+			chromedp.SetAttributeValue(selChart, "style", "padding:20px"),
+			chromedp.Screenshot(selChart, &buf1, chromedp.NodeVisible),
+			chromedp.SetAttributeValue(selTable, "style", "padding:20px"),
+			chromedp.Screenshot(selTable, &buf2, chromedp.NodeVisible),
 		}
 	}()); err != nil {
 		log.Println(err)
