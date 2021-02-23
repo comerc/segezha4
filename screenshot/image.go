@@ -2,6 +2,8 @@ package screenshot
 
 import (
 	"context"
+	"image"
+	"image/png"
 	"log"
 
 	"github.com/chromedp/cdproto/emulation"
@@ -9,6 +11,11 @@ import (
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
 )
+
+func init() {
+	// image.RegisterFormat("jpeg", "jpeg", jpeg.Decode, jpeg.DecodeConfig)
+	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
+}
 
 // MakeScreenshotForImage description
 func MakeScreenshotForImage(linkURL string, width, height float64) []byte {

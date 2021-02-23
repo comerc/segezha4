@@ -15,11 +15,6 @@ import (
 	"github.com/nfnt/resize"
 )
 
-func init() {
-	// image.RegisterFormat("jpeg", "jpeg", jpeg.Decode, jpeg.DecodeConfig)
-	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
-}
-
 // MakeScreenshotForMarketBeat description
 func MakeScreenshotForMarketBeat(linkURL string) []byte {
 	ctx, cancel := chromedp.NewContext(context.Background())
@@ -36,21 +31,21 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 		log.Println(err)
 	}
 	var buf11, buf12 []byte
-	if err := takeScreenshot(ctx, "#liInsiderTrades > a", "#insiderChart", &buf11, &buf12); err != nil {
+	if err := takeScreenshotForMarketBeat(ctx, "#liInsiderTrades > a", "#insiderChart", &buf11, &buf12); err != nil {
 		log.Println(err)
 	}
 	var buf21, buf22 []byte
-	if err := takeScreenshot(ctx, "#liInstutionalOwnership > a", "#SECChart", &buf21, &buf22); err != nil {
+	if err := takeScreenshotForMarketBeat(ctx, "#liInstutionalOwnership > a", "#SECChart", &buf21, &buf22); err != nil {
 		log.Println(err)
 	}
 	var src1 image.Image
-	if err := glue(buf12, buf11, &src1); err != nil {
+	if err := glueForMarketBeat(buf12, buf11, &src1); err != nil {
 		log.Println(err)
 	}
 	buf11 = nil
 	buf12 = nil
 	var src2 image.Image
-	if err := glue(buf22, buf21, &src2); err != nil {
+	if err := glueForMarketBeat(buf22, buf21, &src2); err != nil {
 		log.Println(err)
 	}
 	buf21 = nil
@@ -60,7 +55,7 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 		return nil
 	}
 	if src1 != nil && src2 != nil {
-		glueImages(src1, src2, &src)
+		glueImagesForMarketBeat(src1, src2, &src)
 		src1 = nil
 		src2 = nil
 	} else {
@@ -89,7 +84,7 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 	return out.Bytes()
 }
 
-func takeScreenshot(ctx context.Context, linkSel, chartSel interface{}, titleRes, chartRes *[]byte) error {
+func takeScreenshotForMarketBeat(ctx context.Context, linkSel, chartSel interface{}, titleRes, chartRes *[]byte) error {
 	var nodes []*cdp.Node
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
@@ -141,7 +136,7 @@ func takeScreenshot(ctx context.Context, linkSel, chartSel interface{}, titleRes
 	return nil
 }
 
-func glue(buf1, buf2 []byte, src *image.Image) error {
+func glueForMarketBeat(buf1, buf2 []byte, src *image.Image) error {
 	if len(buf1) == 0 && len(buf2) == 0 {
 		return nil
 	}
@@ -156,7 +151,7 @@ func glue(buf1, buf2 []byte, src *image.Image) error {
 			return err
 		}
 		buf2 = nil
-		glueImages(img1, img2, src)
+		glueImagesForMarketBeat(img1, img2, src)
 	} else {
 		if len(buf1) > 0 {
 			img1, _, err := image.Decode(bytes.NewReader(buf1))
@@ -178,7 +173,7 @@ func glue(buf1, buf2 []byte, src *image.Image) error {
 	return nil
 }
 
-func glueImages(img1, img2 image.Image, src *image.Image) error {
+func glueImagesForMarketBeat(img1, img2 image.Image, src *image.Image) error {
 	//starting position of the second image (bottom left)
 	sp2 := image.Point{0, img1.Bounds().Dy()}
 	//new rectangle for the second image

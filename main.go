@@ -124,6 +124,8 @@ func main() {
 				case ScreenshotModeImage:
 					result = sendImage(b, m, articleCase, ticker)
 					// result = sendScreenshotForImage(b, m, articleCase, ticker)
+				case ScreenshotModeMarketWatch:
+					result = sendScreenshotForMarketWatch(b, m, articleCase, ticker)
 				case ScreenshotModeMarketBeat:
 					result = sendScreenshotForMarketBeat(b, m, articleCase, ticker)
 				default:
@@ -162,10 +164,10 @@ func main() {
 				// TODO: var modes map[string]myFunc https://golangbot.com/first-class-functions/
 				switch mode {
 				case "?!":
-					articleCase = GetExactArticleCase("shortvolume.com")
-					result = sendImage(b, m, articleCase, ticker)
-					// 	articleCase = GetExactArticleCase("marketwatch.com")
-					// 	result = sendScreenshotForPage(b, m, articleCase, ticker)
+					articleCase = GetExactArticleCase("marketwatch.com")
+					result = sendScreenshotForMarketWatch(b, m, articleCase, ticker)
+					// articleCase = GetExactArticleCase("shortvolume.com")
+					// result = sendImage(b, m, articleCase, ticker)
 					// articleCase = GetExactArticleCase("shortvolume.com")
 					// result = sendScreenshotForImage(b, m, articleCase, ticker)
 				case "?":
@@ -246,6 +248,37 @@ func escape(s string) string {
 func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 	screenshot := ss.MakeScreenshotForPage(linkURL, articleCase.x, articleCase.y, articleCase.width, articleCase.height)
+	if len(screenshot) == 0 {
+		return false
+	}
+	photo := &tb.Photo{
+		File: tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: fmt.Sprintf(
+			`\#%s %s[%s](%s)`,
+			ticker.symbol,
+			escape(by(articleCase.description)),
+			escape(articleCase.name),
+			linkURL,
+			// getUserLink(m.Sender),
+		),
+	}
+	_, err := b.Send(
+		tb.ChatID(m.Chat.ID),
+		photo,
+		&tb.SendOptions{
+			ParseMode: tb.ModeMarkdownV2,
+		},
+	)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	return true
+}
+
+func sendScreenshotForMarketWatch(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
+	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	screenshot := ss.MakeScreenshotForMarketWatch(linkURL)
 	if len(screenshot) == 0 {
 		return false
 	}

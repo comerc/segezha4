@@ -9,9 +9,10 @@ type ScreenshotMode = string
 
 // ScreenshotMode variants
 const (
-	ScreenshotModePage       ScreenshotMode = "Page"
-	ScreenshotModeImage      ScreenshotMode = "Image"
-	ScreenshotModeMarketBeat ScreenshotMode = "MarketBeat"
+	ScreenshotModePage        ScreenshotMode = "Page"
+	ScreenshotModeImage       ScreenshotMode = "Image"
+	ScreenshotModeMarketWatch ScreenshotMode = "MarketWatch"
+	ScreenshotModeMarketBeat  ScreenshotMode = "MarketBeat"
 )
 
 // ArticleCase struct
@@ -67,8 +68,8 @@ var ArticleCases = []ArticleCase{
 		// screenshotMode: ScreenshotModePage,
 	},
 	{name: "marketwatch.com", linkURL: "https://marketwatch.com/investing/stock/%s",
-		description: "Daily Price",
-		// screenshotMode: ScreenshotModePage,
+		description:    "Daily Price",
+		screenshotMode: ScreenshotModeMarketWatch,
 	}, // y: 345,
 	// height: 565,
 	{name: "marketbeat.com", linkURL: "https://marketbeat.com/stocks/%s",
