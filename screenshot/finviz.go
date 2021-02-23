@@ -22,6 +22,8 @@ func MakeScreenshotForFinviz(linkURL string) []byte {
 			chromedp.Emulate(device.KindleFireHDX),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body"),
+			chromedp.SetAttributeValue("body > div > #app > #chart > #charts", "style", "padding:0 8px"),
+			chromedp.SetAttributeValue("body > div.content > div.container > table.snapshot-table2", "style", "padding:0 8px"),
 			chromedp.Screenshot("body > div > #app > #chart > #charts", &buf1, chromedp.NodeVisible),
 			chromedp.Screenshot("body > div.content > div.container > table.snapshot-table2", &buf2, chromedp.NodeVisible),
 		}
