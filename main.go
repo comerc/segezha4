@@ -165,8 +165,8 @@ func main() {
 				switch mode {
 				case "?!":
 					articleCase = GetExactArticleCase("marketwatch.com")
-					// result = sendScreenshotForMarketWatch(b, m, articleCase, ticker)
-					result = sendScreenshotForPage(b, m, articleCase, ticker)
+					result = sendScreenshotForMarketWatch(b, m, articleCase, ticker)
+					// result = sendScreenshotForPage(b, m, articleCase, ticker)
 					// articleCase = GetExactArticleCase("shortvolume.com")
 					// result = sendImage(b, m, articleCase, ticker)
 					// articleCase = GetExactArticleCase("shortvolume.com")
