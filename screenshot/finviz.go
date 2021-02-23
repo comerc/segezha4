@@ -15,7 +15,7 @@ func MakeScreenshotForFinviz(linkURL string) []byte {
 	var buf []byte
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
-			chromedp.Emulate(device.IPad),
+			chromedp.Emulate(device.KindleFireHDX),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body"),
 			chromedp.Screenshot("#app > #chart > #charts", &buf, chromedp.NodeVisible),
