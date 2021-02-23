@@ -104,6 +104,25 @@ func takeScreenshotForMarketBeat(ctx context.Context, linkSel, chartSel interfac
 	}()); err != nil {
 		return err
 	}
+
+	selBar := "body > #mb-bar"
+	if err := chromedp.Run(ctx, func() chromedp.Tasks {
+		return chromedp.Tasks{
+			chromedp.Nodes(selBar, &nodes, chromedp.AtLeast(0)),
+		}
+	}()); err != nil {
+		return err
+	}
+	if len(nodes) == 1 {
+		if err := chromedp.Run(ctx, func() chromedp.Tasks {
+			return chromedp.Tasks{
+				chromedp.SetAttributeValue(selBar, "style", "display:none"),
+			}
+		}()); err != nil {
+			return err
+		}
+	}
+
 	titleSel := "#article > #form1 > #cphPrimaryContent_pnlCompany > #shareableArticle > div:nth-child(2) > div > div"
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
