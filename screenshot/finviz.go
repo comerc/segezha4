@@ -24,9 +24,7 @@ func MakeScreenshotForFinviz(linkURL string) []byte {
 			chromedp.Emulate(device.IPadPro),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body"),
-			chromedp.SetAttributeValue(selChart, "style", "margin:0 20px"),
 			chromedp.Screenshot(selChart, &buf1, chromedp.NodeVisible),
-			chromedp.SetAttributeValue(selTable, "style", "margin:0 20px"),
 			chromedp.Screenshot(selTable, &buf2, chromedp.NodeVisible),
 		}
 	}()); err != nil {
