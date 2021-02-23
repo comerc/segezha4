@@ -11,6 +11,7 @@ type ScreenshotMode = string
 const (
 	ScreenshotModePage        ScreenshotMode = "Page"
 	ScreenshotModeImage       ScreenshotMode = "Image"
+	ScreenshotModeFinviz      ScreenshotMode = "Finviz"
 	ScreenshotModeMarketWatch ScreenshotMode = "MarketWatch"
 	ScreenshotModeMarketBeat  ScreenshotMode = "MarketBeat"
 )
@@ -36,9 +37,9 @@ var ArticleCases = []ArticleCase{
 	{name: "tradingview.com", linkURL: "https://tradingview.com/symbols/%s"},
 	{name: "finviz.com", linkURL: "https://finviz.com/quote.ashx?t=%s",
 		description:    "Financial Visualizations",
-		screenshotMode: ScreenshotModePage,
-		y:              215,
-		height:         845 - 91, /* (banner) */
+		screenshotMode: ScreenshotModeFinviz,
+		// y:              215,
+		// height:         845 - 91, /* (banner) */
 	},
 	{name: "tipranks.com", linkURL: "https://tipranks.com/stocks/%s/forecast",
 		description:    "Stock Forecast & Price Targets",

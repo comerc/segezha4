@@ -124,6 +124,8 @@ func main() {
 				case ScreenshotModeImage:
 					result = sendImage(b, m, articleCase, ticker)
 					// result = sendScreenshotForImage(b, m, articleCase, ticker)
+				case ScreenshotModeFinviz:
+					result = sendScreenshotForFinviz(b, m, articleCase, ticker)
 				case ScreenshotModeMarketWatch:
 					result = sendScreenshotForMarketWatch(b, m, articleCase, ticker)
 				case ScreenshotModeMarketBeat:
@@ -178,7 +180,8 @@ func main() {
 					// result = sendScreenshotForImage(b, m, articleCase, ticker)
 				case "!":
 					articleCase = GetExactArticleCase("finviz.com")
-					result = sendScreenshotForPage(b, m, articleCase, ticker)
+					// result = sendScreenshotForPage(b, m, articleCase, ticker)
+					result = sendScreenshotForFinviz(b, m, articleCase, ticker)
 				default:
 					log.Println("Invalid simple command mode")
 					result = true
@@ -249,6 +252,37 @@ func escape(s string) string {
 func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 	screenshot := ss.MakeScreenshotForPage(linkURL, articleCase.x, articleCase.y, articleCase.width, articleCase.height)
+	if len(screenshot) == 0 {
+		return false
+	}
+	photo := &tb.Photo{
+		File: tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: fmt.Sprintf(
+			`\#%s %s[%s](%s)`,
+			ticker.symbol,
+			escape(by(articleCase.description)),
+			escape(articleCase.name),
+			linkURL,
+			// getUserLink(m.Sender),
+		),
+	}
+	_, err := b.Send(
+		tb.ChatID(m.Chat.ID),
+		photo,
+		&tb.SendOptions{
+			ParseMode: tb.ModeMarkdownV2,
+		},
+	)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	return true
+}
+
+func sendScreenshotForFinviz(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
+	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	screenshot := ss.MakeScreenshotForFinviz(linkURL)
 	if len(screenshot) == 0 {
 		return false
 	}
