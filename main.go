@@ -127,7 +127,11 @@ func main() {
 				case ScreenshotModeFinviz:
 					result = sendScreenshotForFinviz(b, m, articleCase, ticker)
 				case ScreenshotModeMarketWatch:
-					result = sendScreenshotForMarketWatch(b, m, articleCase, ticker)
+					if ticker.symbol == "BABA" || ticker.symbol == "TAK" || ticker.symbol == "TSM" || ticker.symbol == "BIDU" {
+						result = false
+					} else {
+						result = sendScreenshotForMarketWatch(b, m, articleCase, ticker)
+					}
 				case ScreenshotModeMarketBeat:
 					result = sendScreenshotForMarketBeat(b, m, articleCase, ticker)
 				default:
@@ -166,8 +170,12 @@ func main() {
 				// TODO: var modes map[string]myFunc https://golangbot.com/first-class-functions/
 				switch mode {
 				case "?!":
-					articleCase = GetExactArticleCase("marketwatch.com")
-					result = sendScreenshotForMarketWatch(b, m, articleCase, ticker)
+					if ticker.symbol == "BABA" || ticker.symbol == "TAK" || ticker.symbol == "TSM" || ticker.symbol == "BIDU" {
+						result = false
+					} else {
+						articleCase = GetExactArticleCase("marketwatch.com")
+						result = sendScreenshotForMarketWatch(b, m, articleCase, ticker)
+					}
 					// result = sendScreenshotForPage(b, m, articleCase, ticker)
 					// articleCase = GetExactArticleCase("shortvolume.com")
 					// result = sendImage(b, m, articleCase, ticker)
