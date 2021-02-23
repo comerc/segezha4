@@ -273,6 +273,8 @@ func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, t
 			ParseMode: tb.ModeMarkdownV2,
 		},
 	)
+	screenshot = nil
+	photo = nil
 	if err != nil {
 		log.Println(err)
 		return false
@@ -304,6 +306,8 @@ func sendScreenshotForFinviz(b *tb.Bot, m *tb.Message, articleCase *ArticleCase,
 			ParseMode: tb.ModeMarkdownV2,
 		},
 	)
+	screenshot = nil
+	photo = nil
 	if err != nil {
 		log.Println(err)
 		return false
@@ -335,6 +339,8 @@ func sendScreenshotForMarketWatch(b *tb.Bot, m *tb.Message, articleCase *Article
 			ParseMode: tb.ModeMarkdownV2,
 		},
 	)
+	screenshot = nil
+	photo = nil
 	if err != nil {
 		log.Println(err)
 		return false
@@ -366,6 +372,8 @@ func sendScreenshotForMarketBeat(b *tb.Bot, m *tb.Message, articleCase *ArticleC
 			ParseMode: tb.ModeMarkdownV2,
 		},
 	)
+	screenshot = nil
+	photo = nil
 	if err != nil {
 		log.Println(err)
 		return false
@@ -398,6 +406,8 @@ func sendScreenshotForImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, 
 			ParseMode: tb.ModeMarkdownV2,
 		},
 	)
+	screenshot = nil
+	photo = nil
 	if err != nil {
 		log.Println(err)
 		return false
@@ -426,6 +436,7 @@ func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticke
 			ParseMode: tb.ModeMarkdownV2,
 		},
 	)
+	photo = nil
 	if err != nil {
 		log.Println(err)
 		return false
