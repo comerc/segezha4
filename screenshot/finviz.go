@@ -71,6 +71,7 @@ func glueForFinviz(buf1, buf2, buf3 []byte, src *image.Image) error {
 		return err
 	}
 	buf3 = nil
+	// TODO: glueImages3
 	glueImages(img1, img2, &img3)
 	glueImages(img3, img4, src)
 	img1 = nil

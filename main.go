@@ -14,14 +14,15 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: кнопки под полем ввода в приватном чате для: inline mode, help, search & all,
+// TODO: marketwatch для иностранных акций
+// TODO: bold для тикеров
 // TODO: реализовать румтур
 // TODO: поиск по ticker.title
 // TODO: README
 // TODO: svg to png
 // TODO: добавить тайм-фрейм #BABA?15M
 // TODO: добавить медленную скользящую #BABA?50EMA
-// TODO: #BABA?! - marketwatch
-// TODO: bold для тикеров
 
 func main() {
 	var (
@@ -134,6 +135,8 @@ func main() {
 					}
 				case ScreenshotModeMarketBeat:
 					result = sendScreenshotForMarketBeat(b, m, articleCase, ticker)
+				case ScreenshotModeCathiesArk:
+					result = sendScreenshotForCathiesArk(b, m, articleCase, ticker)
 				default:
 					result = false
 				}
@@ -359,6 +362,39 @@ func sendScreenshotForMarketWatch(b *tb.Bot, m *tb.Message, articleCase *Article
 func sendScreenshotForMarketBeat(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
 	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
 	screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
+	if len(screenshot) == 0 {
+		return false
+	}
+	photo := &tb.Photo{
+		File: tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: fmt.Sprintf(
+			`\#%s %s[%s](%s)`,
+			ticker.symbol,
+			escape(by(articleCase.description)),
+			escape(articleCase.name),
+			linkURL,
+			// getUserLink(m.Sender),
+		),
+	}
+	_, err := b.Send(
+		tb.ChatID(m.Chat.ID),
+		photo,
+		&tb.SendOptions{
+			ParseMode: tb.ModeMarkdownV2,
+		},
+	)
+	screenshot = nil
+	photo = nil
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	return true
+}
+
+func sendScreenshotForCathiesArk(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
+	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	screenshot := ss.MakeScreenshotForCathiesArk(linkURL)
 	if len(screenshot) == 0 {
 		return false
 	}

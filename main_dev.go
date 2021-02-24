@@ -12,14 +12,16 @@ func _main() {
 	// linkURL := "https://finviz.com/quote.ashx?t=TSLA"
 	// buf := ss.MakeScreenshotForFinviz(linkURL)
 
-	// linkURL := "https://marketwatch.com/investing/stock/GS"
+	// linkURL := "https://marketwatch.com/investing/stock/BABA"
 	// // linkURL := "https://tipranks.com/stocks/ZM/forecast"
 	// buf := ss.MakeScreenshotForMarketWatch(linkURL)
 
 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
 	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
-	linkURL := "https://www.marketbeat.com/stocks/TSLA"
-	buf := ss.MakeScreenshotForMarketBeat(linkURL)
+	// linkURL := "https://www.marketbeat.com/stocks/TSLA"
+	// buf := ss.MakeScreenshotForMarketBeat(linkURL)
+	linkURL := "https://cathiesark.com/ark-combined-holdings-of-TSLA"
+	buf := ss.MakeScreenshotForCathiesArk(linkURL)
 	if len(buf) == 0 {
 		log.Println("exit buf == 0")
 		return

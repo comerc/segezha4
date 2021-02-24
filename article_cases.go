@@ -14,6 +14,7 @@ const (
 	ScreenshotModeFinviz      ScreenshotMode = "Finviz"
 	ScreenshotModeMarketWatch ScreenshotMode = "MarketWatch"
 	ScreenshotModeMarketBeat  ScreenshotMode = "MarketBeat"
+	ScreenshotModeCathiesArk  ScreenshotMode = "CathiesArk"
 )
 
 // ArticleCase struct
@@ -41,13 +42,9 @@ var ArticleCases = []ArticleCase{
 		// y:              215,
 		// height:         845 - 91, /* (banner) */
 	},
-	{name: "tipranks.com", linkURL: "https://tipranks.com/stocks/%s/forecast",
-		description:    "Stock Forecast & Price Targets",
-		screenshotMode: ScreenshotModePage,
-		x:              64,
-		y:              170,
-		width:          800 - 64,
-		height:         913,
+	{name: "cathiesark.com", linkURL: "https://cathiesark.com/ark-combined-holdings-of-%s",
+		description:    "ARK Invest Fund Holdings",
+		screenshotMode: ScreenshotModeCathiesArk,
 	},
 	{name: "stockscores.com", linkURL: "https://stockscores.com/charts/charts/?ticker=%s",
 		description:    "Technical Analysis",
@@ -64,10 +61,6 @@ var ArticleCases = []ArticleCase{
 		// height:         600,
 		imageURL: "https://shortvolume.com/chart_engine/draw_chart.php?Symbol=%s&TimeRange=100&noCache=%d",
 	},
-	{name: "cathiesark.com", linkURL: "https://cathiesark.com/ark-combined-holdings-of-%s",
-		description: "ARK Invest Fund Holdings",
-		// screenshotMode: ScreenshotModePage,
-	},
 	{name: "marketwatch.com", linkURL: "https://marketwatch.com/investing/stock/%s",
 		description:    "Daily Price",
 		screenshotMode: ScreenshotModeMarketWatch,
@@ -76,6 +69,14 @@ var ArticleCases = []ArticleCase{
 	{name: "marketbeat.com", linkURL: "https://marketbeat.com/stocks/%s",
 		description:    "Insider Trades & Institutional Ownership",
 		screenshotMode: ScreenshotModeMarketBeat,
+	},
+	{name: "tipranks.com", linkURL: "https://tipranks.com/stocks/%s/forecast",
+		description:    "Stock Forecast & Price Targets",
+		screenshotMode: ScreenshotModePage,
+		x:              64,
+		y:              170,
+		width:          800 - 64,
+		height:         913,
 	},
 	{name: "barchart.com", linkURL: "https://barchart.com/stocks/quotes/%s/overview", description: "Overview"},
 	{name: "gurufocus.com", linkURL: "https://gurufocus.com/stock/%s/summary", description: "Overview"},
