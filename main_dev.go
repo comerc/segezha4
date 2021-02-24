@@ -7,7 +7,7 @@ import (
 	ss "github.com/comerc/segezha4/screenshot"
 )
 
-func main() {
+func _main() {
 
 	// linkURL := "https://finviz.com/quote.ashx?t=TSLA"
 	// buf := ss.MakeScreenshotForFinviz(linkURL)
