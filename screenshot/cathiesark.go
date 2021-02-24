@@ -23,7 +23,7 @@ func MakeScreenshotForCathiesArk(linkURL string) []byte {
 	sel3 := "body main div.ant-row.sectionContainer___plkQX:nth-child(3) > div > div > div.recharts-responsive-container > div.recharts-wrapper"
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
-			chromedp.Emulate(device.IPadlandscape),
+			chromedp.Emulate(device.IPadProlandscape),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body"),
 			chromedp.SetAttributeValue("body main", "style", ""),
