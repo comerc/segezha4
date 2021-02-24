@@ -22,7 +22,7 @@ import (
 // TODO: README
 // TODO: svg to png
 // TODO: добавить тайм-фрейм #BABA?15M
-// TODO: добавить медленную скользящую #BABA?50EMA
+// TODO: добавить медленную скользящую #BABA?50EMA / 100EMA / 200EMA
 
 func main() {
 	var (

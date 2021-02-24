@@ -9,6 +9,7 @@ import (
 
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
+	"github.com/nfnt/resize"
 )
 
 // MakeScreenshotForFinviz description
@@ -43,14 +44,14 @@ func MakeScreenshotForFinviz(linkURL string) []byte {
 	buf3 = nil
 	// resize to width 800 using Bicubic resampling
 	// and preserve aspect ratio
-	// res := resize.Resize(800, 0, src, resize.Bicubic)
+	res := resize.Resize(800, 0, src, resize.Bicubic)
 	// encode
 	out := &bytes.Buffer{}
-	if err := png.Encode(out, src); err != nil {
+	if err := png.Encode(out, res); err != nil {
 		log.Println(err)
 	}
 	src = nil
-	// res = nil
+	res = nil
 	return out.Bytes()
 }
 
