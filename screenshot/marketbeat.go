@@ -95,12 +95,15 @@ func takeScreenshotForMarketBeat(ctx context.Context, linkSel, chartSel interfac
 	if len(nodes) == 0 {
 		return nil
 	}
+	pnlAdSenseHeader := "#pnlAdSenseHeader"
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.Click(linkSel, chromedp.NodeVisible),
 			chromedp.WaitReady(`body > div > footer`),
 			// chromedp.WaitVisible(chartSel),
-			chromedp.ScrollIntoView(chartSel),
+			// chromedp.ScrollIntoView(chartSel),
+			chromedp.SetAttributeValue(pnlAdSenseHeader, "style", "display:none"),
+			chromedp.WaitNotVisible(pnlAdSenseHeader),
 		}
 	}()); err != nil {
 		return err
