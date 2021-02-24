@@ -17,7 +17,7 @@ func MakeScreenshotForFinviz(linkURL string) []byte {
 	ctx, cancel := chromedp.NewContext(context.Background())
 	defer cancel()
 	selChart := "body > div > #app > #chart > #charts"
-	selTitle := "body > div.content > div.container table.fullview-title"
+	selTitle := "body > div.content > div.container table.fullview-title > tbody"
 	selTable := "body > div.content > div.container > table.snapshot-table2"
 	var buf1, buf2, buf3 []byte
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
@@ -25,7 +25,6 @@ func MakeScreenshotForFinviz(linkURL string) []byte {
 			chromedp.Emulate(device.IPadPro),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body"),
-			chromedp.SetAttributeValue(selTitle+" div", "style", "display:none"),
 			chromedp.Screenshot(selChart, &buf1, chromedp.NodeVisible),
 			chromedp.Screenshot(selTitle, &buf2, chromedp.NodeVisible),
 			chromedp.Screenshot(selTable, &buf3, chromedp.NodeVisible),
