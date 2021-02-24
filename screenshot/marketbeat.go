@@ -7,7 +7,6 @@ import (
 	"image"
 	"image/png"
 	"log"
-	"time"
 
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/chromedp"
@@ -101,7 +100,7 @@ func takeScreenshotForMarketBeat(ctx context.Context, linkSel, chartSel interfac
 			chromedp.Click(linkSel, chromedp.NodeVisible),
 			chromedp.WaitReady(`body > div > footer`),
 			// chromedp.WaitVisible(chartSel),
-			chromedp.Sleep(4 * time.Second),
+			chromedp.ScrollIntoView(chartSel),
 		}
 	}()); err != nil {
 		return err
