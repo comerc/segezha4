@@ -21,7 +21,8 @@ func _main() {
 	// buf := ss.MakeScreenshotForMarketBeat(linkURL)
 	// linkURL := "https://cathiesark.com/ark-combined-holdings-of-BABA"
 	// buf := ss.MakeScreenshotForCathiesArk(linkURL)
-	buf := ss.MakeScreenshotForFinvizMap()
+	linkURL := "https://finviz.com/map.ashx?t=sec"
+	buf := ss.MakeScreenshotForFinvizMap(linkURL)
 	if len(buf) == 0 {
 		log.Println("exit buf == 0")
 		return
