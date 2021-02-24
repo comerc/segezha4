@@ -7,7 +7,7 @@ import (
 	ss "github.com/comerc/segezha4/screenshot"
 )
 
-func _main() {
+func main() {
 
 	// linkURL := "https://finviz.com/quote.ashx?t=TSLA"
 	// buf := ss.MakeScreenshotForFinviz(linkURL)
@@ -20,7 +20,7 @@ func _main() {
 	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
 	// linkURL := "https://www.marketbeat.com/stocks/TSLA"
 	// buf := ss.MakeScreenshotForMarketBeat(linkURL)
-	linkURL := "https://cathiesark.com/ark-combined-holdings-of-TSLA"
+	linkURL := "https://cathiesark.com/ark-combined-holdings-of-BABA"
 	buf := ss.MakeScreenshotForCathiesArk(linkURL)
 	if len(buf) == 0 {
 		log.Println("exit buf == 0")

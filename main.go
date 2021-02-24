@@ -24,7 +24,7 @@ import (
 // TODO: добавить тайм-фрейм #BABA?15M
 // TODO: добавить медленную скользящую #BABA?50EMA
 
-func main() {
+func _main() {
 	var (
 		port      = os.Getenv("PORT")
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
