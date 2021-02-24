@@ -552,8 +552,11 @@ func backgroundTask(b *tb.Bot, chatID int64) {
 	ticker := time.NewTicker(1 * time.Second)
 	for t := range ticker.C {
 		fmt.Println("Tick at", t.Minute(), t.Minute()%10, t.Second())
-		if t.Minute()%10 == 0 && t.Second() == 4 {
-			sendFinvizMap(b, chatID)
+		// t.Minute()%10 == 0 &&
+		if t.Second() == 4 {
+			if sendFinvizMap(b, chatID) {
+				fmt.Println("Send map")
+			}
 		}
 	}
 }
