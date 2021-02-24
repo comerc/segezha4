@@ -7,7 +7,6 @@ import (
 	"image"
 	"image/png"
 	"log"
-	"time"
 
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/chromedp"
@@ -118,7 +117,6 @@ func takeScreenshotForMarketBeat(ctx context.Context, linkSel, chartSel interfac
 			return chromedp.Tasks{
 				chromedp.SetAttributeValue(selBar, "style", "display:none"),
 				chromedp.WaitNotVisible(selBar),
-				chromedp.Sleep(1 * time.Second),
 			}
 		}()); err != nil {
 			return err
