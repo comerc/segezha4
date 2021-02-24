@@ -209,7 +209,7 @@ func main() {
 	go backgroundTask(b, int64(strToInt(chatID)))
 	// This print statement will be executed before
 	// the first `tock` prints in the console
-	fmt.Println("The rest of my application can continue")
+	log.Println("The rest of my application can continue")
 	// here we use an empty select{} in order to keep
 	// our main function alive indefinitely as it would
 	// complete before our backgroundTask has a chance
@@ -551,11 +551,11 @@ func by(s string) string {
 func backgroundTask(b *tb.Bot, chatID int64) {
 	ticker := time.NewTicker(1 * time.Second)
 	for t := range ticker.C {
-		fmt.Println("Tick at", t.Minute(), t.Minute()%10, t.Second())
+		log.Println("Tick at", t.Minute(), t.Minute()%10, t.Second())
 		// t.Minute()%10 == 0 &&
 		if t.Second() == 4 {
 			if sendFinvizMap(b, chatID) {
-				fmt.Println("Send map")
+				log.Println("Send map")
 			}
 		}
 	}
@@ -594,7 +594,7 @@ func sendFinvizMap(b *tb.Bot, chatID int64) bool {
 func strToInt(s string) int {
 	n, err := strconv.Atoi(s)
 	if err != nil {
-		fmt.Println(s, "is not an integer.")
+		log.Println(s, "is not an integer.")
 		return 0
 	}
 	return n
