@@ -99,7 +99,7 @@ func takeScreenshotForMarketBeat(ctx context.Context, linkSel, chartSel interfac
 		return chromedp.Tasks{
 			chromedp.Click(linkSel, chromedp.NodeVisible),
 			chromedp.WaitReady(`body > div > footer`),
-			chromedp.WaitVisible(chartSel),
+			// chromedp.WaitVisible(chartSel),
 		}
 	}()); err != nil {
 		return err
@@ -127,6 +127,7 @@ func takeScreenshotForMarketBeat(ctx context.Context, linkSel, chartSel interfac
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.SetAttributeValue(titleSel, "style", "padding:8px"),
+			chromedp.WaitVisible(titleSel),
 			chromedp.Screenshot(titleSel, titleRes, chromedp.NodeVisible),
 		}
 	}()); err != nil {
@@ -146,6 +147,7 @@ func takeScreenshotForMarketBeat(ctx context.Context, linkSel, chartSel interfac
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.SetAttributeValue(sel, "style", "display:none"),
+			chromedp.WaitVisible(chartSel),
 			chromedp.Screenshot(chartSel, chartRes, chromedp.NodeVisible),
 		}
 	}()); err != nil {
