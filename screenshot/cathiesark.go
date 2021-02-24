@@ -9,7 +9,7 @@ import (
 	"github.com/chromedp/chromedp/device"
 )
 
-// MakeScreenshotForCathiesark description
+// MakeScreenshotForCathiesArk description
 func MakeScreenshotForCathiesArk(linkURL string) []byte {
 	ctx, cancel := chromedp.NewContext(context.Background())
 	defer cancel()
@@ -22,7 +22,7 @@ func MakeScreenshotForCathiesArk(linkURL string) []byte {
 			chromedp.Emulate(device.IPadProlandscape),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body"),
-			chromedp.Sleep(2 * time.Second),
+			chromedp.Sleep(4 * time.Second),
 			chromedp.SetAttributeValue(sel1, "style", "display:none"),
 			chromedp.SetAttributeValue(sel2, "style", "display:none"),
 			chromedp.SetAttributeValue(sel3+" svg > g:nth-child(4)", "style", "display:none"),
