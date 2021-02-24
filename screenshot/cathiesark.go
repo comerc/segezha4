@@ -22,7 +22,7 @@ func MakeScreenshotForCathiesArk(linkURL string) []byte {
 			chromedp.Emulate(device.IPadProlandscape),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body"),
-			chromedp.Sleep(4 * time.Second),
+			chromedp.Sleep(8 * time.Second),
 			chromedp.SetAttributeValue(sel1, "style", "display:none"),
 			chromedp.SetAttributeValue(sel2, "style", "display:none"),
 			chromedp.SetAttributeValue(sel3+" svg > g:nth-child(4) > g", "style", "display:none"),
