@@ -39,13 +39,13 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 		log.Println(err)
 	}
 	var src1 image.Image
-	if err := glueForMarketBeat(buf11, buf12, &src1); err != nil {
+	if err := glueForMarketBeat(buf12, buf11, &src1); err != nil {
 		log.Println(err)
 	}
 	buf11 = nil
 	buf12 = nil
 	var src2 image.Image
-	if err := glueForMarketBeat(buf21, buf22, &src2); err != nil {
+	if err := glueForMarketBeat(buf22, buf21, &src2); err != nil {
 		log.Println(err)
 	}
 	buf21 = nil
