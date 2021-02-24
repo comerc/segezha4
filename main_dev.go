@@ -8,7 +8,6 @@ import (
 )
 
 func _main() {
-
 	// linkURL := "https://finviz.com/quote.ashx?t=TSLA"
 	// buf := ss.MakeScreenshotForFinviz(linkURL)
 
@@ -20,8 +19,9 @@ func _main() {
 	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
 	// linkURL := "https://www.marketbeat.com/stocks/TSLA"
 	// buf := ss.MakeScreenshotForMarketBeat(linkURL)
-	linkURL := "https://cathiesark.com/ark-combined-holdings-of-BABA"
-	buf := ss.MakeScreenshotForCathiesArk(linkURL)
+	// linkURL := "https://cathiesark.com/ark-combined-holdings-of-BABA"
+	// buf := ss.MakeScreenshotForCathiesArk(linkURL)
+	buf := ss.MakeScreenshotForFinvizMap()
 	if len(buf) == 0 {
 		log.Println("exit buf == 0")
 		return

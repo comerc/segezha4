@@ -23,12 +23,14 @@ import (
 // TODO: svg to png
 // TODO: добавить тайм-фрейм #BABA?15M
 // TODO: добавить медленную скользящую #BABA?50EMA / 100EMA / 200EMA
+// TODO: параллельная обрарботка https://gobyexample.ru/worker-pools.html
 
 func main() {
 	var (
 		port      = os.Getenv("PORT")
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
 		token     = os.Getenv("TOKEN")      // you must add it to your config vars
+		chatID    = os.Getenv("CHAT_ID")    // you must add it to your config vars
 	)
 	webhook := &tb.Webhook{
 		Listen:   ":" + port,
@@ -204,6 +206,15 @@ func main() {
 		}
 	})
 	b.Start()
+	go backgroundTask(b, int64(strToInt(chatID)))
+	// This print statement will be executed before
+	// the first `tock` prints in the console
+	fmt.Println("The rest of my application can continue")
+	// here we use an empty select{} in order to keep
+	// our main function alive indefinitely as it would
+	// complete before our backgroundTask has a chance
+	// to execute if we didn't.
+	select {}
 }
 
 func contains(slice []string, search string) bool {
@@ -535,4 +546,53 @@ func by(s string) string {
 		return "by "
 	}
 	return s + " by "
+}
+
+func backgroundTask(b *tb.Bot, chatID int64) {
+	ticker := time.NewTicker(1 * time.Second)
+	for t := range ticker.C {
+		fmt.Println("Tick at", t.Minute(), t.Minute()%10, t.Second())
+		if t.Minute()%10 == 0 && t.Second() == 4 {
+			sendFinvizMap(b, chatID)
+		}
+	}
+}
+
+func sendFinvizMap(b *tb.Bot, chatID int64) bool {
+	linkURL := "https://finviz.com/map.ashx?t=sec"
+	screenshot := ss.MakeScreenshotForFinvizMap(linkURL)
+	if len(screenshot) == 0 {
+		return false
+	}
+	photo := &tb.Photo{
+		File: tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: fmt.Sprintf(
+			`%s[%s](%s)`,
+			escape(by("Map")),
+			escape("finviz.com"),
+			linkURL,
+		),
+	}
+	_, err := b.Send(
+		tb.ChatID(chatID),
+		photo,
+		&tb.SendOptions{
+			ParseMode: tb.ModeMarkdownV2,
+		},
+	)
+	photo = nil
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	return true
+}
+
+func strToInt(s string) int {
+	n, err := strconv.Atoi(s)
+	if err != nil {
+		fmt.Println(s, "is not an integer.")
+		return 0
+	}
+	return n
 }
