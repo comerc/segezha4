@@ -33,7 +33,7 @@ func MakeScreenshotForCathiesArk(linkURL string) []byte {
 			chromedp.SetAttributeValue(sel1, "style", "display:none"),
 			chromedp.SetAttributeValue(sel2, "style", "display:none"),
 			chromedp.SetAttributeValue(sel3+" > svg > g:nth-child(4) > g", "style", "display:none"),
-			chromedp.SetAttributeValue(sel3+" > div.recharts-legend-wrapper", "style", "display:none"),
+			// chromedp.SetAttributeValue(sel3+" > div.recharts-legend-wrapper", "style", "display:none"),
 			chromedp.Sleep(8 * time.Second),
 			chromedp.SetAttributeValue("body > div > div.ant-notification", "style", "display:none"),
 			chromedp.Screenshot(sel3, &buf2, chromedp.NodeVisible),
