@@ -96,9 +96,10 @@ func main() {
 	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
 		log.Println(m.Text)
-		if m.Text == "/map" {
-			sendFinvizMap(b, m.Chat.ID)
-		} else if strings.HasPrefix(m.Text, "/info ") {
+		// if m.Text == "/map" {
+		// 	sendFinvizMap(b, m.Chat.ID)
+		// } else
+		if strings.HasPrefix(m.Text, "/info ") {
 			re := regexp.MustCompile(",")
 			payload := re.ReplaceAllString(m.Payload, " ")
 			arguments := strings.Split(payload, " ")
