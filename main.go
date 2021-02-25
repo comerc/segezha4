@@ -30,7 +30,7 @@ func main() {
 		port      = os.Getenv("PORT")
 		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
 		token     = os.Getenv("TOKEN")      // you must add it to your config vars
-		chatID    = os.Getenv("CHAT_ID")    // you must add it to your config vars
+		// chatID    = os.Getenv("CHAT_ID")    // you must add it to your config vars
 	)
 	webhook := &tb.Webhook{
 		Listen:   ":" + port,
@@ -96,7 +96,9 @@ func main() {
 	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
 		log.Println(m.Text)
-		if strings.HasPrefix(m.Text, "/info ") {
+		if m.Text == "/map" {
+			sendFinvizMap(b, m.Chat.ID)
+		} else if strings.HasPrefix(m.Text, "/info ") {
 			re := regexp.MustCompile(",")
 			payload := re.ReplaceAllString(m.Payload, " ")
 			arguments := strings.Split(payload, " ")
@@ -206,15 +208,15 @@ func main() {
 		}
 	})
 	b.Start()
-	go backgroundTask(b, int64(strToInt(chatID)))
-	// This print statement will be executed before
-	// the first `tock` prints in the console
-	log.Println("The rest of my application can continue")
-	// here we use an empty select{} in order to keep
-	// our main function alive indefinitely as it would
-	// complete before our backgroundTask has a chance
-	// to execute if we didn't.
-	select {}
+	// go backgroundTask(b, int64(strToInt(chatID)))
+	// // This print statement will be executed before
+	// // the first `tock` prints in the console
+	// log.Println("The rest of my application can continue")
+	// // here we use an empty select{} in order to keep
+	// // our main function alive indefinitely as it would
+	// // complete before our backgroundTask has a chance
+	// // to execute if we didn't.
+	// select {}
 }
 
 func contains(slice []string, search string) bool {
@@ -548,18 +550,18 @@ func by(s string) string {
 	return s + " by "
 }
 
-func backgroundTask(b *tb.Bot, chatID int64) {
-	ticker := time.NewTicker(1 * time.Second)
-	for t := range ticker.C {
-		log.Println("Tick at", t.Minute(), t.Minute()%10, t.Second())
-		// t.Minute()%10 == 0 &&
-		if t.Second() == 4 {
-			if sendFinvizMap(b, chatID) {
-				log.Println("Send map")
-			}
-		}
-	}
-}
+// func backgroundTask(b *tb.Bot, chatID int64) {
+// 	ticker := time.NewTicker(1 * time.Second)
+// 	for t := range ticker.C {
+// 		log.Println("Tick at", t.Minute(), t.Minute()%10, t.Second())
+// 		// t.Minute()%10 == 0 &&
+// 		if t.Second() == 4 {
+// 			if sendFinvizMap(b, chatID) {
+// 				log.Println("Send map")
+// 			}
+// 		}
+// 	}
+// }
 
 func sendFinvizMap(b *tb.Bot, chatID int64) bool {
 	linkURL := "https://finviz.com/map.ashx?t=sec"
