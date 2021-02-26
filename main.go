@@ -24,6 +24,9 @@ import (
 // TODO: добавить тайм-фрейм #BABA?15M
 // TODO: добавить медленную скользящую #BABA?50EMA / 100EMA / 200EMA
 // TODO: параллельная обрарботка https://gobyexample.ru/worker-pools.html
+// TODO: добавить ETF, например ARKK
+// TODO: Добавить биток GBTC
+// TODO: https://stockcharts.com/
 
 func main() {
 	var (
