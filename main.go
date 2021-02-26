@@ -25,8 +25,9 @@ import (
 // TODO: добавить медленную скользящую #BABA?50EMA / 100EMA / 200EMA
 // TODO: параллельная обрарботка https://gobyexample.ru/worker-pools.html
 // TODO: добавить ETF, например ARKK
-// TODO: Добавить биток GBTC
-// TODO: https://stockcharts.com/
+// TODO: добавить биток GBTC
+// TODO: добавить https://stockcharts.com/
+// TODO: не успевает загрузить картинку tipranks.com (показывает колёсики)
 
 func main() {
 	var (
