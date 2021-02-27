@@ -15,7 +15,6 @@ import (
 )
 
 // TODO: кнопки под полем ввода в приватном чате для: inline mode, help, search & all,
-// TODO: marketwatch для иностранных акций
 // TODO: bold для тикеров
 // TODO: реализовать румтур
 // TODO: поиск по ticker.title
@@ -136,11 +135,7 @@ func main() {
 				case ScreenshotModeFinviz:
 					result = sendScreenshotForFinviz(b, m, articleCase, ticker)
 				case ScreenshotModeMarketWatch:
-					if ticker.symbol == "BABA" || ticker.symbol == "TAK" || ticker.symbol == "TSM" || ticker.symbol == "BIDU" {
-						result = false
-					} else {
-						result = sendScreenshotForMarketWatch(b, m, articleCase, ticker)
-					}
+					result = sendScreenshotForMarketWatch(b, m, articleCase, ticker)
 				case ScreenshotModeMarketBeat:
 					result = sendScreenshotForMarketBeat(b, m, articleCase, ticker)
 				case ScreenshotModeCathiesArk:
@@ -181,12 +176,8 @@ func main() {
 				// TODO: var modes map[string]myFunc https://golangbot.com/first-class-functions/
 				switch mode {
 				case "?!":
-					if ticker.symbol == "BABA" || ticker.symbol == "TAK" || ticker.symbol == "TSM" || ticker.symbol == "BIDU" {
-						result = false
-					} else {
-						articleCase = GetExactArticleCase("marketwatch.com")
-						result = sendScreenshotForMarketWatch(b, m, articleCase, ticker)
-					}
+					articleCase = GetExactArticleCase("marketwatch.com")
+					result = sendScreenshotForMarketWatch(b, m, articleCase, ticker)
 					// result = sendScreenshotForPage(b, m, articleCase, ticker)
 					// articleCase = GetExactArticleCase("shortvolume.com")
 					// result = sendImage(b, m, articleCase, ticker)

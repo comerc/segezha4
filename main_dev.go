@@ -11,9 +11,9 @@ func _main() {
 	// linkURL := "https://finviz.com/quote.ashx?t=TSLA"
 	// buf := ss.MakeScreenshotForFinviz(linkURL)
 
-	// linkURL := "https://marketwatch.com/investing/stock/BABA"
-	// // linkURL := "https://tipranks.com/stocks/ZM/forecast"
-	// buf := ss.MakeScreenshotForMarketWatch(linkURL)
+	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
+	linkURL := "https://marketwatch.com/investing/stock/TSLA"
+	buf := ss.MakeScreenshotForMarketWatch(linkURL)
 
 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
 	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
@@ -21,8 +21,8 @@ func _main() {
 	// buf := ss.MakeScreenshotForMarketBeat(linkURL)
 	// linkURL := "https://cathiesark.com/ark-combined-holdings-of-BABA"
 	// buf := ss.MakeScreenshotForCathiesArk(linkURL)
-	linkURL := "https://finviz.com/map.ashx?t=sec"
-	buf := ss.MakeScreenshotForFinvizMap(linkURL)
+	// linkURL := "https://finviz.com/map.ashx?t=sec"
+	// buf := ss.MakeScreenshotForFinvizMap(linkURL)
 	if len(buf) == 0 {
 		log.Println("exit buf == 0")
 		return
