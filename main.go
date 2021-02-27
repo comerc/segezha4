@@ -25,7 +25,6 @@ import (
 // TODO: параллельная обрарботка https://gobyexample.ru/worker-pools.html
 // TODO: добавить ETF, например ARKK
 // TODO: добавить биток GBTC
-// TODO: добавить https://stockcharts.com/
 // TODO: не успевает загрузить картинку tipranks.com (показывает колёсики)
 
 func main() {
@@ -184,10 +183,8 @@ func main() {
 					// articleCase = GetExactArticleCase("shortvolume.com")
 					// result = sendScreenshotForImage(b, m, articleCase, ticker)
 				case "?":
-					articleCase = GetExactArticleCase("stockscores.com")
+					articleCase = GetExactArticleCase("stockcharts.com")
 					result = sendImage(b, m, articleCase, ticker)
-					// articleCase = GetExactArticleCase("stockscores.com")
-					// result = sendScreenshotForImage(b, m, articleCase, ticker)
 				case "!":
 					articleCase = GetExactArticleCase("finviz.com")
 					// result = sendScreenshotForPage(b, m, articleCase, ticker)
