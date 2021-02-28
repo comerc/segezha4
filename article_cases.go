@@ -66,7 +66,9 @@ var ArticleCases = []ArticleCase{
 		// imageURL: "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=3&g=1&i=t8844882045c&r=%d", // landscape & 3 bar
 		// imageURL: "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=3&g=1&i=t2411346931c&r=%d", // landscape w/o zoom & 3 bar
 		// imageURL: "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=5&g=1&i=t8110014273c&r=%d", // portrain w/o zoom & 5 bar
-		imageURL: "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=5&g=1&i=t7762146583c&r=%d", // landscape w/o zoom & 5 bar
+		// imageURL: "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=5&g=1&i=t7762146583c&r=%d", // landscape w/o zoom & 5 bar
+		// imageURL: "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=5&g=1&i=t6193398740c&r=%d", // portrain w/o zoom & 5 bar & default theme
+		imageURL: "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=5&g=1&i=t8674635596c&r=%d", // landscape w/o zoom & 5 bar & default theme
 	},
 	{name: "marketwatch.com", linkURL: "https://marketwatch.com/investing/stock/%s",
 		description:    "Daily Price",
