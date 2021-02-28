@@ -100,13 +100,11 @@ func main() {
 		log.Println("****")
 		log.Println(m.Text)
 		log.Println("****")
-		if m.Text == "/index" {
+		if m.Text == "/vix" {
 			sendBarChart(b, m.Chat.ID, "$VIX")
-			// } else if m.Text == "/inx" {
+		} else if m.Text == "/index" {
 			sendBarChart(b, m.Chat.ID, "$INX")
-			// } else if m.Text == "/nasx" {
 			sendBarChart(b, m.Chat.ID, "$NASX")
-			// } else if m.Text == "/dowi" {
 			sendBarChart(b, m.Chat.ID, "$DOWI")
 		} else if m.Text == "/map" {
 			sendFinvizMap(b, m.Chat.ID)
