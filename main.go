@@ -101,7 +101,11 @@ func main() {
 		log.Println(m.Text)
 		log.Println("****")
 		if m.Text == "/vix" {
-			sendVIX(b, m.Chat.ID)
+			sendBarChart(b, m.Chat.ID, "$VIX")
+		} else if m.Text == "/spy" {
+			sendBarChart(b, m.Chat.ID, "SPY")
+		} else if m.Text == "/qqq" {
+			sendBarChart(b, m.Chat.ID, "QQQ")
 		} else if m.Text == "/map" {
 			sendFinvizMap(b, m.Chat.ID)
 		} else if strings.HasPrefix(m.Text, "/info ") {
@@ -564,9 +568,9 @@ func by(s string) string {
 // 	}
 // }
 
-func sendVIX(b *tb.Bot, chatID int64) bool {
-	linkURL := "https://www.barchart.com/stocks/quotes/$VIX/technical-chart%s?plot=CANDLE&volume=0&data=I:5&density=L&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(50);EXPMA(100);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500);EXPMA(1000)&sym=$VIX&grid=1&height=625&studyheight=100"
-	screenshot := ss.MakeScreenshotForVIX(fmt.Sprintf(linkURL, "/fullscreen"))
+func sendBarChart(b *tb.Bot, chatID int64, symbol string) bool {
+	linkURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=0&data=I:5&density=L&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(50);EXPMA(100);EXPMA(20);EXPMA(200);WMA(9);EXPMA(300);EXPMA(500)&sym=%[1]s&grid=1&height=625&studyheight=100"
+	screenshot := ss.MakeScreenshotForBarChart(fmt.Sprintf(linkURL, symbol, "/fullscreen"))
 	if len(screenshot) == 0 {
 		return false
 	}
@@ -574,9 +578,9 @@ func sendVIX(b *tb.Bot, chatID int64) bool {
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
 			"%s[%s](%s)",
-			escape(by("$VIX")),
+			escape(by(symbol)),
 			escape("barchart.com"),
-			"https://tinyurl.com/4hpbd4pp",
+			escapeURL(fmt.Sprintf(linkURL, symbol, "")),
 		),
 	}
 	_, err := b.Send(

@@ -9,8 +9,8 @@ import (
 	"github.com/chromedp/chromedp/device"
 )
 
-// MakeScreenshotForVIX description
-func MakeScreenshotForVIX(linkURL string) []byte {
+// MakeScreenshotForBarChart description
+func MakeScreenshotForBarChart(linkURL string) []byte {
 	ctx, cancel := chromedp.NewContext(context.Background())
 	defer cancel()
 	selChart := "body #technicalChartImage"
