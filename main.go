@@ -575,7 +575,7 @@ func sendVIX(b *tb.Bot, chatID int64) bool {
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
 			"%s[%s](%s)",
-			escape(by("*$VIX*")),
+			escape(by("$VIX")),
 			escape("barchart.com"),
 			"https://tinyurl.com/2szxasyt", // "https://u.to/e0MYGw",
 		),
