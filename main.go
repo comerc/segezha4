@@ -562,7 +562,7 @@ func by(s string) string {
 
 func sendVIX(b *tb.Bot, chatID int64) bool {
 	linkURL := "https://www.barchart.com/stocks/quotes/$VIX/technical-chart%s?plot=CANDLE&volume=0&data=I:5&density=L&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(20);EXPMA(50);EXPMA(200);WMA(9);EXPMA(500);EXPMA(1000)&sym=$VIX&grid=1&height=625&studyheight=100"
-	screenshot := ss.MakeScreenshotForFinvizMap(fmt.Sprintf(linkURL, "/fullscreen"))
+	screenshot := ss.MakeScreenshotForVIX(fmt.Sprintf(linkURL, "/fullscreen"))
 	if len(screenshot) == 0 {
 		return false
 	}
