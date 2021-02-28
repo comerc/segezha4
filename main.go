@@ -191,7 +191,7 @@ func main() {
 					// articleCase = GetExactArticleCase("shortvolume.com")
 					// result = sendScreenshotForImage(b, m, articleCase, ticker)
 				case "?":
-					articleCase = GetExactArticleCase("stockcharts.com")
+					articleCase = GetExactArticleCase("stockscores.com")
 					result = sendImage(b, m, articleCase, ticker)
 				case "!":
 					articleCase = GetExactArticleCase("finviz.com")
