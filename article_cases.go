@@ -61,7 +61,8 @@ var ArticleCases = []ArticleCase{
 	{name: "stockcharts.com", linkURL: "https://stockcharts.com/h-sc/ui?s=%s",
 		description:    "Technical Analysis",
 		screenshotMode: ScreenshotModeImage,
-		imageURL:       "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=3&g=1&i=t8007589923c&r=%d",
+		// imageURL:       "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=3&g=1&i=t8007589923c&r=%d", // portrain
+		imageURL: "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=3&g=1&i=t8844882045c&r=%d", // landscape
 	},
 	{name: "marketwatch.com", linkURL: "https://marketwatch.com/investing/stock/%s",
 		description:    "Daily Price",
