@@ -38,6 +38,8 @@ https://github.com/heroku/heroku-buildpack-google-chrome
 
 А я сделал новый режим /map
 
+Переключил индексы на \#SPY \#QQQ \#DOW - там другая цена, но видно объемы при той же динамике цены. Дима тоже на них смотрит. Почему-то $INX $DOWI показывают объемы, а $NASX - нет.
+
 ## BUGS
 
 - "Bad Request: can't parse entities: Can't find end of Italic entity at byte offset 70 (400)"

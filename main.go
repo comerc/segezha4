@@ -14,6 +14,7 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: подключить ETF-ки https://etfdb.com/screener/
 // TODO: выдавать сообщение sendLink, а по готовности основного ответа - его удалять
 // TODO: кнопки под полем ввода в приватном чате для: inline mode, help, search & all,
 // TODO: реализовать румтур
@@ -103,9 +104,13 @@ func main() {
 		if m.Text == "/vix" {
 			sendBarChart(b, m.Chat.ID, "$VIX")
 		} else if m.Text == "/index" {
-			sendBarChart(b, m.Chat.ID, "SPY") // "$INX"
-			sendBarChart(b, m.Chat.ID, "QQQ") // "$NASX"
-			sendBarChart(b, m.Chat.ID, "DOW") // "$DOWI"
+			sendBarChart(b, m.Chat.ID, "$INX")
+			sendBarChart(b, m.Chat.ID, "$NASX")
+			sendBarChart(b, m.Chat.ID, "$DOWI")
+		} else if m.Text == "/volume" {
+			sendBarChart(b, m.Chat.ID, "SPY")
+			sendBarChart(b, m.Chat.ID, "QQQ")
+			sendBarChart(b, m.Chat.ID, "DOW")
 		} else if m.Text == "/map" {
 			sendFinvizMap(b, m.Chat.ID)
 		} else if strings.HasPrefix(m.Text, "/info ") {
@@ -569,11 +574,17 @@ func by(s string) string {
 // }
 
 func sendBarChart(b *tb.Bot, chatID int64, symbol string) bool {
-	volume, height, tag := func() (string, string, string) {
-		if symbol == "$VIX" {
-			return "0", "625", ""
+	volume, height := func() (string, string) {
+		if symbol == "$VIX" || symbol == "$NASX" {
+			return "0", "625"
 		}
-		return "total", "500", `\#`
+		return "total", "500"
+	}()
+	tag := func() string {
+		if strings.HasPrefix(symbol, "$") {
+			return ""
+		}
+		return `\#`
 	}()
 	linkURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=%s&data=I:5&density=L&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(50);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=%[4]s&studyheight=100"
 	screenshot := ss.MakeScreenshotForBarChart(fmt.Sprintf(linkURL, symbol, "/fullscreen", volume, height))
