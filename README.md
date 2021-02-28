@@ -47,7 +47,9 @@ https://github.com/heroku/heroku-buildpack-google-chrome
 
 ## CHANGELOG
 
-- добавил stockcharts.com
+- /vix
+- /map
+- /info stockcharts.com ZM
 - FIXED для ADR не отдаёт информер MarketWatch
 - FIXED \#AYX? не отдаёт скриншоты
 - marketbeat #BABA - только Institutional Ownership > один график
