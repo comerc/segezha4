@@ -62,8 +62,9 @@ var ArticleCases = []ArticleCase{
 		description:    "Technical Analysis",
 		screenshotMode: ScreenshotModeImage,
 		// imageURL:       "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=3&g=1&i=t8007589923c&r=%d", // portrain
+		imageURL: "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=3&g=1&i=t0143501833c&r=%d", // portrain w/o zoom
 		// imageURL: "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=3&g=1&i=t8844882045c&r=%d", // landscape
-		imageURL: "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=3&g=1&i=t2411346931c&r=%d", // landscape w/o zoom
+		// imageURL: "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=3&g=1&i=t2411346931c&r=%d", // landscape w/o zoom
 	},
 	{name: "marketwatch.com", linkURL: "https://marketwatch.com/investing/stock/%s",
 		description:    "Daily Price",
