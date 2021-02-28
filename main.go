@@ -569,11 +569,11 @@ func by(s string) string {
 // }
 
 func sendBarChart(b *tb.Bot, chatID int64, symbol string) bool {
-	volume, height := func() (string, string) {
+	volume, height, tag := func() (string, string, string) {
 		if symbol == "$VIX" {
-			return "0", "625"
+			return "0", "625", ""
 		}
-		return "total", "500"
+		return "total", "500", `\#`
 	}()
 	linkURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=%s&data=I:5&density=L&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(50);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=%[4]s&studyheight=100"
 	screenshot := ss.MakeScreenshotForBarChart(fmt.Sprintf(linkURL, symbol, "/fullscreen", volume, height))
@@ -584,7 +584,7 @@ func sendBarChart(b *tb.Bot, chatID int64, symbol string) bool {
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
 			"%s[%s](%s)",
-			escape(by(symbol)),
+			escape(by(tag+symbol)),
 			escape("barchart.com"),
 			escapeURL(fmt.Sprintf(linkURL, symbol, "")),
 		),
@@ -613,7 +613,7 @@ func sendFinvizMap(b *tb.Bot, chatID int64) bool {
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`%s[%s](%s)`,
+			"%s[%s](%s)",
 			escape(by("Map")),
 			escape("finviz.com"),
 			linkURL,
