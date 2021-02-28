@@ -577,7 +577,7 @@ func sendVIX(b *tb.Bot, chatID int64) bool {
 			"%s[%s](%s)",
 			escape(by("*$VIX*")),
 			escape("barchart.com"),
-			escapeURL(fmt.Sprintf(linkURL, "")),
+			"https://tinyurl.com/2szxasyt", // "https://u.to/e0MYGw",
 		),
 	}
 	_, err := b.Send(
