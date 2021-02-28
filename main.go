@@ -569,7 +569,7 @@ func by(s string) string {
 // }
 
 func sendBarChart(b *tb.Bot, chatID int64, symbol string) bool {
-	linkURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=1&data=I:5&density=L&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(50);EXPMA(100);EXPMA(20);EXPMA(200);WMA(9);EXPMA(300);EXPMA(500)&sym=%[1]s&grid=1&height=625&studyheight=100"
+	linkURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=1&data=I:5&density=L&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(50);EXPMA(100);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=625&studyheight=100"
 	screenshot := ss.MakeScreenshotForBarChart(fmt.Sprintf(linkURL, symbol, "/fullscreen"))
 	if len(screenshot) == 0 {
 		return false
