@@ -233,6 +233,11 @@ func parseInt(s string) int64 {
 	return result
 }
 
+func escapeURL(s string) string {
+	re := regexp.MustCompile("[(|)]")
+	return re.ReplaceAllString(s, `\$0`)
+}
+
 func escape(s string) string {
 	re := regexp.MustCompile("[.|-]")
 	return re.ReplaceAllString(s, `\$0`)
@@ -572,7 +577,7 @@ func sendVIX(b *tb.Bot, chatID int64) bool {
 			`%s[%s](%s)`,
 			escape(by("Map")),
 			escape("finviz.com"),
-			fmt.Sprintf(linkURL, ""),
+			escapeURL(fmt.Sprintf(linkURL, "")),
 		),
 	}
 	_, err := b.Send(
