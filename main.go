@@ -14,7 +14,7 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// TODO: переехать обратно в Европу
+// TODO: выдавать сообщение sendLink, а по готовности основного ответа - его удалять
 // TODO: кнопки под полем ввода в приватном чате для: inline mode, help, search & all,
 // TODO: bold для тикеров
 // TODO: реализовать румтур
@@ -101,7 +101,9 @@ func main() {
 		log.Println("****")
 		log.Println(m.Text)
 		log.Println("****")
-		if m.Text == "/map" {
+		if m.Text == "/vix" {
+			sendVIX(b, m.Chat.ID)
+		} else if m.Text == "/map" {
 			sendFinvizMap(b, m.Chat.ID)
 		} else if strings.HasPrefix(m.Text, "/info ") {
 			re := regexp.MustCompile(",")
@@ -557,6 +559,36 @@ func by(s string) string {
 // 		}
 // 	}
 // }
+
+func sendVIX(b *tb.Bot, chatID int64) bool {
+	linkURL := "https://www.barchart.com/stocks/quotes/$VIX/technical-chart%s?plot=CANDLE&volume=0&data=I:5&density=L&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(20);EXPMA(50);EXPMA(200);WMA(9);EXPMA(500);EXPMA(1000)&sym=$VIX&grid=1&height=625&studyheight=100"
+	screenshot := ss.MakeScreenshotForFinvizMap(fmt.Sprintf(linkURL, "/fullscreen"))
+	if len(screenshot) == 0 {
+		return false
+	}
+	photo := &tb.Photo{
+		File: tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: fmt.Sprintf(
+			`%s[%s](%s)`,
+			escape(by("Map")),
+			escape("finviz.com"),
+			fmt.Sprintf(linkURL, ""),
+		),
+	}
+	_, err := b.Send(
+		tb.ChatID(chatID),
+		photo,
+		&tb.SendOptions{
+			ParseMode: tb.ModeMarkdownV2,
+		},
+	)
+	photo = nil
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	return true
+}
 
 func sendFinvizMap(b *tb.Bot, chatID int64) bool {
 	linkURL := "https://finviz.com/map.ashx?t=sec"
