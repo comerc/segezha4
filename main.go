@@ -574,9 +574,9 @@ func sendVIX(b *tb.Bot, chatID int64) bool {
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`%s[%s](%s)`,
-			escape(by("Map")),
-			escape("finviz.com"),
+			"%s[%s](%s)",
+			escape(by("*$VIX*")),
+			escape("barchart.com"),
 			escapeURL(fmt.Sprintf(linkURL, "")),
 		),
 	}
