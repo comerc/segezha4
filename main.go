@@ -98,7 +98,9 @@ func main() {
 		}
 	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
+		log.Println("****")
 		log.Println(m.Text)
+		log.Println("****")
 		if m.Text == "/map" {
 			sendFinvizMap(b, m.Chat.ID)
 		} else if strings.HasPrefix(m.Text, "/info ") {
