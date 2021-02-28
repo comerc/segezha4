@@ -36,12 +36,6 @@ type ArticleCase struct {
 // ArticleCases slice
 var ArticleCases = []ArticleCase{
 	{name: "tradingview.com", linkURL: "https://tradingview.com/symbols/%s"},
-	{name: "finviz.com", linkURL: "https://finviz.com/quote.ashx?t=%s",
-		description:    "Financial Visualizations",
-		screenshotMode: ScreenshotModeFinviz,
-		// y:              215,
-		// height:         845 - 91, /* (banner) */
-	},
 	{name: "stockcharts.com", linkURL: "https://stockcharts.com/h-sc/ui?s=%s",
 		description:    "Technical Analysis",
 		screenshotMode: ScreenshotModeImage,
@@ -53,6 +47,12 @@ var ArticleCases = []ArticleCase{
 		// imageURL: "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=5&g=1&i=t7762146583c&r=%d", // landscape w/o zoom & 5 bar
 		// imageURL: "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=5&g=1&i=t6193398740c&r=%d", // portrain w/o zoom & 5 bar & default theme
 		imageURL: "https://stockcharts.com/c-sc/sc?s=%s&p=D&b=5&g=1&i=t8674635596c&r=%d", // landscape w/o zoom & 5 bar & default theme
+	},
+	{name: "finviz.com", linkURL: "https://finviz.com/quote.ashx?t=%s",
+		description:    "Financial Visualizations",
+		screenshotMode: ScreenshotModeFinviz,
+		// y:              215,
+		// height:         845 - 91, /* (banner) */
 	},
 	{name: "marketwatch.com", linkURL: "https://marketwatch.com/investing/stock/%s",
 		description:    "Daily Price",
