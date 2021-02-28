@@ -28,7 +28,7 @@ func MakeScreenshotForCathiesArk(linkURL string) []byte {
 			chromedp.WaitReady("body"),
 			chromedp.SetAttributeValue("body main", "style", ""),
 			chromedp.SetAttributeValue(sel0, "style", ""),
-			chromedp.SetAttributeValue(sel0+" > div", "style", "padding: 40px 0px 40px; flex: 0 0 100%; max-width: 100%;"),
+			chromedp.SetAttributeValue(sel0+" > div", "style", "padding: 40px 40px 0; flex: 0 0 100%; max-width: 100%;"),
 			chromedp.Screenshot(sel0, &buf1, chromedp.NodeVisible),
 			chromedp.SetAttributeValue(sel1, "style", "display:none"),
 			chromedp.SetAttributeValue(sel2, "style", "display:none"),
