@@ -580,7 +580,7 @@ func sendBarChart(b *tb.Bot, chatID int64, symbol string) bool {
 		if strings.HasPrefix(symbol, "$") {
 			return "0", "625", ""
 		}
-		return "total", "375", `\#`
+		return "total", "500", `\#`
 	}()
 	linkURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=%s&data=I:5&density=L&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(50);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=%[4]s&studyheight=200"
 	screenshot := ss.MakeScreenshotForBarChart(fmt.Sprintf(linkURL, symbol, "/fullscreen", volume, height))
@@ -593,7 +593,7 @@ func sendBarChart(b *tb.Bot, chatID int64, symbol string) bool {
 			"%s[%s](%s)",
 			escape(by(tag+symbol)),
 			escape("barchart.com"),
-			escapeURL(fmt.Sprintf(linkURL, symbol, "")),
+			escapeURL(fmt.Sprintf(linkURL, symbol, "", volume, height)),
 		),
 	}
 	_, err := b.Send(

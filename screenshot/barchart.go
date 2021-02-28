@@ -17,7 +17,7 @@ func MakeScreenshotForBarChart(linkURL string) []byte {
 	var buf []byte
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
-			chromedp.Emulate(device.KindleFireHDXlandscape),
+			chromedp.Emulate(device.KindleFireHDX),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body"),
 			chromedp.Sleep(1 * time.Second),
