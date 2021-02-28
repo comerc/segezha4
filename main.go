@@ -103,6 +103,8 @@ func main() {
 		log.Println("****")
 		if m.Text == "/vix" {
 			sendBarChart(b, m.Chat.ID, "$VIX")
+		} else if m.Text == "/spy" {
+			sendBarChart(b, m.Chat.ID, "SPY")
 		} else if m.Text == "/index" {
 			sendBarChart(b, m.Chat.ID, "$INX")
 			sendBarChart(b, m.Chat.ID, "$NASX")
