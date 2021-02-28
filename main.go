@@ -14,6 +14,7 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: переехать обратно в Европу
 // TODO: кнопки под полем ввода в приватном чате для: inline mode, help, search & all,
 // TODO: bold для тикеров
 // TODO: реализовать румтур
