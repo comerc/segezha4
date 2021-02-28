@@ -103,9 +103,9 @@ func main() {
 		if m.Text == "/vix" {
 			sendBarChart(b, m.Chat.ID, "$VIX")
 		} else if m.Text == "/index" {
-			sendBarChart(b, m.Chat.ID, "$INX")
-			sendBarChart(b, m.Chat.ID, "$NASX")
-			sendBarChart(b, m.Chat.ID, "$DOWI")
+			sendBarChart(b, m.Chat.ID, "SPY") // "$INX"
+			sendBarChart(b, m.Chat.ID, "QQQ") // "$NASX"
+			sendBarChart(b, m.Chat.ID, "DOW") // "$DOWI"
 		} else if m.Text == "/map" {
 			sendFinvizMap(b, m.Chat.ID)
 		} else if strings.HasPrefix(m.Text, "/info ") {
@@ -570,7 +570,7 @@ func by(s string) string {
 
 func sendBarChart(b *tb.Bot, chatID int64, symbol string) bool {
 	volume, height := func() (string, string) {
-		if symbol == "$VIX" || symbol == "$NASX" {
+		if symbol == "$VIX" {
 			return "0", "625"
 		}
 		return "total", "500"
