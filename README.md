@@ -4,6 +4,10 @@ Telegram-bot - учебная граната на GoLang
 
 $GOOGL #GOOGL
 
+Q: Бот может таргет от инвест домов дергать?
+
+A: Я не придумал, как этим пользоваться для принятия решений о торговом моменте. Но есть другая идея. На примере Кати. Если повторять покупки вслед за ней, то повышается вероятность зацепить краткосрочный рост. Хочется такого же эффекта по этим данным - собирать последние рекомендации лучших аналитиков https://www.tipranks.com/analysts/top
+
 1. Сбор скриншотов по тикеру
 2. Дайджест с других каналов по тикеру https://github.com/keselekpermen69/Telegram_Forwarder/blob/adc0ffd3aa/forwarder/modules/auto_forward.py
 3. Копирование ФА в портфель по тикету https://googlesheets.medium.com/bot-happens-telegram-bot-google-sheets-on-webhooks-e415509a6213
