@@ -48,6 +48,7 @@ https://github.com/heroku/heroku-buildpack-google-chrome
 
 ## BUGS
 
+- /info finviz.com #TCEHY - повис
 - "Bad Request: can't parse entities: Can't find end of Italic entity at byte offset 70 (400)"
 - /info marketbeat.com M - Error R14 (Memory quota exceeded)
 - параллельно обрабатывать запросы на несколько бумажек или несколько на marketbeat

@@ -115,6 +115,8 @@ func main() {
 			sendBarChart(b, m.Chat.ID, "DOW")
 		} else if m.Text == "/map" {
 			sendFinvizMap(b, m.Chat.ID)
+		} else if m.Text == "/fear" {
+			sendFear(b, m.Chat.ID)
 		} else if strings.HasPrefix(m.Text, "/info ") {
 			re := regexp.MustCompile(",")
 			payload := re.ReplaceAllString(m.Payload, " ")
@@ -623,6 +625,36 @@ func sendFinvizMap(b *tb.Bot, chatID int64) bool {
 			"%s[%s](%s)",
 			escape(by("Map")),
 			escape("finviz.com"),
+			linkURL,
+		),
+	}
+	_, err := b.Send(
+		tb.ChatID(chatID),
+		photo,
+		&tb.SendOptions{
+			ParseMode: tb.ModeMarkdownV2,
+		},
+	)
+	photo = nil
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	return true
+}
+
+func sendFear(b *tb.Bot, chatID int64) bool {
+	linkURL := "https://money.cnn.com/data/fear-and-greed/"
+	screenshot := ss.MakeScreenshotForFear(linkURL)
+	if len(screenshot) == 0 {
+		return false
+	}
+	photo := &tb.Photo{
+		File: tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: fmt.Sprintf(
+			"%s[%s](%s)",
+			escape(by("Fear & Greed Index")),
+			escape("money.cnn.com"),
 			linkURL,
 		),
 	}
