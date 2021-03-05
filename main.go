@@ -99,6 +99,7 @@ func main() {
 	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
 		log.Println("****")
+		log.Println(m.Chat.Username)
 		log.Println(m.Text)
 		log.Println("****")
 		if m.Text == "/vix" {
