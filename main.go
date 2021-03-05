@@ -150,6 +150,10 @@ func main() {
 					// result = sendScreenshotForImage(b, m, articleCase, ticker)
 				case ScreenshotModeFinviz:
 					result = sendScreenshotForFinviz(b, m, articleCase, ticker)
+					if !result {
+						sendError(b, m, fmt.Sprintf(`\#%s not found on finviz.com`, strings.ToUpper(symbol)))
+						result = true
+					}
 				case ScreenshotModeMarketWatch:
 					result = sendScreenshotForMarketWatch(b, m, articleCase, ticker)
 				case ScreenshotModeMarketBeat:
@@ -206,6 +210,10 @@ func main() {
 					articleCase = GetExactArticleCase("finviz.com")
 					// result = sendScreenshotForPage(b, m, articleCase, ticker)
 					result = sendScreenshotForFinviz(b, m, articleCase, ticker)
+					if !result {
+						sendError(b, m, fmt.Sprintf(`\#%s not found on finviz.com`, strings.ToUpper(symbol)))
+						result = true
+					}
 				default:
 					log.Println("Invalid simple command mode")
 					result = true
