@@ -14,6 +14,8 @@ A: Я не придумал, как этим пользоваться для п�
 4. парсер, чтобы собирать последние рекомендации лучших аналитиков https://www.tipranks.com/analysts/top
 5. с определённым интервалом постить информер https://finviz.com/map.ashx?t=sec
 
+Как бы добавить в бота российские тикеры и ETF (https://etfdb.com/screener/)
+
 [Telegram Bot - how to get a group chat id?](https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id)
 
 https://github.com/heroku/heroku-buildpack-google-chrome
@@ -48,7 +50,6 @@ https://github.com/heroku/heroku-buildpack-google-chrome
 
 ## BUGS
 
-- /info finviz.com #TCEHY - повис
 - "Bad Request: can't parse entities: Can't find end of Italic entity at byte offset 70 (400)"
 - /info marketbeat.com M - Error R14 (Memory quota exceeded)
 - параллельно обрабатывать запросы на несколько бумажек или несколько на marketbeat
@@ -56,6 +57,8 @@ https://github.com/heroku/heroku-buildpack-google-chrome
 
 ## CHANGELOG
 
+- /info finviz.com ATV - бот повесился
+- /info finviz.com #TCEHY - повис
 - /vix
 - /map
 - /info stockcharts.com ZM
