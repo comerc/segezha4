@@ -151,7 +151,7 @@ func main() {
 				case ScreenshotModeFinviz:
 					result = sendScreenshotForFinviz(b, m, articleCase, ticker)
 					if !result {
-						sendError(b, m, fmt.Sprintf(`\#%s not found on finviz.com`, strings.ToUpper(symbol)))
+						sendError(b, m, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
 						result = true
 					}
 				case ScreenshotModeMarketWatch:
@@ -211,7 +211,7 @@ func main() {
 					// result = sendScreenshotForPage(b, m, articleCase, ticker)
 					result = sendScreenshotForFinviz(b, m, articleCase, ticker)
 					if !result {
-						sendError(b, m, fmt.Sprintf(`\#%s not found on finviz.com`, strings.ToUpper(symbol)))
+						sendError(b, m, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
 						result = true
 					}
 				default:
