@@ -98,15 +98,15 @@ func main() {
 		}
 	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
-		log.Println("****")
-		if m.Sender != nil {
-			log.Println(m.Sender.Username)
-			log.Println(m.Sender.FirstName)
-			log.Println(m.Sender.LastName)
-		}
-		log.Println(m.Chat.Username)
-		log.Println(m.Text)
-		log.Println("****")
+		// log.Println("****")
+		// if m.Sender != nil {
+		// 	log.Println(m.Sender.Username)
+		// 	log.Println(m.Sender.FirstName)
+		// 	log.Println(m.Sender.LastName)
+		// }
+		// log.Println(m.Chat.Username)
+		// log.Println(m.Text)
+		// log.Println("****")
 		if m.Text == "/vix" {
 			sendBarChart(b, m.Chat.ID, "$VIX")
 		} else if m.Text == "/spy" {
