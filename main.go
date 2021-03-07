@@ -43,6 +43,7 @@ func main() {
 		// URL:    "https://api.bots.mn/telegram/",
 		Token:  token,
 		Poller: webhook,
+		Synchronous: true,
 	}
 	b, err := tb.NewBot(pref)
 	if err != nil {
