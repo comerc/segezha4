@@ -10,6 +10,8 @@ import (
 	"github.com/chromedp/chromedp/device"
 )
 
+// TODO: sp_message_container_*
+
 // MarketWatchHref description
 type MarketWatchHref = string
 
@@ -63,7 +65,7 @@ func MakeScreenshotForMarketWatchIDs(linkURL string, tabHref MarketWatchHref) []
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body > footer"),
 			chromedp.Sleep(4 * time.Second),
-			// chromedp.SetAttributeValue("body > #sp_message_container_413120", "style", "display:none"),
+			chromedp.SetAttributeValue("body > #sp_message_container_450644", "style", "display:none"),
 			chromedp.Click(fmt.Sprintf("//a[@href='%s']", tabHref), chromedp.BySearch),
 			chromedp.Sleep(1 * time.Second),
 			chromedp.SetAttributeValue(sel, "style", "border-left:none"),
