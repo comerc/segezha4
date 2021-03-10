@@ -96,7 +96,7 @@ docker build -t go-docker-image .
 docker run -v ~/segezha4:/app -p 8080:8080 go-docker-image
 docker image list
 docker container ls
-docker rmi -f $(docker images -a -q)
+docker rmi -f $(docker images -f "dangling=true" -q)
 docker rm -vf $(docker ps -a -q)
 docker-compose up
 
