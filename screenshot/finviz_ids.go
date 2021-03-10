@@ -8,6 +8,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
 )
@@ -28,6 +29,7 @@ func MakeScreenshotForFinvizIDs(linkURL string) []byte {
 	sel2 := "body > div.content.is-index > div.container > table > tbody > tr > td > #homepage > table > tbody > tr > td > table"
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
+			network.SetBlockedURLS([]string{"https://dggaenaawxe8z.cloudfront.net/cmp_v2/admiral/finviz.js"}),
 			chromedp.Emulate(device.KindleFireHDX),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body #homepage"),
