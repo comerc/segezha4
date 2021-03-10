@@ -14,6 +14,7 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: отправлять #TSLA?! если в тексте $TSLA и #ОТЧЕТ, если просто $TSLA - отправлять #TSLA!
 // TODO: отправлять через runBackgroundTask() информеры про фьючи
 // TODO: использовать символы тикеров в качестве команд: /TSLA
 // TODO: подключить ETF-ки https://etfdb.com/screener/
@@ -595,9 +596,10 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 	for t := range ticker.C {
 		h := t.UTC().Hour()
 		m := t.Minute()
+		s := t.Second()
 		const d = 30
 		if h == 14 && m >= 30 || h > 14 && h < 21 || h == 21 && m < d {
-			if m%d == 0 && t.Second() == 4 {
+			if m%d == 0 && s == 4 {
 				sendFinvizIDs(b, chatID)
 				sendFinvizMap(b, chatID)
 				sendBarChart(b, chatID, "$VIX")
@@ -607,7 +609,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 				}
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabRates)
 			}
-		} else if m == 0 {
+		} else if m == 0 && s == 0 {
 			if h >= 0 {
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFutures)
 			}
