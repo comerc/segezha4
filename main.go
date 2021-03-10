@@ -111,7 +111,23 @@ func main() {
 		log.Println(m.Chat.Username)
 		log.Println(m.Text)
 		log.Println("****")
-		if m.Text == "/vix" {
+		if m.Text == "/ids" {
+			sendFinvizIDs(b, m.Chat.ID)
+		} else if m.Text == "/us" {
+			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchTabUS)
+		} else if m.Text == "/europe" {
+			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchTabEurope)
+		} else if m.Text == "/asia" {
+			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchTabAsia)
+		} else if m.Text == "/fx" {
+			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchTabFX)
+		} else if m.Text == "/rates" {
+			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchTabRates)
+		} else if m.Text == "/futures" {
+			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchTabFutures)
+		} else if m.Text == "/crypto" {
+			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchTabCrypto)
+		} else if m.Text == "/vix" {
 			sendBarChart(b, m.Chat.ID, "$VIX")
 		} else if m.Text == "/spy" {
 			sendBarChart(b, m.Chat.ID, "SPY")
@@ -582,10 +598,30 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 		const d = 30
 		if h == 14 && m >= 30 || h > 14 && h < 21 || h == 21 && m < d {
 			if m%d == 0 && t.Second() == 4 {
-				log.Println("runBackgroundTask")
+				sendFinvizIDs(b, chatID)
 				sendFinvizMap(b, chatID)
 				sendBarChart(b, chatID, "$VIX")
+				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabUS)
+				if h >= 8 || h <= 17 {
+					sendMarketWatchIDs(b, chatID, ss.MarketWatchTabEurope)
+				}
+				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabRates)
 			}
+		} else if m == 0 {
+			if h >= 0 {
+				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFutures)
+			}
+			if h >= 8 || h <= 17 {
+				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabEurope)
+			}
+			if h >= 0 || h <= 8 {
+				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabAsia)
+			}
+			if h >= 0 {
+				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabRates)
+			}
+			// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFX)
+			// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabCrypto)
 		}
 	}
 }
@@ -668,6 +704,66 @@ func sendFear(b *tb.Bot, chatID int64) bool {
 			"%s[%s](%s)",
 			escape(by("Fear & Greed Index")),
 			escape("money.cnn.com"),
+			linkURL,
+		),
+	}
+	_, err := b.Send(
+		tb.ChatID(chatID),
+		photo,
+		&tb.SendOptions{
+			ParseMode: tb.ModeMarkdownV2,
+		},
+	)
+	photo = nil
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	return true
+}
+
+func sendFinvizIDs(b *tb.Bot, chatID int64) bool {
+	linkURL := "https://finviz.com/"
+	screenshot := ss.MakeScreenshotForFinvizIDs(linkURL)
+	if len(screenshot) == 0 {
+		return false
+	}
+	photo := &tb.Photo{
+		File: tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: fmt.Sprintf(
+			"%s[%s](%s)",
+			escape(by("IDs")),
+			escape("finviz.com"),
+			linkURL,
+		),
+	}
+	_, err := b.Send(
+		tb.ChatID(chatID),
+		photo,
+		&tb.SendOptions{
+			ParseMode: tb.ModeMarkdownV2,
+		},
+	)
+	photo = nil
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	return true
+}
+
+func sendMarketWatchIDs(b *tb.Bot, chatID int64, tab ss.MarketWatchTab) bool {
+	linkURL := "https://www.marketwatch.com/"
+	screenshot := ss.MakeScreenshotForMarketWatchIDs(linkURL, tab)
+	if len(screenshot) == 0 {
+		return false
+	}
+	photo := &tb.Photo{
+		File: tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: fmt.Sprintf(
+			"%s[%s](%s)",
+			escape(by("IDs")),
+			escape("marketwatch.com"),
 			linkURL,
 		),
 	}
