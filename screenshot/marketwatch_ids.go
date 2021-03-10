@@ -33,7 +33,7 @@ func MakeScreenshotForMarketWatchIDs(linkURL string, tab MarketWatchTab) []byte 
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, 30*time.Second)
+	ctx2, cancel2 := context.WithTimeout(ctx1, 40*time.Second)
 	defer cancel2()
 	// sel := "body > section > div.region.region--full.masthead-elements > div.column.column--full.max-markets > div.element.element--markets.desktop > div.markets--desktop"
 	sel := "body div.markets__table > table"

@@ -22,7 +22,7 @@ func MakeScreenshotForFinvizIDs(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, 30*time.Second)
+	ctx2, cancel2 := context.WithTimeout(ctx1, 40*time.Second)
 	defer cancel2()
 	var buf1, buf2 []byte
 	sel1 := "body > div.content.is-index > div.container > table > tbody > tr > td table:nth-child(1)"

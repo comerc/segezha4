@@ -21,7 +21,7 @@ func MakeScreenshotForCathiesArk(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, 30*time.Second)
+	ctx2, cancel2 := context.WithTimeout(ctx1, 40*time.Second)
 	defer cancel2()
 	var buf1, buf2 []byte
 	sel0 := "body main > div:nth-child(2) > div:nth-child(2)"
