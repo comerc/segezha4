@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"math"
+	"time"
 
 	"github.com/chromedp/cdproto/emulation"
 	"github.com/chromedp/cdproto/page"
@@ -13,10 +14,17 @@ import (
 
 // MakeScreenshotForPage description
 func MakeScreenshotForPage(linkURL string, x, y, width, height float64) []byte {
-	ctx, cancel := chromedp.NewContext(context.Background())
-	defer cancel()
+	ctx1, cancel1 := chromedp.NewContext(context.Background())
+	defer cancel1()
+	// start the browser without a timeout
+	if err := chromedp.Run(ctx1); err != nil {
+		log.Println(err)
+		return nil
+	}
+	ctx2, cancel2 := context.WithTimeout(ctx1, 30*time.Second)
+	defer cancel2()
 	var buf []byte
-	if err := chromedp.Run(ctx, makeScreenshotForPage(linkURL, x, y, width, height, 100, &buf)); err != nil {
+	if err := chromedp.Run(ctx2, makeScreenshotForPage(linkURL, x, y, width, height, 100, &buf)); err != nil {
 		log.Println(err)
 	}
 	return buf

@@ -14,14 +14,21 @@ import (
 
 // MakeScreenshotForCathiesArk description
 func MakeScreenshotForCathiesArk(linkURL string) []byte {
-	ctx, cancel := chromedp.NewContext(context.Background())
-	defer cancel()
+	ctx1, cancel1 := chromedp.NewContext(context.Background())
+	defer cancel1()
+	// start the browser without a timeout
+	if err := chromedp.Run(ctx1); err != nil {
+		log.Println(err)
+		return nil
+	}
+	ctx2, cancel2 := context.WithTimeout(ctx1, 30*time.Second)
+	defer cancel2()
 	var buf1, buf2 []byte
 	sel0 := "body main > div:nth-child(2) > div:nth-child(2)"
 	sel1 := "body header"
 	sel2 := "body main > div:nth-child(1)"
 	sel3 := "body main div.ant-row.sectionContainer___plkQX:nth-child(3) > div > div > div.recharts-responsive-container > div.recharts-wrapper"
-	if err := chromedp.Run(ctx, func() chromedp.Tasks {
+	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.Emulate(device.IPadlandscape),
 			chromedp.Navigate(linkURL),

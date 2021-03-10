@@ -13,6 +13,7 @@ A: Я не придумал, как этим пользоваться для п�
 3. Копирование ФА в портфель по тикету https://googlesheets.medium.com/bot-happens-telegram-bot-google-sheets-on-webhooks-e415509a6213
 4. парсер, чтобы собирать последние рекомендации лучших аналитиков https://www.tipranks.com/analysts/top
 5. с определённым интервалом постить информер https://finviz.com/map.ashx?t=sec
+6. наблюдать за https://t.me/FTD_ALGO и добавлять графики к трём зелёным кружочкам
 
 Как бы добавить в бота российские тикеры и ETF (https://etfdb.com/screener/)
 
@@ -50,6 +51,7 @@ https://github.com/heroku/heroku-buildpack-google-chrome
 
 ## BUGS
 
+- /info marketwatch.com bidy crsp pypl - повесился после "#BIDY not found"
 - "Bad Request: can't parse entities: Can't find end of Italic entity at byte offset 70 (400)"
 - /info marketbeat.com M - Error R14 (Memory quota exceeded)
 - параллельно обрабатывать запросы на несколько бумажек или несколько на marketbeat
@@ -82,3 +84,21 @@ log.Printf("scaling using %q takes %v time",
 sc.Name, time.Now().Sub(tp))
 }
 ```
+
+## Docker's steps (draft)
+
+sudo groupadd docker
+sudo usermod -aG docker aka
+su -s aka
+chmod 777 /var/run/docker.sock
+
+docker build -t go-docker-image .
+docker run -v ~/segezha4:/app -p 8080:8080 go-docker-image
+docker image list
+docker container ls
+docker rmi -f $(docker images -a -q)
+docker rm -vf $(docker ps -a -q)
+docker-compose up
+
+// https://onedev.net/post/578
+wget -qO- https://get.docker.com/ | sh

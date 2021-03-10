@@ -26,24 +26,25 @@ import (
 // TODO: параллельная обрарботка https://gobyexample.ru/worker-pools.html
 // TODO: добавить ETF, например ARKK
 // TODO: добавить биток GBTC
+// TODO: добавить опционы с investing.com
 // TODO: не успевает загрузить картинку tipranks.com (показывает колёсики)
 
 func main() {
 	var (
-		port      = os.Getenv("PORT")
-		publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
-		token     = os.Getenv("TOKEN")      // you must add it to your config vars
-		// chatID    = os.Getenv("CHAT_ID")    // you must add it to your config vars
+		// port      = os.Getenv("PORT")
+		// publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
+		// chatID    = os.Getenv("CHAT_ID") // you must add it to your config vars
+		token = os.Getenv("TELEBOT_SECRET") // you must add it to your config vars
 	)
-	webhook := &tb.Webhook{
-		Listen:   ":" + port,
-		Endpoint: &tb.WebhookEndpoint{PublicURL: publicURL},
-	}
+	// webhook := &tb.Webhook{
+	// 	Listen:   ":" + port,
+	// 	Endpoint: &tb.WebhookEndpoint{PublicURL: publicURL},
+	// }
 	pref := tb.Settings{
 		// URL:    "https://api.bots.mn/telegram/",
-		Token:  token,
-		Poller: webhook,
-		Synchronous: true,
+		Token: token,
+		// Poller: webhook,
+		Poller: &tb.LongPoller{Timeout: 10 * time.Second},
 	}
 	b, err := tb.NewBot(pref)
 	if err != nil {
@@ -58,7 +59,7 @@ func main() {
 		}
 		results := make(tb.Results, len(ArticleCases)) // []tb.Result
 		for i, articleCase := range ArticleCases {
-			linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+			linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
 			var result *tb.ArticleResult
 			if i == 0 {
 				result = &tb.ArticleResult{
@@ -99,15 +100,15 @@ func main() {
 		}
 	})
 	b.Handle(tb.OnText, func(m *tb.Message) {
-		// log.Println("****")
-		// if m.Sender != nil {
-		// 	log.Println(m.Sender.Username)
-		// 	log.Println(m.Sender.FirstName)
-		// 	log.Println(m.Sender.LastName)
-		// }
-		// log.Println(m.Chat.Username)
-		// log.Println(m.Text)
-		// log.Println("****")
+		log.Println("****")
+		if m.Sender != nil {
+			log.Println(m.Sender.Username)
+			log.Println(m.Sender.FirstName)
+			log.Println(m.Sender.LastName)
+		}
+		log.Println(m.Chat.Username)
+		log.Println(m.Text)
+		log.Println("****")
 		if m.Text == "/vix" {
 			sendBarChart(b, m.Chat.ID, "$VIX")
 		} else if m.Text == "/spy" {
@@ -215,8 +216,8 @@ func main() {
 					result = sendImage(b, m, articleCase, ticker)
 				case "!":
 					articleCase = GetExactArticleCase("finviz.com")
-					// result = sendScreenshotForPage(b, m, articleCase, ticker)
 					result = sendScreenshotForFinviz(b, m, articleCase, ticker)
+					// result = sendScreenshotForPage(b, m, articleCase, ticker)
 					if !result {
 						sendError(b, m, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
 						result = true
@@ -303,7 +304,7 @@ func escape(s string) string {
 // }
 
 func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
-	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
 	screenshot := ss.MakeScreenshotForPage(linkURL, articleCase.x, articleCase.y, articleCase.width, articleCase.height)
 	if len(screenshot) == 0 {
 		return false
@@ -336,7 +337,7 @@ func sendScreenshotForPage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, t
 }
 
 func sendScreenshotForFinviz(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
-	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
 	screenshot := ss.MakeScreenshotForFinviz(linkURL)
 	if len(screenshot) == 0 {
 		return false
@@ -369,7 +370,7 @@ func sendScreenshotForFinviz(b *tb.Bot, m *tb.Message, articleCase *ArticleCase,
 }
 
 func sendScreenshotForMarketWatch(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
-	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
 	screenshot := ss.MakeScreenshotForMarketWatch(linkURL)
 	if len(screenshot) == 0 {
 		return false
@@ -402,7 +403,7 @@ func sendScreenshotForMarketWatch(b *tb.Bot, m *tb.Message, articleCase *Article
 }
 
 func sendScreenshotForMarketBeat(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
-	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
 	screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
 	if len(screenshot) == 0 {
 		return false
@@ -435,7 +436,7 @@ func sendScreenshotForMarketBeat(b *tb.Bot, m *tb.Message, articleCase *ArticleC
 }
 
 func sendScreenshotForCathiesArk(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
-	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
 	screenshot := ss.MakeScreenshotForCathiesArk(linkURL)
 	if len(screenshot) == 0 {
 		return false
@@ -469,7 +470,7 @@ func sendScreenshotForCathiesArk(b *tb.Bot, m *tb.Message, articleCase *ArticleC
 
 func sendScreenshotForImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
 	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
-	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
 	screenshot := ss.MakeScreenshotForImage(imageURL, articleCase.width, articleCase.height)
 	if len(screenshot) == 0 {
 		return false
@@ -503,7 +504,7 @@ func sendScreenshotForImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, 
 
 func sendImage(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker) bool {
 	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol, time.Now().Unix())
-	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
 	photo := &tb.Photo{
 		File: tb.FromURL(imageURL),
 		Caption: fmt.Sprintf(
@@ -537,7 +538,7 @@ func sendLink(b *tb.Bot, m *tb.Message, articleCase *ArticleCase, ticker *Ticker
 		}
 		return articleCase.description
 	}()
-	linkURL := fmt.Sprintf(articleCase.linkURL, ticker.symbol)
+	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
 	text := fmt.Sprintf(`\#%s %s[%s](%s)`,
 		ticker.symbol,
 		escape(by(description)),

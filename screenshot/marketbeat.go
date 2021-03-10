@@ -7,6 +7,7 @@ import (
 	"image"
 	"image/png"
 	"log"
+	"time"
 
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/chromedp"
@@ -15,9 +16,16 @@ import (
 
 // MakeScreenshotForMarketBeat description
 func MakeScreenshotForMarketBeat(linkURL string) []byte {
-	ctx, cancel := chromedp.NewContext(context.Background())
-	defer cancel()
-	if err := chromedp.Run(ctx, func() chromedp.Tasks {
+	ctx1, cancel1 := chromedp.NewContext(context.Background())
+	defer cancel1()
+	// start the browser without a timeout
+	if err := chromedp.Run(ctx1); err != nil {
+		log.Println(err)
+		return nil
+	}
+	ctx2, cancel2 := context.WithTimeout(ctx1, 60*time.Second)
+	defer cancel2()
+	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.Emulate(device.KindleFireHDX),
 			chromedp.Navigate(linkURL),
@@ -29,11 +37,11 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 		log.Println(err)
 	}
 	var buf11, buf12 []byte
-	if err := takeScreenshotForMarketBeat(ctx, "#liInsiderTrades > a", "#insiderChart", &buf11, &buf12); err != nil {
+	if err := takeScreenshotForMarketBeat(ctx2, "#liInsiderTrades > a", "#insiderChart", &buf11, &buf12); err != nil {
 		log.Println(err)
 	}
 	var buf21, buf22 []byte
-	if err := takeScreenshotForMarketBeat(ctx, "#liInstutionalOwnership > a", "#SECChart", &buf21, &buf22); err != nil {
+	if err := takeScreenshotForMarketBeat(ctx2, "#liInstutionalOwnership > a", "#SECChart", &buf21, &buf22); err != nil {
 		log.Println(err)
 	}
 	var src1 image.Image

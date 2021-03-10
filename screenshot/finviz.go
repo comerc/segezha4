@@ -6,27 +6,39 @@ import (
 	"image"
 	"image/png"
 	"log"
+	"time"
 
 	"github.com/chromedp/cdproto/cdp"
+	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
 )
 
 // MakeScreenshotForFinviz description
 func MakeScreenshotForFinviz(linkURL string) []byte {
-	ctx, cancel := chromedp.NewContext(context.Background())
-	defer cancel()
-	if err := chromedp.Run(ctx, func() chromedp.Tasks {
+	ctx1, cancel1 := chromedp.NewContext(context.Background())
+	defer cancel1()
+	// start the browser without a timeout
+	if err := chromedp.Run(ctx1); err != nil {
+		log.Println(err)
+		return nil
+	}
+	ctx2, cancel2 := context.WithTimeout(ctx1, 30*time.Second)
+	defer cancel2()
+	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
+			network.SetBlockedURLS([]string{"https://dggaenaawxe8z.cloudfront.net/cmp_v2/admiral/finviz.js"}),
 			chromedp.Emulate(device.KindleFireHDX),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body"),
+			// chromedp.Sleep(4 * time.Second),
+			// chromedp.Click("//*[text()='Accept all']", chromedp.BySearch),
 		}
 	}()); err != nil {
 		log.Println(err)
 	}
 	var buf1, buf2, buf3 []byte
-	if err := takeScreenshotForFinviz(ctx, &buf1, &buf2, &buf3); err != nil {
+	if err := takeScreenshotForFinviz(ctx2, &buf1, &buf2, &buf3); err != nil {
 		log.Println(err)
 	}
 	if len(buf1) == 0 {
