@@ -33,6 +33,7 @@ import (
 // TODO: не успевает загрузить картинку tipranks.com (показывает колёсики)
 
 func main() {
+	log.Println("new bot")
 	var (
 		// port      = os.Getenv("PORT")
 		// publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
@@ -115,19 +116,19 @@ func main() {
 		if m.Text == "/ids" {
 			sendFinvizIDs(b, m.Chat.ID)
 		} else if m.Text == "/us" {
-			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchTabUS)
+			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchHrefUS)
 		} else if m.Text == "/europe" {
-			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchTabEurope)
+			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchHrefEurope)
 		} else if m.Text == "/asia" {
-			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchTabAsia)
+			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchHrefAsia)
 		} else if m.Text == "/fx" {
-			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchTabFX)
+			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchHrefFX)
 		} else if m.Text == "/rates" {
-			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchTabRates)
+			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchHrefRates)
 		} else if m.Text == "/futures" {
-			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchTabFutures)
+			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchHrefFutures)
 		} else if m.Text == "/crypto" {
-			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchTabCrypto)
+			sendMarketWatchIDs(b, m.Chat.ID, ss.MarketWatchHrefCrypto)
 		} else if m.Text == "/vix" {
 			sendBarChart(b, m.Chat.ID, "$VIX")
 		} else if m.Text == "/spy" {
@@ -603,27 +604,27 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 				sendFinvizIDs(b, chatID)
 				sendFinvizMap(b, chatID)
 				sendBarChart(b, chatID, "$VIX")
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabUS)
+				sendMarketWatchIDs(b, chatID, ss.MarketWatchHrefUS)
 				if h >= 8 && h <= 17 {
-					sendMarketWatchIDs(b, chatID, ss.MarketWatchTabEurope)
+					sendMarketWatchIDs(b, chatID, ss.MarketWatchHrefEurope)
 				}
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabRates)
+				sendMarketWatchIDs(b, chatID, ss.MarketWatchHrefRates)
 			}
 		} else if m == 0 && s == 0 {
 			if h >= 0 {
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFutures)
+				sendMarketWatchIDs(b, chatID, ss.MarketWatchHrefFutures)
 			}
 			if h >= 8 && h <= 17 {
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabEurope)
+				sendMarketWatchIDs(b, chatID, ss.MarketWatchHrefEurope)
 			}
 			if h >= 0 && h <= 8 {
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabAsia)
+				sendMarketWatchIDs(b, chatID, ss.MarketWatchHrefAsia)
 			}
 			if h >= 0 {
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabRates)
+				sendMarketWatchIDs(b, chatID, ss.MarketWatchHrefRates)
 			}
-			// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFX)
-			// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabCrypto)
+			// sendMarketWatchIDs(b, chatID, ss.MarketWatchHrefFX)
+			// sendMarketWatchIDs(b, chatID, ss.MarketWatchHrefCrypto)
 		}
 	}
 }
@@ -673,8 +674,9 @@ func sendFinvizMap(b *tb.Bot, chatID int64) bool {
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			"%s[%s](%s)",
-			escape(by("Map")),
+			`\#%s %s[%s](%s)`,
+			escape("map"),
+			escape(by("")),
 			escape("finviz.com"),
 			linkURL,
 		),
@@ -703,7 +705,8 @@ func sendFear(b *tb.Bot, chatID int64) bool {
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			"%s[%s](%s)",
+			`\#%s %s[%s](%s)`,
+			escape("fear"),
 			escape(by("Fear & Greed Index")),
 			escape("money.cnn.com"),
 			linkURL,
@@ -733,8 +736,9 @@ func sendFinvizIDs(b *tb.Bot, chatID int64) bool {
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			"%s[%s](%s)",
-			escape(by("IDs")),
+			`\#%s %s[%s](%s)`,
+			escape("ids"),
+			escape(by("Bull Or Bear")),
 			escape("finviz.com"),
 			linkURL,
 		),
@@ -754,9 +758,9 @@ func sendFinvizIDs(b *tb.Bot, chatID int64) bool {
 	return true
 }
 
-func sendMarketWatchIDs(b *tb.Bot, chatID int64, tab ss.MarketWatchTab) bool {
+func sendMarketWatchIDs(b *tb.Bot, chatID int64, tabHref ss.MarketWatchHref) bool {
 	linkURL := "https://www.marketwatch.com/"
-	screenshot := ss.MakeScreenshotForMarketWatchIDs(linkURL, tab)
+	screenshot := ss.MakeScreenshotForMarketWatchIDs(linkURL, tabHref)
 	if len(screenshot) == 0 {
 		return false
 	}
