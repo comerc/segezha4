@@ -604,7 +604,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 				sendFinvizMap(b, chatID)
 				sendBarChart(b, chatID, "$VIX")
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabUS)
-				if h >= 8 || h <= 17 {
+				if h >= 8 && h <= 17 {
 					sendMarketWatchIDs(b, chatID, ss.MarketWatchTabEurope)
 				}
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabRates)
@@ -613,10 +613,10 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 			if h >= 0 {
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFutures)
 			}
-			if h >= 8 || h <= 17 {
+			if h >= 8 && h <= 17 {
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabEurope)
 			}
-			if h >= 0 || h <= 8 {
+			if h >= 0 && h <= 8 {
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabAsia)
 			}
 			if h >= 0 {
