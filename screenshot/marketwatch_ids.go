@@ -10,22 +10,41 @@ import (
 	"github.com/chromedp/chromedp/device"
 )
 
-// MarketWatchTab description
-type MarketWatchTab = string
+// MarketWatchHref description
+type MarketWatchHref = string
 
-// MarketWatchTab variants
+// MarketWatchHref variants
 const (
-	MarketWatchTabUS      MarketWatchTab = "https://www.marketwatch.com/markets/us"
-	MarketWatchTabEurope  MarketWatchTab = "https://www.marketwatch.com/markets/europe-middle-east"
-	MarketWatchTabAsia    MarketWatchTab = "https://www.marketwatch.com/markets/asia"
-	MarketWatchTabFX      MarketWatchTab = "https://www.marketwatch.com/investing/currencies"
-	MarketWatchTabRates   MarketWatchTab = "https://www.marketwatch.com/investing/bonds"
-	MarketWatchTabFutures MarketWatchTab = "https://www.marketwatch.com/investing/futures"
-	MarketWatchTabCrypto  MarketWatchTab = "https://www.marketwatch.com/investing/cryptocurrency"
+	MarketWatchHrefUS      MarketWatchHref = "https://www.marketwatch.com/markets/us"
+	MarketWatchHrefEurope  MarketWatchHref = "https://www.marketwatch.com/markets/europe-middle-east"
+	MarketWatchHrefAsia    MarketWatchHref = "https://www.marketwatch.com/markets/asia"
+	MarketWatchHrefFX      MarketWatchHref = "https://www.marketwatch.com/investing/currencies"
+	MarketWatchHrefRates   MarketWatchHref = "https://www.marketwatch.com/investing/bonds"
+	MarketWatchHrefFutures MarketWatchHref = "https://www.marketwatch.com/investing/futures"
+	MarketWatchHrefCrypto  MarketWatchHref = "https://www.marketwatch.com/investing/cryptocurrency"
 )
 
+// MarketWatchTab struct
+type MarketWatchTab struct {
+	name string
+	href MarketWatchHref
+}
+
+// MarketWatchTabs slice
+var MarketWatchTabs = []MarketWatchTab{
+	{name: "us", href: MarketWatchHrefUS},
+	{name: "europe", href: MarketWatchHrefEurope},
+	{name: "asia", href: MarketWatchHrefAsia},
+	{name: "fx", href: MarketWatchHrefFX},
+	{name: "rates", href: MarketWatchHrefRates},
+	{name: "futures", href: MarketWatchHrefFutures},
+	{name: "crypto", href: MarketWatchHrefCrypto},
+}
+
+// elements := make(map[string]string)
+
 // MakeScreenshotForMarketWatchIDs description
-func MakeScreenshotForMarketWatchIDs(linkURL string, tab MarketWatchTab) []byte {
+func MakeScreenshotForMarketWatchIDs(linkURL string, tabHref MarketWatchHref) []byte {
 	ctx1, cancel1 := chromedp.NewContext(context.Background())
 	defer cancel1()
 	// start the browser without a timeout
@@ -44,8 +63,8 @@ func MakeScreenshotForMarketWatchIDs(linkURL string, tab MarketWatchTab) []byte 
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body > footer"),
 			chromedp.Sleep(4 * time.Second),
-			chromedp.SetAttributeValue("body > #sp_message_container_413120", "style", "display:none"),
-			chromedp.Click(fmt.Sprintf("//a[@href='%s']", tab), chromedp.BySearch),
+			// chromedp.SetAttributeValue("body > #sp_message_container_413120", "style", "display:none"),
+			chromedp.Click(fmt.Sprintf("//a[@href='%s']", tabHref), chromedp.BySearch),
 			chromedp.Sleep(1 * time.Second),
 			chromedp.SetAttributeValue(sel, "style", "border-left:none"),
 			chromedp.Screenshot(sel, &buf, chromedp.NodeVisible),

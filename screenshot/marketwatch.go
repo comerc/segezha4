@@ -28,7 +28,7 @@ func MakeScreenshotForMarketWatch(linkURL string) []byte {
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body > footer"),
 			chromedp.Sleep(4 * time.Second),
-			chromedp.SetAttributeValue("body > #sp_message_container_413120", "style", "display:none"),
+			// chromedp.SetAttributeValue("body > #sp_message_container_413120", "style", "display:none"),
 			chromedp.SetAttributeValue("body > div.container.container--body > div.region.region--intraday > div.column.column--full.quote__nav", "style", "display:none"),
 			chromedp.SetAttributeValue("body > div.container.container--body > div.region.region--intraday > div.column.column--full > div.element.element--company > div.row", "style", "display:none"),
 			chromedp.SetAttributeValue("body > div.container.container--body > div.region.region--intraday > div.column.column--full > div.element.element--company > div.row > div.quote-actions", "style", "display:none"),

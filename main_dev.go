@@ -18,15 +18,15 @@ func _main() {
 	// linkURL := "https://finviz.com/quote.ashx?t=ZM"
 	// buf := ss.MakeScreenshotForFinviz(linkURL)
 
-	linkURL := "https://finviz.com/"
-	buf := ss.MakeScreenshotForFinvizIDs(linkURL)
+	// linkURL := "https://finviz.com/"
+	// buf := ss.MakeScreenshotForFinvizIDs(linkURL)
 
 	// linkURL := "https://marketwatch.com/"
-	// buf := ss.MakeScreenshotForMarketWatchIDs(linkURL, ss.MarketWatchTabCrypto)
+	// buf := ss.MakeScreenshotForMarketWatchIDs(linkURL, ss.MarketWatchHrefCrypto)
 
 	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
-	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
-	// buf := ss.MakeScreenshotForMarketWatch(linkURL)
+	linkURL := "https://marketwatch.com/investing/stock/TSLA"
+	buf := ss.MakeScreenshotForMarketWatch(linkURL)
 
 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
 	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
