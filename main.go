@@ -14,11 +14,12 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: отправлять #TSLA?! если в тексте $TSLA и #ОТЧЕТ, если просто $TSLA - отправлять #TSLA!
 // TODO: выдавать пачкой все информеры по тикеру !!
 // TODO: добавить опционы с investing.com
-// TODO: отправлять #TSLA?! если в тексте $TSLA и #ОТЧЕТ, если просто $TSLA - отправлять #TSLA!
-// TODO: использовать символы тикеров в качестве команд: /TSLA
+// TODO: использовать символы тикеров в качестве команд: /TSLA (но #TSLA! тоже оставить, иначе потеряю возможность вставлять внутри текста)
 // TODO: подключить ETF-ки, например ARKK https://etfdb.com/screener/
+// TODO: Жаль ЕТФ не пробивается на финвиз
 // TODO: выдавать сообщение sendLink, а по готовности основного ответа - его удалять
 // TODO: кнопки под полем ввода в приватном чате для: inline mode, help, search & all,
 // TODO: реализовать румтур
@@ -29,6 +30,8 @@ import (
 // TODO: добавить медленную скользящую #BABA?50EMA / 100EMA / 200EMA
 // TODO: параллельная обработка https://gobyexample.ru/worker-pools.html
 // TODO: добавить биток GBTC
+// TODO: выборка с графиками https://finviz.com/screener.ashx?v=212&t=ZM,BA,MU,MS,GE,AA
+// TODO: https://stockcharts.com/h-sc/ui?s=$CPCE https://school.stockcharts.com/doku.php?id=market_indicators:put_call_ratio
 
 func main() {
 	var (
@@ -134,13 +137,30 @@ func main() {
 			sendFinvizMap(b, m.Chat.ID)
 		} else if m.Text == "/fear" {
 			sendFear(b, m.Chat.ID)
+		} else if strings.HasPrefix(m.Text, "/finviz ") {
+			re := regexp.MustCompile(",")
+			payload := re.ReplaceAllString(m.Payload, " ")
+			symbols := strings.Split(payload, " ")
+			if len(symbols) == 0 {
+				sendError(b, m.Chat.ID, "No symbols")
+				return
+			}
+			for _, symbol := range symbols {
+				if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
+					symbol = symbol[1:]
+				}
+				result := sendFinvizImage(b, m.Chat.ID, symbol)
+				if !result {
+					sendError(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
+				}
+			}
 		} else if strings.HasPrefix(m.Text, "/info ") {
 			re := regexp.MustCompile(",")
 			payload := re.ReplaceAllString(m.Payload, " ")
 			arguments := strings.Split(payload, " ")
 			symbols := arguments[1:]
 			if len(symbols) == 0 {
-				sendError(b, m.Chat.ID, "Empty symbols")
+				sendError(b, m.Chat.ID, "No symbols")
 				return
 			}
 			articleCaseName := arguments[0]
@@ -197,9 +217,6 @@ func main() {
 			// simple command mode
 			re := regexp.MustCompile(`(^|[ ])#([A-Za-z]+)(\?!|\?\?|\?|!)`)
 			matches := re.FindAllStringSubmatch(m.Text, -1)
-			if len(matches) == 0 {
-				sendError(b, m.Chat.ID, "No matches")
-			}
 			for _, match := range matches {
 				symbol := match[2]
 				mode := match[3]
@@ -500,6 +517,35 @@ func sendScreenshotForImage(b *tb.Bot, chatID int64, articleCase *ArticleCase, t
 		},
 	)
 	screenshot = nil
+	photo = nil
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	return true
+}
+
+func sendFinvizImage(b *tb.Bot, chatID int64, symbol string) bool {
+	imageURL := fmt.Sprintf("https://charts2.finviz.com/chart.ashx?t=%s&ta=1&p=d", strings.ToLower(symbol))
+	linkURL := fmt.Sprintf("https://finviz.com/quote.ashx?t=%s", strings.ToLower(symbol))
+	photo := &tb.Photo{
+		File: tb.FromURL(imageURL),
+		Caption: fmt.Sprintf(
+			`\#%s %s[%s](%s)`,
+			strings.ToUpper(symbol),
+			escape(by("")),
+			escape("finviz.com"),
+			linkURL,
+			// getUserLink(m.Sender),
+		),
+	}
+	_, err := b.Send(
+		tb.ChatID(chatID),
+		photo,
+		&tb.SendOptions{
+			ParseMode: tb.ModeMarkdownV2,
+		},
+	)
 	photo = nil
 	if err != nil {
 		log.Println(err)
