@@ -11,7 +11,6 @@ import (
 )
 
 // TODO: что со шрифтами?
-// TODO: sp_message_container_*
 
 // MarketWatchTab description
 type MarketWatchTab = string

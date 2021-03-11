@@ -9,8 +9,6 @@ import (
 	"github.com/chromedp/chromedp/device"
 )
 
-// TODO: sp_message_container_*
-
 // MakeScreenshotForMarketWatch description
 func MakeScreenshotForMarketWatch(linkURL string) []byte {
 	ctx1, cancel1 := chromedp.NewContext(context.Background())
