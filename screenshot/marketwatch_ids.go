@@ -61,11 +61,11 @@ func MakeScreenshotForMarketWatchIDs(linkURL string, tab MarketWatchTab) []byte 
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body > footer"),
 			chromedp.Sleep(4 * time.Second),
-			chromedp.SetAttributeValue("//body/div[starts-with(@id, 'sp_message_container_')]", "style", "display:none"),
+			// chromedp.SetAttributeValue("//body/div[starts-with(@id, 'sp_message_container_')]", "style", "display:none"),
 			// chromedp.SetAttributeValue("body > #sp_message_container_450644", "style", "display:none"),
 			chromedp.Click(fmt.Sprintf("//a[@href='%s']", MarketWatchTabs[tab]), chromedp.BySearch),
 			chromedp.Sleep(1 * time.Second),
-			chromedp.SetAttributeValue(sel, "style", "border-left:none"),
+			chromedp.SetAttributeValue(sel, "style", "border-left:none; border-bottom: 1px solid #e1e1e1;"),
 			chromedp.Screenshot(sel, &buf, chromedp.NodeVisible),
 		}
 	}()); err != nil {

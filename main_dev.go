@@ -25,8 +25,11 @@ func _main() {
 	// buf := ss.MakeScreenshotForMarketWatchIDs(linkURL, ss.MarketWatchHrefCrypto)
 
 	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
-	linkURL := "https://marketwatch.com/investing/stock/TSLA"
-	buf := ss.MakeScreenshotForMarketWatch(linkURL)
+	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
+	// buf := ss.MakeScreenshotForMarketWatch(linkURL)
+
+	linkURL := "https://www.marketwatch.com/"
+	buf := ss.MakeScreenshotForMarketWatchIDs(linkURL, ss.MarketWatchTabUS)
 
 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
 	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
