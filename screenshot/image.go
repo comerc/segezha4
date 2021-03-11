@@ -38,6 +38,8 @@ func makeScreenshotForImage(linkURL string, width, height float64, quality int64
 	return chromedp.Tasks{
 		chromedp.Emulate(device.IPad),
 		chromedp.Navigate(linkURL),
+		chromedp.WaitReady("body"),
+		chromedp.Sleep(4 * time.Second),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			// force viewport emulation
 			err := emulation.SetDeviceMetricsOverride(int64(width), int64(height), 1, false).

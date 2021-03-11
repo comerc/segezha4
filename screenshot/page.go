@@ -39,6 +39,8 @@ func makeScreenshotForPage(linkURL string, x, y, width, height float64, quality 
 	return chromedp.Tasks{
 		chromedp.Emulate(device.KindleFireHDX),
 		chromedp.Navigate(linkURL),
+		chromedp.WaitReady("body"),
+		chromedp.Sleep(4 * time.Second),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			// get layout metrics
 			_, _, contentSize, err := page.GetLayoutMetrics().Do(ctx)
