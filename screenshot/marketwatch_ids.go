@@ -10,43 +10,39 @@ import (
 	"github.com/chromedp/chromedp/device"
 )
 
+// TODO: что со шрифтами?
 // TODO: sp_message_container_*
 
-// MarketWatchHref description
-type MarketWatchHref = string
+// MarketWatchTab description
+type MarketWatchTab = string
 
-// MarketWatchHref variants
+// MarketWatchTab variants
 const (
-	MarketWatchHrefUS      MarketWatchHref = "https://www.marketwatch.com/markets/us"
-	MarketWatchHrefEurope  MarketWatchHref = "https://www.marketwatch.com/markets/europe-middle-east"
-	MarketWatchHrefAsia    MarketWatchHref = "https://www.marketwatch.com/markets/asia"
-	MarketWatchHrefFX      MarketWatchHref = "https://www.marketwatch.com/investing/currencies"
-	MarketWatchHrefRates   MarketWatchHref = "https://www.marketwatch.com/investing/bonds"
-	MarketWatchHrefFutures MarketWatchHref = "https://www.marketwatch.com/investing/futures"
-	MarketWatchHrefCrypto  MarketWatchHref = "https://www.marketwatch.com/investing/cryptocurrency"
+	MarketWatchTabUS      MarketWatchTab = "us"
+	MarketWatchTabEurope  MarketWatchTab = "europe"
+	MarketWatchTabAsia    MarketWatchTab = "asia"
+	MarketWatchTabFX      MarketWatchTab = "fx"
+	MarketWatchTabRates   MarketWatchTab = "rates"
+	MarketWatchTabFutures MarketWatchTab = "futures"
+	MarketWatchTabCrypto  MarketWatchTab = "crypto"
 )
 
-// MarketWatchTab struct
-type MarketWatchTab struct {
-	name string
-	href MarketWatchHref
-}
+// MarketWatchTabs description
+var MarketWatchTabs map[string]string
 
-// MarketWatchTabs slice
-var MarketWatchTabs = []MarketWatchTab{
-	{name: "us", href: MarketWatchHrefUS},
-	{name: "europe", href: MarketWatchHrefEurope},
-	{name: "asia", href: MarketWatchHrefAsia},
-	{name: "fx", href: MarketWatchHrefFX},
-	{name: "rates", href: MarketWatchHrefRates},
-	{name: "futures", href: MarketWatchHrefFutures},
-	{name: "crypto", href: MarketWatchHrefCrypto},
+func init() {
+	MarketWatchTabs = make(map[string]string)
+	MarketWatchTabs[MarketWatchTabUS] = "https://www.marketwatch.com/markets/us"
+	MarketWatchTabs[MarketWatchTabEurope] = "https://www.marketwatch.com/markets/europe-middle-east"
+	MarketWatchTabs[MarketWatchTabAsia] = "https://www.marketwatch.com/markets/asia"
+	MarketWatchTabs[MarketWatchTabFX] = "https://www.marketwatch.com/investing/currencies"
+	MarketWatchTabs[MarketWatchTabRates] = "https://www.marketwatch.com/investing/bonds"
+	MarketWatchTabs[MarketWatchTabFutures] = "https://www.marketwatch.com/investing/futures"
+	MarketWatchTabs[MarketWatchTabCrypto] = "https://www.marketwatch.com/investing/cryptocurrency"
 }
-
-// elements := make(map[string]string)
 
 // MakeScreenshotForMarketWatchIDs description
-func MakeScreenshotForMarketWatchIDs(linkURL string, tabHref MarketWatchHref) []byte {
+func MakeScreenshotForMarketWatchIDs(linkURL string, tab MarketWatchTab) []byte {
 	ctx1, cancel1 := chromedp.NewContext(context.Background())
 	defer cancel1()
 	// start the browser without a timeout
@@ -65,8 +61,9 @@ func MakeScreenshotForMarketWatchIDs(linkURL string, tabHref MarketWatchHref) []
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body > footer"),
 			chromedp.Sleep(4 * time.Second),
-			chromedp.SetAttributeValue("body > #sp_message_container_450644", "style", "display:none"),
-			chromedp.Click(fmt.Sprintf("//a[@href='%s']", tabHref), chromedp.BySearch),
+			chromedp.SetAttributeValue("//body/div[starts-with(@id, 'sp_message_container_')]", "style", "display:none"),
+			// chromedp.SetAttributeValue("body > #sp_message_container_450644", "style", "display:none"),
+			chromedp.Click(fmt.Sprintf("//a[@href='%s']", MarketWatchTabs[tab]), chromedp.BySearch),
 			chromedp.Sleep(1 * time.Second),
 			chromedp.SetAttributeValue(sel, "style", "border-left:none"),
 			chromedp.Screenshot(sel, &buf, chromedp.NodeVisible),
