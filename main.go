@@ -33,7 +33,6 @@ import (
 // TODO: не успевает загрузить картинку tipranks.com (показывает колёсики)
 
 func main() {
-	log.Println("new bot")
 	var (
 		// port      = os.Getenv("PORT")
 		// publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
