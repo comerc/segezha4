@@ -29,9 +29,11 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 		return chromedp.Tasks{
 			chromedp.Emulate(device.KindleFireHDX),
 			chromedp.Navigate(linkURL),
-			chromedp.WaitReady(`body > div > footer`),
-			chromedp.WaitVisible("#optinform-modal a"),
-			chromedp.Click("#optinform-modal a", chromedp.NodeVisible),
+			chromedp.WaitReady("body footer"),
+			chromedp.WaitVisible("#optinform-container"),
+			chromedp.SetAttributeValue("#optinform-container", "style", "display:none"),
+			// chromedp.WaitVisible("#optinform-modal a"),
+			// chromedp.Click("#optinform-modal a", chromedp.NodeVisible),
 		}
 	}()); err != nil {
 		log.Println(err)
@@ -106,7 +108,7 @@ func takeScreenshotForMarketBeat(ctx context.Context, linkSel, chartSel interfac
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.Click(linkSel, chromedp.NodeVisible),
-			chromedp.WaitReady(`body > div > footer`),
+			chromedp.WaitReady("body footer"),
 			// chromedp.WaitVisible(chartSel),
 			// chromedp.ScrollIntoView(chartSel),
 			chromedp.SetAttributeValue(pnlAdSenseHeader, "style", "display:none"),

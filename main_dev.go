@@ -24,16 +24,17 @@ func _main() {
 	// linkURL := "https://marketwatch.com/"
 	// buf := ss.MakeScreenshotForMarketWatchIDs(linkURL, ss.MarketWatchHrefCrypto)
 
-	linkURL := "https://marketwatch.com/investing/stock/ZM"
-	buf := ss.MakeScreenshotForMarketWatch(linkURL)
+	// linkURL := "https://marketwatch.com/investing/stock/ZM"
+	// buf := ss.MakeScreenshotForMarketWatch(linkURL)
 
 	// linkURL := "https://www.marketwatch.com/"
 	// buf := ss.MakeScreenshotForMarketWatchIDs(linkURL, ss.MarketWatchTabUS)
 
 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
 	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
-	// linkURL := "https://www.marketbeat.com/stocks/TSLA"
-	// buf := ss.MakeScreenshotForMarketBeat(linkURL)
+	linkURL := "https://www.marketbeat.com/stocks/TSLA"
+	buf := ss.MakeScreenshotForMarketBeat(linkURL)
+
 	// linkURL := "https://cathiesark.com/ark-combined-holdings-of-REGN"
 	// buf := ss.MakeScreenshotForCathiesArk(linkURL)
 	// linkURL := "https://finviz.com/map.ashx?t=sec"
