@@ -53,6 +53,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// b.Handle(tb.OnCallback, func(*tb.Callback) {
+	// 	log.Println("OnCallback")
+	// })
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		re := regexp.MustCompile("[^A-Za-z]")
 		symbol := re.ReplaceAllString(q.Text, "")
@@ -102,7 +105,7 @@ func main() {
 			log.Println(err)
 		}
 	})
-	b.Handle(tb.OnText, func(m *tb.Message) {
+	messageHandler := func(m *tb.Message) {
 		log.Println("****")
 		if m.Sender != nil {
 			log.Println(m.Sender.Username)
@@ -110,33 +113,39 @@ func main() {
 			log.Println(m.Sender.LastName)
 		}
 		log.Println(m.Chat.Username)
-		log.Println(m.Text)
+		var text string
+		if m.Photo != nil {
+			text = m.Caption
+		} else {
+			text = m.Text
+		}
+		log.Println(text)
 		log.Println("****")
 		for tab := range ss.MarketWatchTabs {
-			if m.Text == "/"+tab {
+			if text == "/"+tab {
 				sendMarketWatchIDs(b, m.Chat.ID, tab)
 				return
 			}
 		}
-		if m.Text == "/ids" {
+		if text == "/ids" {
 			sendFinvizIDs(b, m.Chat.ID)
-		} else if m.Text == "/vix" {
+		} else if text == "/vix" {
 			sendBarChart(b, m.Chat.ID, "$VIX")
-		} else if m.Text == "/spy" {
+		} else if text == "/spy" {
 			sendBarChart(b, m.Chat.ID, "SPY")
-		} else if m.Text == "/index" {
+		} else if text == "/index" {
 			sendBarChart(b, m.Chat.ID, "$INX")
 			sendBarChart(b, m.Chat.ID, "$NASX")
 			sendBarChart(b, m.Chat.ID, "$DOWI")
-		} else if m.Text == "/volume" {
+		} else if text == "/volume" {
 			sendBarChart(b, m.Chat.ID, "SPY")
 			sendBarChart(b, m.Chat.ID, "QQQ")
 			sendBarChart(b, m.Chat.ID, "DOW")
-		} else if m.Text == "/map" {
+		} else if text == "/map" {
 			sendFinvizMap(b, m.Chat.ID)
-		} else if m.Text == "/fear" {
+		} else if text == "/fear" {
 			sendFear(b, m.Chat.ID)
-		} else if strings.HasPrefix(m.Text, "/finviz ") {
+		} else if strings.HasPrefix(text, "/finviz ") {
 			re := regexp.MustCompile(",")
 			payload := re.ReplaceAllString(m.Payload, " ")
 			symbols := strings.Split(payload, " ")
@@ -144,16 +153,21 @@ func main() {
 				sendError(b, m.Chat.ID, "No symbols")
 				return
 			}
+			executed := make([]string, 0)
 			for _, symbol := range symbols {
 				if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
 					symbol = symbol[1:]
 				}
+				if Contains(executed, strings.ToUpper(symbol)) {
+					continue
+				}
+				executed = append(executed, strings.ToUpper(symbol))
 				result := sendFinvizImage(b, m.Chat.ID, symbol)
 				if !result {
 					sendError(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
 				}
 			}
-		} else if strings.HasPrefix(m.Text, "/info ") {
+		} else if strings.HasPrefix(text, "/info ") {
 			re := regexp.MustCompile(",")
 			payload := re.ReplaceAllString(m.Payload, " ")
 			arguments := strings.Split(payload, " ")
@@ -168,10 +182,15 @@ func main() {
 				sendError(b, m.Chat.ID, "Invalid command")
 				return
 			}
+			executed := make([]string, 0)
 			for _, symbol := range symbols {
 				if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
 					symbol = symbol[1:]
 				}
+				if Contains(executed, strings.ToUpper(symbol)) {
+					continue
+				}
+				executed = append(executed, strings.ToUpper(symbol))
 				ticker := GetExactTicker(symbol)
 				if ticker == nil {
 					sendError(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
@@ -212,11 +231,12 @@ func main() {
 			// if err != nil {
 			// 	log.Println(err)
 			// }
-		} else if isEarnings(m.Text) {
-			// log.Println(m.Text)
+
+		} else if isEarnings(text) {
+			// log.Println(text)
 			log.Println("isEarnings")
 			re := regexp.MustCompile(`(^|[ ])\$([A-Za-z]+)`)
-			symbol := re.FindString(m.Text)
+			symbol := re.FindString(text)
 			log.Println(symbol == "")
 			log.Println(symbol)
 			if symbol == "" {
@@ -237,12 +257,66 @@ func main() {
 			if !result {
 				sendLink(b, m.Chat.ID, articleCase, ticker)
 			}
+		} else if isARK(text) {
+			re := regexp.MustCompile(`(^|[ ])#([A-Za-z]+)`)
+			matches := re.FindAllStringSubmatch(text, -1)
+			executed := make([]string, 0)
+			executed = append(executed, "ARK")
+			for _, match := range matches {
+				symbol := match[2]
+				if Contains(executed, strings.ToUpper(symbol)) {
+					continue
+				}
+				executed = append(executed, strings.ToUpper(symbol))
+				ticker := GetExactTicker(symbol)
+				if ticker == nil {
+					sendError(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
+					continue
+				}
+				articleCase := GetExactArticleCase("finviz.com")
+				result := sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
+				// result = sendScreenshotForPage(b, m.Chat.ID, articleCase, ticker)
+				if !result {
+					sendError(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
+					result = true
+				}
+			}
+		} else if isIdeas(text) {
+			log.Println("isIdeas")
+			re := regexp.MustCompile(`(^|[ ])\$([A-Za-z]+)`)
+			matches := re.FindAllStringSubmatch(text, -1)
+			executed := make([]string, 0)
+			for _, match := range matches {
+				symbol := match[2]
+				log.Println(symbol)
+				if Contains(executed, strings.ToUpper(symbol)) {
+					continue
+				}
+				executed = append(executed, strings.ToUpper(symbol))
+				ticker := GetExactTicker(symbol)
+				if ticker == nil {
+					sendError(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
+					continue
+				}
+				articleCase := GetExactArticleCase("finviz.com")
+				result := sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
+				// result = sendScreenshotForPage(b, m.Chat.ID, articleCase, ticker)
+				if !result {
+					sendError(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
+					result = true
+				}
+			}
 		} else {
 			// simple command mode
 			re := regexp.MustCompile(`(^|[ ])#([A-Za-z]+)(\?!|\?\?|\?|!)`)
-			matches := re.FindAllStringSubmatch(m.Text, -1)
+			matches := re.FindAllStringSubmatch(text, -1)
+			executed := make([]string, 0)
 			for _, match := range matches {
 				symbol := match[2]
+				if Contains(executed, strings.ToUpper(symbol)) {
+					continue
+				}
+				executed = append(executed, strings.ToUpper(symbol))
 				mode := match[3]
 				// log.Println(symbol + mode)
 				ticker := GetExactTicker(symbol)
@@ -286,7 +360,10 @@ func main() {
 				}
 			}
 		}
-	})
+
+	}
+	b.Handle(tb.OnText, messageHandler)
+	b.Handle(tb.OnPhoto, messageHandler)
 	go runBackgroundTask(b, int64(strToInt(chatID)))
 	b.Start()
 }
@@ -869,6 +946,57 @@ func strToInt(s string) int {
 }
 
 func isEarnings(text string) bool {
-	re := regexp.MustCompile(`#ОТЧЕТ`)
+	re := regexp.MustCompile("#ОТЧЕТ")
 	return re.FindStringIndex(text) != nil
+}
+
+func isARK(text string) bool {
+	re := regexp.MustCompile("#ARK")
+	return re.FindStringIndex(text) != nil
+}
+
+func isIdeas(text string) bool {
+	re := regexp.MustCompile("#Идеи_покупок")
+	return re.FindStringIndex(text) != nil
+}
+
+// func tryTag(b *tb.Bot, m *tb.Message) bool {
+// 	tag := findTag(m.Text, fmt.Sprintf("(%s|%s)", TagEarnings, TagARK))
+// 	if tag == "" {
+// 		return false
+// 	}
+// 	// log.Println(m.Text)
+// 	log.Println(tag)
+// 	re := regexp.MustCompile(`(^|[ ])\$([A-Za-z]+)`)
+// 	symbol := re.FindString(m.Text)
+// 	log.Println(symbol == "")
+// 	log.Println(symbol)
+// 	if symbol == "" {
+// 		return true
+// 	}
+// 	symbol = strings.Trim(symbol, " ")
+// 	symbol = symbol[1:]
+// 	ticker := GetExactTicker(symbol)
+// 	if ticker == nil {
+// 		sendError(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
+// 		return true
+// 	}
+// 	log.Println(ticker)
+// 	log.Println(m.Chat.ID)
+// 	articleCase := GetExactArticleCase(ArticleCaseNamesByTag[tag])
+// 	result := sendScreenshotForMarketWatch(b, m.Chat.ID, articleCase, ticker)
+// 	log.Println(result)
+// 	if !result {
+// 		sendLink(b, m.Chat.ID, articleCase, ticker)
+// 	}
+// 	return true
+// }
+
+func Contains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
 }
