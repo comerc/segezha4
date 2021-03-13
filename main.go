@@ -14,7 +14,6 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// TODO: отправлять #TSLA?! если в тексте $TSLA и #ОТЧЕТ, если просто $TSLA - отправлять #TSLA!
 // TODO: выдавать пачкой все информеры по тикеру !!
 // TODO: добавить опционы с investing.com
 // TODO: использовать символы тикеров в качестве команд: /TSLA (но #TSLA! тоже оставить, иначе потеряю возможность вставлять внутри текста)
@@ -213,6 +212,31 @@ func main() {
 			// if err != nil {
 			// 	log.Println(err)
 			// }
+		} else if isEarnings(m.Text) {
+			// log.Println(m.Text)
+			log.Println("isEarnings")
+			re := regexp.MustCompile(`(^|[ ])\$([A-Za-z]+)`)
+			symbol := re.FindString(m.Text)
+			log.Println(symbol == "")
+			log.Println(symbol)
+			if symbol == "" {
+				return
+			}
+			symbol = strings.Trim(symbol, " ")
+			symbol = symbol[1:]
+			ticker := GetExactTicker(symbol)
+			if ticker == nil {
+				sendError(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
+				return
+			}
+			log.Println(ticker)
+			log.Println(m.Chat.ID)
+			articleCase := GetExactArticleCase("marketwatch.com")
+			result := sendScreenshotForMarketWatch(b, m.Chat.ID, articleCase, ticker)
+			log.Println(result)
+			if !result {
+				sendLink(b, m.Chat.ID, articleCase, ticker)
+			}
 		} else {
 			// simple command mode
 			re := regexp.MustCompile(`(^|[ ])#([A-Za-z]+)(\?!|\?\?|\?|!)`)
@@ -635,30 +659,37 @@ func by(s string) string {
 func runBackgroundTask(b *tb.Bot, chatID int64) {
 	ticker := time.NewTicker(1 * time.Second)
 	for t := range ticker.C {
+		w := t.Weekday()
+		if w == 6 || w == 0 {
+			return
+		}
 		h := t.UTC().Hour()
 		m := t.Minute()
 		s := t.Second()
 		const d = 30
 		if h == 14 && m >= 30 || h > 14 && h < 21 || h == 21 && m < d {
 			if m%d == 0 && s == 15 {
-				sendFinvizIDs(b, chatID)
-				sendFinvizMap(b, chatID)
+				if h >= 15 {
+					sendFinvizIDs(b, chatID)
+					sendFinvizMap(b, chatID)
+				}
 				sendBarChart(b, chatID, "$VIX")
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabUS)
 				if h >= 8 && h <= 17 {
 					sendMarketWatchIDs(b, chatID, ss.MarketWatchTabEurope)
 				}
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabRates)
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFutures)
+				// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFutures)
 			}
 		} else if m == 0 && s == 15 {
 			if h >= 8 && h <= 17 {
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabEurope)
 			}
-			if h >= 5 && h <= 9 {
+			// SPB работает с 7 утра (MSK)
+			if h >= 4 && h <= 9 {
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabAsia)
 			}
-			if h >= 5 && h <= 13 {
+			if h >= 4 && h <= 13 {
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabRates)
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFutures)
 			}
@@ -835,4 +866,9 @@ func strToInt(s string) int {
 		return 0
 	}
 	return n
+}
+
+func isEarnings(text string) bool {
+	re := regexp.MustCompile(`#ОТЧЕТ`)
+	return re.FindStringIndex(text) != nil
 }
