@@ -14,14 +14,13 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: реализовать румтур
 // TODO: выдавать пачкой все информеры по тикеру !!
 // TODO: добавить опционы с investing.com
 // TODO: использовать символы тикеров в качестве команд: /TSLA (но #TSLA! тоже оставить, иначе потеряю возможность вставлять внутри текста)
 // TODO: подключить ETF-ки, например ARKK https://etfdb.com/screener/
-// TODO: Жаль ЕТФ не пробивается на финвиз
 // TODO: выдавать сообщение sendLink, а по готовности основного ответа - его удалять
 // TODO: кнопки под полем ввода в приватном чате для: inline mode, help, search & all,
-// TODO: реализовать румтур
 // TODO: поиск по ticker.title
 // TODO: README
 // TODO: svg to png
@@ -36,8 +35,8 @@ func main() {
 	var (
 		// port      = os.Getenv("PORT")
 		// publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
-		chatID = os.Getenv("TELEBOT_CHAT_ID") // you must add it to your config vars
-		token  = os.Getenv("TELEBOT_SECRET")  // you must add it to your config vars
+		// chatID = os.Getenv("TELEBOT_CHAT_ID") // you must add it to your config vars
+		token = os.Getenv("TELEBOT_SECRET") // you must add it to your config vars
 	)
 	// webhook := &tb.Webhook{
 	// 	Listen:   ":" + port,
@@ -364,7 +363,7 @@ func main() {
 	}
 	b.Handle(tb.OnText, messageHandler)
 	b.Handle(tb.OnPhoto, messageHandler)
-	go runBackgroundTask(b, int64(strToInt(chatID)))
+	// go runBackgroundTask(b, int64(strToInt(chatID)))
 	b.Start()
 }
 
@@ -733,48 +732,48 @@ func by(s string) string {
 	return s + " by "
 }
 
-func runBackgroundTask(b *tb.Bot, chatID int64) {
-	ticker := time.NewTicker(1 * time.Second)
-	for t := range ticker.C {
-		w := t.Weekday()
-		if w == 6 || w == 0 {
-			return
-		}
-		h := t.UTC().Hour()
-		m := t.Minute()
-		s := t.Second()
-		const d = 30
-		if h == 14 && m >= 30 || h > 14 && h < 21 || h == 21 && m < d {
-			if m%d == 0 && s == 15 {
-				if h >= 15 {
-					sendFinvizIDs(b, chatID)
-					sendFinvizMap(b, chatID)
-				}
-				sendBarChart(b, chatID, "$VIX")
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabUS)
-				if h >= 8 && h <= 17 {
-					sendMarketWatchIDs(b, chatID, ss.MarketWatchTabEurope)
-				}
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabRates)
-				// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFutures)
-			}
-		} else if m == 0 && s == 15 {
-			if h >= 8 && h <= 17 {
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabEurope)
-			}
-			// SPB работает с 7 утра (MSK)
-			if h >= 4 && h <= 9 {
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabAsia)
-			}
-			if h >= 4 && h <= 13 {
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabRates)
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFutures)
-			}
-			// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFX)
-			// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabCrypto)
-		}
-	}
-}
+// func runBackgroundTask(b *tb.Bot, chatID int64) {
+// 	ticker := time.NewTicker(1 * time.Second)
+// 	for t := range ticker.C {
+// 		w := t.Weekday()
+// 		if w == 6 || w == 0 {
+// 			return
+// 		}
+// 		h := t.UTC().Hour()
+// 		m := t.Minute()
+// 		s := t.Second()
+// 		const d = 30
+// 		if h == 14 && m >= 30 || h > 14 && h < 21 || h == 21 && m < d {
+// 			if m%d == 0 && s == 15 {
+// 				if h >= 15 {
+// 					sendFinvizIDs(b, chatID)
+// 					sendFinvizMap(b, chatID)
+// 				}
+// 				sendBarChart(b, chatID, "$VIX")
+// 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabUS)
+// 				if h >= 8 && h <= 17 {
+// 					sendMarketWatchIDs(b, chatID, ss.MarketWatchTabEurope)
+// 				}
+// 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabRates)
+// 				// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFutures)
+// 			}
+// 		} else if m == 0 && s == 15 {
+// 			if h >= 8 && h <= 17 {
+// 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabEurope)
+// 			}
+// 			// SPB работает с 7 утра (MSK)
+// 			if h >= 4 && h <= 9 {
+// 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabAsia)
+// 			}
+// 			if h >= 4 && h <= 13 {
+// 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabRates)
+// 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFutures)
+// 			}
+// 			// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFX)
+// 			// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabCrypto)
+// 		}
+// 	}
+// }
 
 func sendBarChart(b *tb.Bot, chatID int64, symbol string) bool {
 	volume, height, tag := func() (string, string, string) {
