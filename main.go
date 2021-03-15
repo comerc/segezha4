@@ -15,9 +15,9 @@ import (
 )
 
 // TODO: реализовать румтур
-// TODO: выдавать пачкой все информеры по тикеру !!
 // TODO: добавить опционы с investing.com
 // TODO: добавить gurufocus.com
+// TODO: выдавать пачкой все информеры по тикеру !!
 // TODO: использовать символы тикеров в качестве команд: /TSLA (но #TSLA! тоже оставить, иначе потеряю возможность вставлять внутри текста)
 // TODO: подключить ETF-ки, например ARKK https://etfdb.com/screener/
 // TODO: выдавать сообщение sendLink, а по готовности основного ответа - его удалять
@@ -233,32 +233,24 @@ func main() {
 			// }
 
 		} else if isEarnings(text) {
-			// log.Println(text)
-			log.Println("isEarnings")
-			re := regexp.MustCompile(`(^|[ ])\$([A-Za-z]+)`)
-			symbol := re.FindString(text)
-			log.Println(symbol == "")
-			log.Println(symbol)
-			if symbol == "" {
+			re := regexp.MustCompile(`(^|[^A-Za-z])\$([A-Za-z]+)`)
+			matches := re.FindAllStringSubmatch(text, -1)
+			if len(matches) == 0 {
 				return
 			}
-			symbol = strings.Trim(symbol, " ")
-			symbol = symbol[1:]
+			symbol := matches[0][2]
 			ticker := GetExactTicker(symbol)
 			if ticker == nil {
 				sendError(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
 				return
 			}
-			log.Println(ticker)
-			log.Println(m.Chat.ID)
 			articleCase := GetExactArticleCase("marketwatch.com")
 			result := sendScreenshotForMarketWatch(b, m.Chat.ID, articleCase, ticker)
-			log.Println(result)
 			if !result {
 				sendLink(b, m.Chat.ID, articleCase, ticker)
 			}
 		} else if isARK(text) {
-			re := regexp.MustCompile(`(^|[ ])#([A-Za-z]+)`)
+			re := regexp.MustCompile(`(^|[^A-Za-z])#([A-Za-z]+)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			executed := make([]string, 0)
 			executed = append(executed, "ARK")
@@ -281,13 +273,11 @@ func main() {
 				}
 			}
 		} else if isIdeas(text) {
-			log.Println("isIdeas")
-			re := regexp.MustCompile(`(^|[ ])\$([A-Za-z]+)`)
+			re := regexp.MustCompile(`(^|[^A-Za-z])\$([A-Za-z]+)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			executed := make([]string, 0)
 			for _, match := range matches {
 				symbol := match[2]
-				log.Println(symbol)
 				if Contains(executed, strings.ToUpper(symbol)) {
 					continue
 				}
@@ -959,38 +949,6 @@ func isIdeas(text string) bool {
 	re := regexp.MustCompile("(?i)#Идеи_покупок|#ИдеиПокупок|#ИнвестИдея")
 	return re.FindStringIndex(text) != nil
 }
-
-// func tryTag(b *tb.Bot, m *tb.Message) bool {
-// 	tag := findTag(m.Text, fmt.Sprintf("(%s|%s)", TagEarnings, TagARK))
-// 	if tag == "" {
-// 		return false
-// 	}
-// 	// log.Println(m.Text)
-// 	log.Println(tag)
-// 	re := regexp.MustCompile(`(^|[ ])\$([A-Za-z]+)`)
-// 	symbol := re.FindString(m.Text)
-// 	log.Println(symbol == "")
-// 	log.Println(symbol)
-// 	if symbol == "" {
-// 		return true
-// 	}
-// 	symbol = strings.Trim(symbol, " ")
-// 	symbol = symbol[1:]
-// 	ticker := GetExactTicker(symbol)
-// 	if ticker == nil {
-// 		sendError(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
-// 		return true
-// 	}
-// 	log.Println(ticker)
-// 	log.Println(m.Chat.ID)
-// 	articleCase := GetExactArticleCase(ArticleCaseNamesByTag[tag])
-// 	result := sendScreenshotForMarketWatch(b, m.Chat.ID, articleCase, ticker)
-// 	log.Println(result)
-// 	if !result {
-// 		sendLink(b, m.Chat.ID, articleCase, ticker)
-// 	}
-// 	return true
-// }
 
 func Contains(a []string, x string) bool {
 	for _, n := range a {
