@@ -127,8 +127,8 @@ func main() {
 				return
 			}
 		}
-		if text == "/ids" {
-			sendFinvizIDs(b, m.Chat.ID)
+		if text == "/bb" {
+			sendFinvizBB(b, m.Chat.ID)
 		} else if text == "/vix" {
 			sendBarChart(b, m.Chat.ID, "$VIX")
 		} else if text == "/spy" {
@@ -747,7 +747,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 		if h == 14-summer && m >= 30 || h > 14-summer && h < 21-summer || h == 21-summer && m < d {
 			if m%d == 0 && s == 15 {
 				if h >= 15-summer {
-					sendFinvizIDs(b, chatID)
+					sendFinvizBB(b, chatID)
 					sendFinvizMap(b, chatID)
 				}
 				sendBarChart(b, chatID, "$VIX")
@@ -874,9 +874,9 @@ func sendFear(b *tb.Bot, chatID int64) bool {
 	return true
 }
 
-func sendFinvizIDs(b *tb.Bot, chatID int64) bool {
+func sendFinvizBB(b *tb.Bot, chatID int64) bool {
 	linkURL := "https://finviz.com/"
-	screenshot := ss.MakeScreenshotForFinvizIDs(linkURL)
+	screenshot := ss.MakeScreenshotForFinvizBB(linkURL)
 	if len(screenshot) == 0 {
 		return false
 	}

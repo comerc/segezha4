@@ -13,8 +13,8 @@ import (
 	"github.com/chromedp/chromedp/device"
 )
 
-// MakeScreenshotForFinvizIDs description
-func MakeScreenshotForFinvizIDs(linkURL string) []byte {
+// MakeScreenshotForFinvizBB description
+func MakeScreenshotForFinvizBB(linkURL string) []byte {
 	o := append(chromedp.DefaultExecAllocatorOptions[:],
 		// chromedp.ProxyServer("socks5://138.59.207.118:9076"),
 		chromedp.Flag("blink-settings", "imagesEnabled=false"),
