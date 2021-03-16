@@ -42,7 +42,7 @@ func MakeScreenshotForFinvizMap(linkURL string) []byte {
 			chromedp.SetAttributeValue(selHeader, "style", "display:none"),
 			chromedp.SetAttributeValue(selNavbar, "style", "display:none"),
 			chromedp.SetAttributeValue(selView, "style", "display:none"),
-			chromedp.SetAttributeValue(selChart, "style", "margin:6px 0 0"),
+			chromedp.SetAttributeValue(selChart, "style", "margin:6px 0 0 2px"),
 			chromedp.SetAttributeValue(selFooter, "style", "display:none"),
 			chromedp.Screenshot(selChart, &buf, chromedp.NodeVisible),
 		}
