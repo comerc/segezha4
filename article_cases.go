@@ -15,6 +15,7 @@ const (
 	ScreenshotModeMarketWatch ScreenshotMode = "MarketWatch"
 	ScreenshotModeMarketBeat  ScreenshotMode = "MarketBeat"
 	ScreenshotModeCathiesArk  ScreenshotMode = "CathiesArk"
+	ScreenshotModeGuruFocus   ScreenshotMode = "GuruFocus"
 )
 
 // ArticleCase struct
@@ -41,6 +42,10 @@ var ArticleCases = []ArticleCase{
 		screenshotMode: ScreenshotModeFinviz,
 		// y:              215,
 		// height:         845 - 91, /* (banner) */
+	},
+	{name: "gurufocus.com", linkURL: "https://gurufocus.com/stock/%s/summary#",
+		description:    "Summary",
+		screenshotMode: ScreenshotModeGuruFocus,
 	},
 	{name: "cathiesark.com", linkURL: "https://cathiesark.com/ark-combined-holdings-of-%s",
 		description:    "ARK Invest Fund Holdings",
@@ -91,7 +96,6 @@ var ArticleCases = []ArticleCase{
 		height:         913,
 	},
 	{name: "barchart.com", linkURL: "https://barchart.com/stocks/quotes/%s/overview", description: "Overview"},
-	{name: "gurufocus.com", linkURL: "https://gurufocus.com/stock/%s/summary", description: "Overview"},
 	{name: "finasquare.com", linkURL: "https://www.finasquare.com/stocks/%s/company-info/overview", description: "Overview"},
 	{name: "stockrow.com", linkURL: "https://stockrow.com/%s", description: "Overview"},
 	{name: "stockanalysis.com", linkURL: "https://stockanalysis.com/stocks/%s/", description: "Overview"},
