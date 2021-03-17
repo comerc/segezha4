@@ -171,9 +171,8 @@ func main() {
 		} else if text == "/fear" {
 			sendFear(b, m.Chat.ID)
 		} else if strings.HasPrefix(text, "/finviz ") {
-			// TODO: убирать лишние пробелы, пример: /finviz  $AMD $INTC
-			re := regexp.MustCompile(",")
-			payload := re.ReplaceAllString(m.Payload, " ")
+			re := regexp.MustCompile(",|[ ]+")
+			payload := re.ReplaceAllString(strings.Trim(m.Payload, " "), " ")
 			symbols := strings.Split(payload, " ")
 			if len(symbols) == 0 {
 				sendText(b, m.Chat.ID, "No symbols")
@@ -194,8 +193,8 @@ func main() {
 				}
 			}
 		} else if strings.HasPrefix(text, "/info ") {
-			re := regexp.MustCompile(",")
-			payload := re.ReplaceAllString(m.Payload, " ")
+			re := regexp.MustCompile(",|[ ]+")
+			payload := re.ReplaceAllString(strings.Trim(m.Payload, " "), " ")
 			arguments := strings.Split(payload, " ")
 			symbols := arguments[1:]
 			if len(symbols) == 0 {
@@ -473,9 +472,8 @@ func sendScreenshotForPage(b *tb.Bot, chatID int64, articleCase *ArticleCase, ti
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s %s[%s](%s)`,
+			`\#%s by [%s](%s)`,
 			ticker.symbol,
-			escape(by(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -506,9 +504,8 @@ func sendScreenshotForFinviz(b *tb.Bot, chatID int64, articleCase *ArticleCase, 
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s %s[%s](%s)`,
+			`\#%s by [%s](%s)`,
 			ticker.symbol,
-			escape(by(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -539,9 +536,8 @@ func sendScreenshotForMarketWatch(b *tb.Bot, chatID int64, articleCase *ArticleC
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s %s[%s](%s)`,
+			`\#%s by [%s](%s)`,
 			ticker.symbol,
-			escape(by(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -572,9 +568,8 @@ func sendScreenshotForMarketBeat(b *tb.Bot, chatID int64, articleCase *ArticleCa
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s %s[%s](%s)`,
+			`\#%s by [%s](%s)`,
 			ticker.symbol,
-			escape(by(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -605,9 +600,8 @@ func sendScreenshotForCathiesArk(b *tb.Bot, chatID int64, articleCase *ArticleCa
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s %s[%s](%s)`,
+			`\#%s by [%s](%s)`,
 			ticker.symbol,
-			escape(by(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -638,9 +632,8 @@ func sendScreenshotForGuruFocus(b *tb.Bot, chatID int64, articleCase *ArticleCas
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s %s[%s](%s)`,
+			`\#%s by [%s](%s)`,
 			ticker.symbol,
-			escape(by(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -672,9 +665,8 @@ func sendScreenshotForImage(b *tb.Bot, chatID int64, articleCase *ArticleCase, t
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s %s[%s](%s)`,
+			`\#%s by [%s](%s)`,
 			ticker.symbol,
-			escape(by(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -702,9 +694,8 @@ func sendFinvizImage(b *tb.Bot, chatID int64, symbol string) bool {
 	photo := &tb.Photo{
 		File: tb.FromURL(imageURL),
 		Caption: fmt.Sprintf(
-			`\#%s %s[%s](%s)`,
+			`\#%s by [%s](%s)`,
 			strings.ToUpper(symbol),
-			escape(by("")),
 			escape("finviz.com"),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -731,9 +722,8 @@ func sendImage(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker
 	photo := &tb.Photo{
 		File: tb.FromURL(imageURL),
 		Caption: fmt.Sprintf(
-			`\#%s %s[%s](%s)`,
+			`\#%s by [%s](%s)`,
 			ticker.symbol,
-			escape(by(articleCase.description)),
 			escape(articleCase.name),
 			linkURL,
 			// getUserLink(m.Sender),
@@ -897,9 +887,7 @@ func sendFinvizMap(b *tb.Bot, chatID int64) bool {
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s %s[%s](%s)`,
-			escape("map"),
-			escape(by("")),
+			`\#map by [%s](%s)`,
 			escape("finviz.com"),
 			linkURL,
 		),
@@ -928,9 +916,7 @@ func sendFear(b *tb.Bot, chatID int64) bool {
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s %s[%s](%s)`,
-			escape("fear"),
-			escape(by("Fear & Greed Index")),
+			`\#fear by [%s](%s)`,
 			escape("money.cnn.com"),
 			linkURL,
 		),
@@ -959,9 +945,7 @@ func sendFinvizBB(b *tb.Bot, chatID int64) bool {
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s %s[%s](%s)`,
-			escape("bb"),
-			escape(by("Bull Or Bear")),
+			`\#bb Bull or Bear by [%s](%s)`,
 			escape("finviz.com"),
 			linkURL,
 		),
@@ -990,9 +974,8 @@ func sendMarketWatchIDs(b *tb.Bot, chatID int64, tab ss.MarketWatchTab) bool {
 	photo := &tb.Photo{
 		File: tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: fmt.Sprintf(
-			`\#%s %s[%s](%s)`,
+			`\#%s by [%s](%s)`,
 			escape(tab),
-			escape(by("")),
 			escape("marketwatch.com"),
 			linkURL,
 		),
