@@ -27,7 +27,8 @@ func MakeScreenshotForCathiesArk(linkURL string) []byte {
 	sel0 := "body main > div:nth-child(2) > div:nth-child(2)"
 	sel1 := "body header"
 	sel2 := "body main > div:nth-child(1)"
-	sel3 := "body main div.ant-row.sectionContainer___plkQX:nth-child(3) > div > div > div.recharts-responsive-container > div.recharts-wrapper"
+	sel3 := "body main > div:nth-child(2) > div"
+	sel4 := "body main div.ant-row.sectionContainer___plkQX:nth-child(3) > div > div > div.recharts-responsive-container > div.recharts-wrapper"
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.Emulate(device.IPadlandscape),
@@ -39,12 +40,13 @@ func MakeScreenshotForCathiesArk(linkURL string) []byte {
 			chromedp.Screenshot(sel0, &buf1, chromedp.NodeVisible),
 			chromedp.SetAttributeValue(sel1, "style", "display:none"),
 			chromedp.SetAttributeValue(sel2, "style", "display:none"),
-			// chromedp.SetAttributeValue(sel3+" > svg > g:nth-child(4) > g", "style", "display:none"),
-			// chromedp.SetAttributeValue(sel3+" > div.recharts-legend-wrapper", "style", "display:none"),
+			chromedp.SetAttributeValue(sel3, "style", "display:none"),
+			// chromedp.SetAttributeValue(sel4+" > svg > g:nth-child(4) > g", "style", "display:none"),
+			// chromedp.SetAttributeValue(sel4+" > div.recharts-legend-wrapper", "style", "display:none"),
 			chromedp.Sleep(4 * time.Second),
 			// TODO: убирать, если успел появиться
 			// chromedp.SetAttributeValue("body > div > div.ant-notification", "style", "display:none"),
-			chromedp.Screenshot(sel3, &buf2, chromedp.NodeVisible),
+			chromedp.Screenshot(sel4, &buf2, chromedp.NodeVisible),
 		}
 	}()); err != nil {
 		log.Println(err)
