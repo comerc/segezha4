@@ -14,10 +14,8 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// TODO: реализовать румтур
-// TODO: добавить опционы с investing.com
-// TODO: добавить gurufocus.com
 // TODO: выдавать пачкой все информеры по тикеру !!
+// TODO: добавить опционы с investing.com
 // TODO: использовать символы тикеров в качестве команд: /TSLA (но #TSLA! тоже оставить, иначе потеряю возможность вставлять внутри текста)
 // TODO: подключить ETF-ки, например ARKK https://etfdb.com/screener/
 // TODO: выдавать сообщение sendLink, а по готовности основного ответа - его удалять
@@ -173,6 +171,7 @@ func main() {
 		} else if text == "/fear" {
 			sendFear(b, m.Chat.ID)
 		} else if strings.HasPrefix(text, "/finviz ") {
+			// TODO: убирать лишние пробелы, пример: /finviz  $AMD $INTC
 			re := regexp.MustCompile(",")
 			payload := re.ReplaceAllString(m.Payload, " ")
 			symbols := strings.Split(payload, " ")
@@ -377,6 +376,7 @@ func main() {
 					// articleCase = GetExactArticleCase("shortvolume.com")
 					// result = sendScreenshotForImage(b, m.Chat.ID, articleCase, ticker)
 				case "??":
+					articleCase = GetExactArticleCase("barchart.com") // для sendLink
 					result = sendBarChart(b, m.Chat.ID, ticker.symbol)
 				case "?":
 					articleCase = GetExactArticleCase("stockscores.com")
@@ -697,7 +697,7 @@ func sendScreenshotForImage(b *tb.Bot, chatID int64, articleCase *ArticleCase, t
 }
 
 func sendFinvizImage(b *tb.Bot, chatID int64, symbol string) bool {
-	imageURL := fmt.Sprintf("https://charts2.finviz.com/chart.ashx?t=%s&ta=1&p=d", strings.ToLower(symbol))
+	imageURL := fmt.Sprintf("https://charts2.finviz.com/chart.ashx?t=%s&ta=1&p=d&r=%d", strings.ToLower(symbol), time.Now().Unix())
 	linkURL := fmt.Sprintf("https://finviz.com/quote.ashx?t=%s", strings.ToLower(symbol))
 	photo := &tb.Photo{
 		File: tb.FromURL(imageURL),
@@ -857,7 +857,7 @@ func sendBarChart(b *tb.Bot, chatID int64, symbol string) bool {
 		if strings.HasPrefix(symbol, "$") {
 			return "0", "625", ""
 		}
-		return "total", "500", `\#`
+		return "total", "500", "#"
 	}()
 	linkURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=%s&data=I:5&density=L&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(50);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=%[4]s&studyheight=200"
 	screenshot := ss.MakeScreenshotForBarChart(fmt.Sprintf(linkURL, symbol, "/fullscreen", volume, height))
