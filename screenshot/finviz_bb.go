@@ -15,16 +15,17 @@ import (
 
 // MakeScreenshotForFinvizBB description
 func MakeScreenshotForFinvizBB(linkURL string) []byte {
-	o := append(chromedp.DefaultExecAllocatorOptions[:],
-		// chromedp.ProxyServer("socks5://138.59.207.118:9076"),
-		chromedp.Flag("blink-settings", "imagesEnabled=false"),
-	)
-	ctx, cancel := chromedp.NewExecAllocator(context.Background(), o...)
-	defer cancel()
-	ctx1, cancel1 := chromedp.NewContext(ctx)
-	defer cancel1()
-	// ctx1, cancel1 := chromedp.NewContext(context.Background())
+	// o := append(chromedp.DefaultExecAllocatorOptions[:],
+	// 	// chromedp.ProxyServer("socks5://138.59.207.118:9076"),
+	// 	// chromedp.Flag("blink-settings", "imagesEnabled=false"),
+	// )
+	// ctx, cancel := chromedp.NewExecAllocator(context.Background(), o...)
+	// defer cancel()
+	// ctx1, cancel1 := chromedp.NewContext(ctx)
 	// defer cancel1()
+	// тут нужны картинки!
+	ctx1, cancel1 := chromedp.NewContext(context.Background())
+	defer cancel1()
 	// start the browser without a timeout
 	if err := chromedp.Run(ctx1); err != nil {
 		log.Println(err)
@@ -50,7 +51,7 @@ func MakeScreenshotForFinvizBB(linkURL string) []byte {
 		log.Println(err)
 	}
 	var src image.Image
-	if err := glueForCathiesArk(buf1, buf2, &src); err != nil {
+	if err := glueForFinvizBB(buf1, buf2, &src); err != nil {
 		log.Println(err)
 	}
 	buf1 = nil
@@ -66,4 +67,19 @@ func MakeScreenshotForFinvizBB(linkURL string) []byte {
 	src = nil
 	// res = nil
 	return out.Bytes()
+}
+
+func glueForFinvizBB(buf1, buf2 []byte, src *image.Image) error {
+	img1, _, err := image.Decode(bytes.NewReader(buf1))
+	if err != nil {
+		return err
+	}
+	buf1 = nil
+	img2, _, err := image.Decode(bytes.NewReader(buf2))
+	if err != nil {
+		return err
+	}
+	buf2 = nil
+	glueImages(img1, img2, src)
+	return nil
 }
