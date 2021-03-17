@@ -49,10 +49,10 @@ func makeScreenshotForGuruFocus(linkURL string, x, y, width, height float64, qua
 		chromedp.Emulate(device.IPadPro),
 		chromedp.Navigate(linkURL),
 		chromedp.WaitReady("body"),
-		// chromedp.Sleep(1 * time.Second),
 		chromedp.SetAttributeValue("body > div.el-dialog__wrapper", "style", "display:none"),
 		chromedp.SetAttributeValue("body > div.v-modal", "style", "display:none"),
 		chromedp.SetAttributeValue("body > div.v-modal", "style", "display:none"),
+		chromedp.Sleep(4 * time.Second),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			// get layout metrics
 			_, _, contentSize, err := page.GetLayoutMetrics().Do(ctx)
