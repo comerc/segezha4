@@ -16,6 +16,7 @@ const (
 	ScreenshotModeMarketBeat  ScreenshotMode = "MarketBeat"
 	ScreenshotModeCathiesArk  ScreenshotMode = "CathiesArk"
 	ScreenshotModeGuruFocus   ScreenshotMode = "GuruFocus"
+	ScreenshotModeTipRanks    ScreenshotMode = "TipRanks"
 )
 
 // ArticleCase struct
@@ -87,13 +88,14 @@ var ArticleCases = []ArticleCase{
 		// height:         600,
 		imageURL: "https://shortvolume.com/chart_engine/draw_chart.php?Symbol=%s&TimeRange=100&noCache=%d",
 	},
-	{name: "tipranks.com", linkURL: "https://tipranks.com/stocks/%s/forecast",
-		description:    "Stock Forecast & Price Targets",
-		screenshotMode: ScreenshotModePage,
-		x:              64,
-		y:              170,
-		width:          800 - 64,
-		height:         913,
+	{name: "tipranks.com", linkURL: "https://tipranks.com/stocks/%s/stock-analysis",
+		description: "Stock Analysis & Ratings",
+		// screenshotMode: ScreenshotModePage,
+		// x:              64,
+		// y:              170,
+		// width:          800 - 64,
+		// height:         913,
+		screenshotMode: ScreenshotModeTipRanks,
 	},
 	{name: "barchart.com", linkURL: "https://barchart.com/stocks/quotes/%s/overview", description: "Overview"},
 	{name: "finasquare.com", linkURL: "https://www.finasquare.com/stocks/%s/company-info/overview", description: "Overview"},
@@ -102,6 +104,7 @@ var ArticleCases = []ArticleCase{
 	{name: "earningswhispers.com", linkURL: "https://earningswhispers.com/stocks/%s", description: "Overview"},
 }
 
+// TODO: articleCase by ScreenshotMode
 // GetExactArticleCase function
 func GetExactArticleCase(search string) *ArticleCase {
 	var result *ArticleCase

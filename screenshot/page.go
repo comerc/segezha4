@@ -21,11 +21,12 @@ func MakeScreenshotForPage(linkURL string, x, y, width, height float64) []byte {
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, 40*time.Second)
+	ctx2, cancel2 := context.WithTimeout(ctx1, 50*time.Second)
 	defer cancel2()
 	var buf []byte
 	if err := chromedp.Run(ctx2, makeScreenshotForPage(linkURL, x, y, width, height, 100, &buf)); err != nil {
 		log.Println(err)
+		return nil
 	}
 	return buf
 }

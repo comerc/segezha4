@@ -26,7 +26,7 @@ func MakeScreenshotForMarketWatch(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, 40*time.Second)
+	ctx2, cancel2 := context.WithTimeout(ctx1, 50*time.Second)
 	defer cancel2()
 	// var s string
 	var buf []byte
@@ -48,6 +48,7 @@ func MakeScreenshotForMarketWatch(linkURL string) []byte {
 		}
 	}()); err != nil {
 		log.Println(err)
+		return nil
 	}
 	// d1 := []byte(s)
 	// if err := ioutil.WriteFile("/tmp/dat_mw.html", d1, 0644); err != nil {

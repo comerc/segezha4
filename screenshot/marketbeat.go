@@ -31,7 +31,7 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, 80*time.Second)
+	ctx2, cancel2 := context.WithTimeout(ctx1, 100*time.Second)
 	defer cancel2()
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
@@ -45,6 +45,7 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 		}
 	}()); err != nil {
 		log.Println(err)
+		return nil
 	}
 	var buf11, buf12 []byte
 	if err := takeScreenshotForMarketBeat(ctx2, "#liInsiderTrades > a", "#insiderChart", &buf11, &buf12); err != nil {

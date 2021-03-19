@@ -31,7 +31,7 @@ func MakeScreenshotForFinvizBB(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, 40*time.Second)
+	ctx2, cancel2 := context.WithTimeout(ctx1, 50*time.Second)
 	defer cancel2()
 	var buf1, buf2 []byte
 	sel1 := "body > div.content.is-index > div.container > table > tbody > tr > td table:nth-child(1)"
@@ -49,6 +49,7 @@ func MakeScreenshotForFinvizBB(linkURL string) []byte {
 		}
 	}()); err != nil {
 		log.Println(err)
+		return nil
 	}
 	var src image.Image
 	if err := glueForFinvizBB(buf1, buf2, &src); err != nil {

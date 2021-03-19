@@ -18,7 +18,7 @@ func MakeScreenshotForBarChart(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, 40*time.Second)
+	ctx2, cancel2 := context.WithTimeout(ctx1, 50*time.Second)
 	defer cancel2()
 	selChart := "body #technicalChartImage"
 	var buf []byte
@@ -34,6 +34,7 @@ func MakeScreenshotForBarChart(linkURL string) []byte {
 		}
 	}()); err != nil {
 		log.Println(err)
+		return nil
 	}
 	return buf
 }

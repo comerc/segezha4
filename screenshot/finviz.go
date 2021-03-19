@@ -31,7 +31,7 @@ func MakeScreenshotForFinviz(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, 40*time.Second)
+	ctx2, cancel2 := context.WithTimeout(ctx1, 50*time.Second)
 	defer cancel2()
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
@@ -44,6 +44,7 @@ func MakeScreenshotForFinviz(linkURL string) []byte {
 		}
 	}()); err != nil {
 		log.Println(err)
+		return nil
 	}
 	var buf1, buf2, buf3 []byte
 	if err := takeScreenshotForFinviz(ctx2, &buf1, &buf2, &buf3); err != nil {
@@ -83,19 +84,16 @@ func glueForFinviz(buf1, buf2, buf3 []byte, src *image.Image) error {
 		return err
 	}
 	buf2 = nil
-	var img3 image.Image
-	img4, _, err := image.Decode(bytes.NewReader(buf3))
+	img3, _, err := image.Decode(bytes.NewReader(buf3))
 	if err != nil {
 		return err
 	}
 	buf3 = nil
-	// TODO: glueImages3
-	glueImages(img1, img2, &img3)
-	glueImages(img3, img4, src)
+	glueImages(img1, img2, src)
+	glueImages(*src, img3, src)
 	img1 = nil
 	img2 = nil
 	img3 = nil
-	img4 = nil
 	return nil
 }
 

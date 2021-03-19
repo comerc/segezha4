@@ -18,7 +18,7 @@ func MakeScreenshotForFear(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, 40*time.Second)
+	ctx2, cancel2 := context.WithTimeout(ctx1, 50*time.Second)
 	defer cancel2()
 	var buf []byte
 	body := "body > #cnnBody"
@@ -42,6 +42,7 @@ func MakeScreenshotForFear(linkURL string) []byte {
 		}
 	}()); err != nil {
 		log.Println(err)
+		return nil
 	}
 	return buf
 }

@@ -14,7 +14,7 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// TODO: выдавать пачкой все информеры по тикеру !!
+// TODO: ARK - перемножать кол-во купленных и проданных акций
 // TODO: добавить опционы с investing.com
 // TODO: использовать символы тикеров в качестве команд: /TSLA (но #TSLA! тоже оставить, иначе потеряю возможность вставлять внутри текста)
 // TODO: подключить ETF-ки, например ARKK https://etfdb.com/screener/
@@ -138,10 +138,10 @@ func main() {
 /rates - Bonds
 /futures - Futures
 /crypto - Crypto Currencies
-/vix - $VIX (5M)
-/spy - SPY (5M)
-/index - Indexes (5M): $INX, $NASX, $DOWI
-/volume - Volumes (5M): SPY, QQQ, DOW
+/vix - $VIX (15M)
+/spy - SPY (15M)
+/index - Indexes (15M): $INX, $NASX, $DOWI
+/volume - Volumes (15M): SPY, QQQ, DOW
 /finviz - batch mode, for example: /finviz TSLA ETSY
 /info - batch mode, for example: /info finviz.com GS MS
 
@@ -149,7 +149,7 @@ func main() {
 @TickerInfoBot TSLA
 
 *Simple (Batch) Mode:*
-#TSLA! #TSLA? #TSLA?? #TSLA?!
+#TSLA! #TSLA? #TSLA?? #TSLA?! #TSLA!!
 `
 			sendText(b, m.Chat.ID, escape(help))
 		} else if text == "/bb" {
@@ -242,6 +242,8 @@ func main() {
 					result = sendScreenshotForCathiesArk(b, m.Chat.ID, articleCase, ticker)
 				case ScreenshotModeGuruFocus:
 					result = sendScreenshotForGuruFocus(b, m.Chat.ID, articleCase, ticker)
+				case ScreenshotModeTipRanks:
+					result = sendScreenshotForTipRanks(b, m.Chat.ID, articleCase, ticker)
 				default:
 					result = false
 				}
@@ -344,7 +346,8 @@ func main() {
 			}
 		} else {
 			// simple command mode
-			re := regexp.MustCompile(`(^|[ ])#([A-Za-z]+)(\?!|\?\?|\?|!)`)
+			// TODO: "#ZM!!"
+			re := regexp.MustCompile(`(^|[^A-Za-z])#([A-Za-z]+)(\?!|\?\?|\?|!!|!)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			executed := make([]string, 0)
 			for _, match := range matches {
@@ -380,6 +383,32 @@ func main() {
 				case "?":
 					articleCase = GetExactArticleCase("stockscores.com")
 					result = sendImage(b, m.Chat.ID, articleCase, ticker)
+				case "!!":
+					articleCase = GetExactArticleCase("finviz.com")
+					result = sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
+					if !result {
+						sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
+						result = true
+					}
+					if !result {
+						sendLink(b, m.Chat.ID, articleCase, ticker)
+					}
+					articleCase = GetExactArticleCase("gurufocus.com")
+					result = sendScreenshotForGuruFocus(b, m.Chat.ID, articleCase, ticker)
+					if !result {
+						sendLink(b, m.Chat.ID, articleCase, ticker)
+					}
+					articleCase = GetExactArticleCase("marketbeat.com")
+					result = sendScreenshotForMarketBeat(b, m.Chat.ID, articleCase, ticker)
+					if !result {
+						sendLink(b, m.Chat.ID, articleCase, ticker)
+					}
+					articleCase = GetExactArticleCase("tipranks.com")
+					result = sendScreenshotForTipRanks(b, m.Chat.ID, articleCase, ticker)
+					if !result {
+						sendLink(b, m.Chat.ID, articleCase, ticker)
+					}
+					result = true
 				case "!":
 					articleCase = GetExactArticleCase("finviz.com")
 					result = sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
@@ -655,6 +684,38 @@ func sendScreenshotForGuruFocus(b *tb.Bot, chatID int64, articleCase *ArticleCas
 	return true
 }
 
+func sendScreenshotForTipRanks(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) bool {
+	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
+	screenshot := ss.MakeScreenshotForTipRanks(strings.ToLower(ticker.symbol))
+	if len(screenshot) == 0 {
+		return false
+	}
+	photo := &tb.Photo{
+		File: tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: fmt.Sprintf(
+			`\#%s by [%s](%s)`,
+			ticker.symbol,
+			escape(articleCase.name),
+			linkURL,
+			// getUserLink(m.Sender),
+		),
+	}
+	_, err := b.Send(
+		tb.ChatID(chatID),
+		photo,
+		&tb.SendOptions{
+			ParseMode: tb.ModeMarkdownV2,
+		},
+	)
+	screenshot = nil
+	photo = nil
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	return true
+}
+
 func sendScreenshotForImage(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) bool {
 	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
 	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
@@ -832,7 +893,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 			if h >= 4 && h <= 9 {
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabAsia)
 			}
-			if h >= 4 && h <= 13-summer {
+			if h >= 4 && h <= 14-summer {
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabRates)
 				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFutures)
 			}
@@ -845,11 +906,11 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 func sendBarChart(b *tb.Bot, chatID int64, symbol string) bool {
 	volume, height, tag := func() (string, string, string) {
 		if strings.HasPrefix(symbol, "$") {
-			return "0", "625", ""
+			return "0", "O", ""
 		}
-		return "total", "500", "#"
+		return "total", "H", "#"
 	}()
-	linkURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=%s&data=I:5&density=L&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(50);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=%[4]s&studyheight=200"
+	linkURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=%s&data=I:15&density=%[4]s&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(50);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=500&studyheight=200"
 	screenshot := ss.MakeScreenshotForBarChart(fmt.Sprintf(linkURL, symbol, "/fullscreen", volume, height))
 	if len(screenshot) == 0 {
 		return false
