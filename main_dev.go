@@ -30,14 +30,14 @@ func _main() {
 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
 	// buf := ss.MakeScreenshotForMarketWatch(linkURL)
 
-	// linkURL := "https://www.gurufocus.com/stock/irbt/summary#"
-	// buf := ss.MakeScreenshotForGuruFocus(linkURL)
+	linkURL := "https://www.gurufocus.com/stock/amd/summary#"
+	buf := ss.MakeScreenshotForGuruFocus(linkURL)
 
 	// linkURL := "https://www.gurufocus.com/stock/irbt/summary#"
 	// buf := ss.MakeScreenshotForPage(linkURL, 0, 0, 0, 2042)
 
 	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
-	buf := ss.MakeScreenshotForTipRanks("fb")
+	// buf := ss.MakeScreenshotForTipRanks("fb")
 
 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
 	// linkURL := "https://www.marketbeat.com/stocks/TSLA"

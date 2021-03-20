@@ -1,9 +1,13 @@
 package screenshot
 
 import (
+	"context"
 	"image"
 	"image/draw"
 	"image/png"
+
+	"github.com/chromedp/cdproto/cdp"
+	"github.com/chromedp/chromedp"
 )
 
 func init() {
@@ -23,4 +27,20 @@ func glueImages(img1, img2 image.Image, src *image.Image) error {
 	draw.Draw(rgba, r2, img2, image.Point{0, 0}, draw.Src)
 	*src = rgba
 	return nil
+}
+
+func hideIfExists(sel string) func(context.Context) error {
+	return func(ctx context.Context) error {
+		var nodes []*cdp.Node
+		if err := chromedp.Nodes(sel, &nodes, chromedp.AtLeast(0)).Do(ctx); err != nil {
+			return err
+		}
+		if len(nodes) == 0 {
+			return nil
+		}
+		if err := chromedp.SetAttributeValue(sel, "style", "display:none").Do(ctx); err != nil {
+			return err
+		}
+		return nil
+	}
 }
