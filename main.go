@@ -384,14 +384,20 @@ func main() {
 					articleCase = GetExactArticleCase("stockscores.com")
 					result = sendImage(b, m.Chat.ID, articleCase, ticker)
 				case "!!":
+					articleCase = GetExactArticleCase("shortvolume.com")
+					result = sendImage(b, m.Chat.ID, articleCase, ticker)
+					if !result {
+						sendLink(b, m.Chat.ID, articleCase, ticker)
+					}
+					articleCase = GetExactArticleCase("stockscores.com")
+					result = sendImage(b, m.Chat.ID, articleCase, ticker)
+					if !result {
+						sendLink(b, m.Chat.ID, articleCase, ticker)
+					}
 					articleCase = GetExactArticleCase("finviz.com")
 					result = sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
 					if !result {
 						sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
-						result = true
-					}
-					if !result {
-						sendLink(b, m.Chat.ID, articleCase, ticker)
 					}
 					articleCase = GetExactArticleCase("gurufocus.com")
 					result = sendScreenshotForGuruFocus(b, m.Chat.ID, articleCase, ticker)
@@ -908,7 +914,7 @@ func sendBarChart(b *tb.Bot, chatID int64, symbol string) bool {
 		if strings.HasPrefix(symbol, "$") {
 			return "0", "O", ""
 		}
-		return "total", "H", "#"
+		return "total", "X", "#"
 	}()
 	linkURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=%s&data=I:15&density=%[4]s&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(50);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=500&studyheight=200"
 	screenshot := ss.MakeScreenshotForBarChart(fmt.Sprintf(linkURL, symbol, "/fullscreen", volume, height))

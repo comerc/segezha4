@@ -56,6 +56,7 @@ func MakeScreenshotForFinviz(linkURL string) []byte {
 	var src image.Image
 	if err := glueForFinviz(buf1, buf2, buf3, &src); err != nil {
 		log.Println(err)
+		return nil
 	}
 	buf1 = nil
 	buf2 = nil
@@ -67,6 +68,7 @@ func MakeScreenshotForFinviz(linkURL string) []byte {
 	out := &bytes.Buffer{}
 	if err := png.Encode(out, src); err != nil {
 		log.Println(err)
+		return nil
 	}
 	src = nil
 	// res = nil

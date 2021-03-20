@@ -50,20 +50,24 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 	var buf11, buf12 []byte
 	if err := takeScreenshotForMarketBeat(ctx2, "#liInsiderTrades > a", "#insiderChart", &buf11, &buf12); err != nil {
 		log.Println(err)
+		return nil
 	}
 	var buf21, buf22 []byte
 	if err := takeScreenshotForMarketBeat(ctx2, "#liInstutionalOwnership > a", "#SECChart", &buf21, &buf22); err != nil {
 		log.Println(err)
+		return nil
 	}
 	var src1 image.Image
 	if err := glueForMarketBeat(buf12, buf11, &src1); err != nil {
 		log.Println(err)
+		return nil
 	}
 	buf11 = nil
 	buf12 = nil
 	var src2 image.Image
 	if err := glueForMarketBeat(buf22, buf21, &src2); err != nil {
 		log.Println(err)
+		return nil
 	}
 	buf21 = nil
 	buf22 = nil
@@ -90,6 +94,7 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 	out := &bytes.Buffer{}
 	if err := png.Encode(out, src); err != nil {
 		log.Println(err)
+		return nil
 	}
 	src1 = nil
 	src2 = nil

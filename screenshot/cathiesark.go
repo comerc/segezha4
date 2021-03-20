@@ -55,6 +55,7 @@ func MakeScreenshotForCathiesArk(linkURL string) []byte {
 	var src image.Image
 	if err := glueForCathiesArk(buf1, buf2, &src); err != nil {
 		log.Println(err)
+		return nil
 	}
 	buf1 = nil
 	buf2 = nil
@@ -65,6 +66,7 @@ func MakeScreenshotForCathiesArk(linkURL string) []byte {
 	out := &bytes.Buffer{}
 	if err := png.Encode(out, src); err != nil {
 		log.Println(err)
+		return nil
 	}
 	src = nil
 	// res = nil

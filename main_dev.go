@@ -37,7 +37,7 @@ func _main() {
 	// buf := ss.MakeScreenshotForPage(linkURL, 0, 0, 0, 2042)
 
 	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
-	buf := ss.MakeScreenshotForTipRanks("zm")
+	buf := ss.MakeScreenshotForTipRanks("fb")
 
 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
 	// linkURL := "https://www.marketbeat.com/stocks/TSLA"
