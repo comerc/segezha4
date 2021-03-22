@@ -42,8 +42,9 @@ func MakeScreenshotForTipRanks(symbol string) []byte {
 		return chromedp.Tasks{
 			chromedp.Emulate(device.IPadlandscape),
 			chromedp.Navigate(fmt.Sprintf("https://www.tipranks.com/stocks/%s/forecast", symbol)),
-			chromedp.WaitReady("body > #app"),
+			chromedp.WaitReady("body > #app "),
 			chromedp.Sleep(4 * time.Second),
+			chromedp.SetAttributeValue("body > #app > div > div > div.tr-app", "style", "display:none"),
 			chromedp.Click("body nav > a:nth-child(1)", chromedp.BySearch),
 			chromedp.SetAttributeValue(sel1, "style", "margin: 10px 0"),
 			chromedp.ActionFunc(screenshotWithoutPopups(sel1, &buf1)),
