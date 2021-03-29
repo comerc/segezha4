@@ -890,7 +890,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 					moon := MoonPhase.New(t)
 					isFullMoon := int(math.Floor((moon.Phase()+0.0625)*8)) == 4
 					if isFullMoon {
-						sendText(b, chatID, "🌕 #FullMoon")
+						sendText(b, chatID, escape("🌕 #FullMoon"))
 					}
 					sendFear(b, chatID)
 				}
