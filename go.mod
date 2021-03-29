@@ -1,6 +1,6 @@
 module github.com/comerc/segezha4
 
-go 1.15
+go 1.16
 
 require (
 	github.com/IvanMenshykov/MoonPhase v0.0.0-20180124195458-2a9432a62575
