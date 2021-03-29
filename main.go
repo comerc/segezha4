@@ -4,16 +4,25 @@ import (
 	"bytes"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/IvanMenshykov/MoonPhase"
 	ss "github.com/comerc/segezha4/screenshot"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: badger для tickers
+// TODO: автоматизировать пересылку УРОВНИ - про три зелёные кружочка (и фильтр по портфелю)
+// TODO: автоматизировать пересылку и разделить отчеты "Инвестиции USA Markets"
+// TODO: /info tipranks.com LIFE
+// TODO: бумажка пробила 9EMA на дневке?
+// TODO: запретить повторы за один день для !! !
+// TODO: виджет из википедии по названию компании
 // TODO: ARK - перемножать кол-во купленных и проданных акций
 // TODO: добавить опционы с investing.com
 // TODO: использовать символы тикеров в качестве команд: /TSLA (но #TSLA! тоже оставить, иначе потеряю возможность вставлять внутри текста)
@@ -299,11 +308,12 @@ func main() {
 					sendLink(b, m.Chat.ID, articleCase, ticker)
 				}
 			}
-		} else if isARK(text) {
+		} else if isARKOrWatchList(text) {
 			re := regexp.MustCompile(`(^|[^A-Za-z])#([A-Za-z]+)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			executed := make([]string, 0)
 			executed = append(executed, "ARK")
+			executed = append(executed, "Watch") // for Watch_list
 			for _, match := range matches {
 				symbol := match[2]
 				if Contains(executed, strings.ToUpper(symbol)) {
@@ -439,22 +449,22 @@ func main() {
 	b.Start()
 }
 
-func contains(slice []string, search string) bool {
-	for _, element := range slice {
-		if element == search {
-			return true
-		}
-	}
-	return false
-}
+// func contains(slice []string, search string) bool {
+// 	for _, element := range slice {
+// 		if element == search {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
 
-func parseInt(s string) int64 {
-	result, err := strconv.ParseInt(s, 10, 64)
-	if err != nil {
-		log.Println(err)
-	}
-	return result
-}
+// func parseInt(s string) int64 {
+// 	result, err := strconv.ParseInt(s, 10, 64)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+// 	return result
+// }
 
 func escapeURL(s string) string {
 	re := regexp.MustCompile("[(|)]")
@@ -462,7 +472,7 @@ func escapeURL(s string) string {
 }
 
 func escape(s string) string {
-	re := regexp.MustCompile(`[.|\-|(|)|#|!]`)
+	re := regexp.MustCompile(`[.|\-|\_|(|)|#|!]`)
 	return re.ReplaceAllString(s, `\$0`)
 }
 
@@ -722,38 +732,38 @@ func sendScreenshotForTipRanks(b *tb.Bot, chatID int64, articleCase *ArticleCase
 	return true
 }
 
-func sendScreenshotForImage(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) bool {
-	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
-	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
-	screenshot := ss.MakeScreenshotForImage(imageURL, articleCase.width, articleCase.height)
-	if len(screenshot) == 0 {
-		return false
-	}
-	photo := &tb.Photo{
-		File: tb.FromReader(bytes.NewReader(screenshot)),
-		Caption: fmt.Sprintf(
-			`\#%s by [%s](%s)`,
-			ticker.symbol,
-			escape(articleCase.name),
-			linkURL,
-			// getUserLink(m.Sender),
-		),
-	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		photo,
-		&tb.SendOptions{
-			ParseMode: tb.ModeMarkdownV2,
-		},
-	)
-	screenshot = nil
-	photo = nil
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	return true
-}
+// func sendScreenshotForImage(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) bool {
+// 	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
+// 	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
+// 	screenshot := ss.MakeScreenshotForImage(imageURL, articleCase.width, articleCase.height)
+// 	if len(screenshot) == 0 {
+// 		return false
+// 	}
+// 	photo := &tb.Photo{
+// 		File: tb.FromReader(bytes.NewReader(screenshot)),
+// 		Caption: fmt.Sprintf(
+// 			`\#%s by [%s](%s)`,
+// 			ticker.symbol,
+// 			escape(articleCase.name),
+// 			linkURL,
+// 			// getUserLink(m.Sender),
+// 		),
+// 	}
+// 	_, err := b.Send(
+// 		tb.ChatID(chatID),
+// 		photo,
+// 		&tb.SendOptions{
+// 			ParseMode: tb.ModeMarkdownV2,
+// 		},
+// 	)
+// 	screenshot = nil
+// 	photo = nil
+// 	if err != nil {
+// 		log.Println(err)
+// 		return false
+// 	}
+// 	return true
+// }
 
 func sendFinvizImage(b *tb.Bot, chatID int64, symbol string) bool {
 	imageURL := fmt.Sprintf("https://charts2.finviz.com/chart.ashx?t=%s&ta=1&p=d&r=%d", strings.ToLower(symbol), time.Now().Unix())
@@ -877,6 +887,11 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 		if h == 14-summer && m >= 30 || h > 14-summer && h < 21-summer || h == 21-summer && m < d {
 			if m%d == 0 && s == 15 {
 				if h == 14-summer && m >= 30 {
+					moon := MoonPhase.New(t)
+					isFullMoon := int(math.Floor((moon.Phase()+0.0625)*8)) == 4
+					if isFullMoon {
+						sendText(b, chatID, "🌕 #FullMoon")
+					}
 					sendFear(b, chatID)
 				}
 				if h >= 15-summer {
@@ -906,6 +921,30 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 			// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFX)
 			// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabCrypto)
 		}
+
+		// if s%10 == 0 {
+		// 	go func(t time.Time) {
+		// 		chatID2 := -1001374011821 // 1
+		// 		// chatID2 := -1001386686650 // 2
+		// 		// chatID2 := -1001200606522 // ftt
+		// 		msg, err1 := b.Send(
+		// 			tb.ChatID(chatID2),
+		// 			"send text "+t.String(),
+		// 		)
+		// 		if err1 != nil {
+		// 			log.Println(err1)
+		// 		}
+		// 		time.Sleep(5 * time.Second)
+		// 		_, err2 := b.Edit(
+		// 			msg,
+		// 			"*edit text* "+escape(fmt.Sprintf(`https://t.me/%s/%d`, msg.Chat.Username, msg.ID)),
+		// 			tb.ModeMarkdownV2,
+		// 		)
+		// 		if err2 != nil {
+		// 			log.Println(err2)
+		// 		}
+		// 	}(t)
+		// }
 	}
 }
 
@@ -1076,8 +1115,8 @@ func isEarnings(text string) bool {
 	return re.FindStringIndex(text) != nil
 }
 
-func isARK(text string) bool {
-	re := regexp.MustCompile("#ARK")
+func isARKOrWatchList(text string) bool {
+	re := regexp.MustCompile("#ARK|#Watch_list")
 	return re.FindStringIndex(text) != nil
 }
 

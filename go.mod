@@ -3,6 +3,7 @@ module github.com/comerc/segezha4
 go 1.15
 
 require (
+	github.com/IvanMenshykov/MoonPhase v0.0.0-20180124195458-2a9432a62575
 	github.com/chromedp/cdproto v0.0.0-20210305224431-50b9f457e822
 	github.com/chromedp/chromedp v0.6.8
 	// github.com/pkg/errors v0.8.1

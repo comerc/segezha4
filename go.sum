@@ -1,3 +1,5 @@
+github.com/IvanMenshykov/MoonPhase v0.0.0-20180124195458-2a9432a62575 h1:tpM+HaT9ie4OP2UYyZesbehvjXgiWNzBTO1uYUabav0=
+github.com/IvanMenshykov/MoonPhase v0.0.0-20180124195458-2a9432a62575/go.mod h1:KEFZMBRDCunBlP5n9fXcPt27aXXLsnAq6WUmAl0DA0E=
 github.com/chromedp/cdproto v0.0.0-20210104223854-2cc87dae3ee3/go.mod h1:55pim6Ht4LJKdVLlyFJV/g++HsEA1hQxPbB5JyNdZC0=
 github.com/chromedp/cdproto v0.0.0-20210211211551-bf465a41a1f9 h1:UgQoDQCE6AAsthd+09vCUgR+ysDzkqGlG4SRLIfSrA8=
 github.com/chromedp/cdproto v0.0.0-20210211211551-bf465a41a1f9/go.mod h1:55pim6Ht4LJKdVLlyFJV/g++HsEA1hQxPbB5JyNdZC0=
