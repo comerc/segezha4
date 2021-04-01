@@ -313,7 +313,7 @@ func main() {
 			matches := re.FindAllStringSubmatch(text, -1)
 			executed := make([]string, 0)
 			executed = append(executed, "ARK")
-			executed = append(executed, "Watch") // for Watch_list
+			executed = append(executed, "WATCH") // for #Watch_list by @usamarke1
 			for _, match := range matches {
 				symbol := match[2]
 				if Contains(executed, strings.ToUpper(symbol)) {
@@ -924,9 +924,8 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 
 		// if s%10 == 0 {
 		// 	go func(t time.Time) {
-		// 		chatID2 := -1001374011821 // 1
-		// 		// chatID2 := -1001386686650 // 2
-		// 		// chatID2 := -1001200606522 // ftt
+		// 		chatID2 := -1001374011821 // ticker_info_test_channel_1
+		// 		// chatID2 := -1001211314640 // ticker_info_test_channel_2
 		// 		msg, err1 := b.Send(
 		// 			tb.ChatID(chatID2),
 		// 			"send text "+t.String(),
