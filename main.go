@@ -354,7 +354,13 @@ func main() {
 					result = true
 				}
 			}
+		} else if symbol := hasDots(text); symbol != "" {
+			result := sendFinvizImage(b, m.Chat.ID, symbol)
+			if !result {
+				sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
+			}
 		} else {
+
 			// simple command mode
 			// TODO: "#ZM!!"
 			re := regexp.MustCompile(`(^|[^A-Za-z])#([A-Za-z]+)(\?!|\?\?|\?|!!|!)`)
@@ -1122,6 +1128,15 @@ func isARKOrWatchList(text string) bool {
 func isIdeas(text string) bool {
 	re := regexp.MustCompile("(?i)#Идеи_покупок|#ИдеиПокупок|#ИнвестИдея")
 	return re.FindStringIndex(text) != nil
+}
+
+func hasDots(text string) string {
+	re := regexp.MustCompile(`(\x{1F7E2}\x{1F7E2}|\x{1F534}\x{1F534}) ([A-Za-z]+)`) // green / red dots
+	matches := re.FindAllStringSubmatch(text, -1)
+	if len(matches) == 1 {
+		return matches[0][2]
+	}
+	return ""
 }
 
 func Contains(a []string, x string) bool {
