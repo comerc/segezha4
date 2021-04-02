@@ -13,9 +13,12 @@ import (
 
 	"github.com/IvanMenshykov/MoonPhase"
 	ss "github.com/comerc/segezha4/screenshot"
+	"github.com/joho/godotenv"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: пакетный режим вылетает по общему таймауту
+// TODO: пересылать ответы для "Andrew Ka2" к "Andrew Ka"
 // TODO: badger для tickers
 // TODO: автоматизировать пересылку УРОВНИ - про три зелёные кружочка (и фильтр по портфелю)
 // TODO: автоматизировать пересылку и разделить отчеты "Инвестиции USA Markets"
@@ -40,11 +43,14 @@ import (
 // TODO: https://stockcharts.com/h-sc/ui?s=$CPCE https://school.stockcharts.com/doku.php?id=market_indicators:put_call_ratio
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Error loading .env file")
+	}
 	var (
 		// port      = os.Getenv("PORT")
 		// publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
-		chatID = os.Getenv("TELEBOT_CHAT_ID") // you must add it to your config vars
-		token  = os.Getenv("TELEBOT_SECRET")  // you must add it to your config vars
+		chatID = os.Getenv("SEGEZHA4_CHAT_ID") // you must add it to your config vars
+		token  = os.Getenv("SEGEZHA4_SECRET")  // you must add it to your config vars
 	)
 	// webhook := &tb.Webhook{
 	// 	Listen:   ":" + port,
@@ -161,6 +167,16 @@ func main() {
 #TSLA! #TSLA? #TSLA?? #TSLA?! #TSLA!!
 `
 			sendText(b, m.Chat.ID, escape(help))
+		} else if text == "/pause" {
+			if isAdmin(m.Sender.ID) {
+				pauseDay = time.Now().UTC().Day()
+				sendText(b, m.Chat.ID, "set pause")
+			}
+		} else if text == "/reset" {
+			if isAdmin(m.Sender.ID) {
+				pauseDay = -1
+				sendText(b, m.Chat.ID, "set reset")
+			}
 		} else if text == "/bb" {
 			sendFinvizBB(b, m.Chat.ID)
 		} else if text == "/vix" {
@@ -451,6 +467,7 @@ func main() {
 	}
 	b.Handle(tb.OnText, messageHandler)
 	b.Handle(tb.OnPhoto, messageHandler)
+	pauseDay = -1
 	go runBackgroundTask(b, int64(strToInt(chatID)))
 	b.Start()
 }
@@ -876,22 +893,31 @@ func by(s string) string {
 	return s + " by "
 }
 
+var pauseDay int
+
 func runBackgroundTask(b *tb.Bot, chatID int64) {
 	ticker := time.NewTicker(1 * time.Second)
 	for t := range ticker.C {
-		w := t.Weekday()
+		utc := t.UTC()
+		w := utc.Weekday()
 		if w == 6 || w == 0 {
 			continue
 		}
-		h := t.UTC().Hour()
-		m := t.Minute()
-		s := t.Second()
+		d := utc.Day()
+		if d == pauseDay {
+			continue
+		} else if pauseDay > -1 {
+			pauseDay = -1 // reset
+		}
+		h := utc.Hour()
+		m := utc.Minute()
+		s := utc.Second()
 		const (
-			d      = 30
+			delta  = 30
 			summer = 1
 		)
-		if h == 14-summer && m >= 30 || h > 14-summer && h < 21-summer || h == 21-summer && m < d {
-			if m%d == 0 && s == 15 {
+		if h == 14-summer && m >= 30 || h > 14-summer && h < 21-summer || h == 21-summer && m < delta {
+			if m%delta == 0 && s == 15 {
 				if h == 14-summer && m >= 30 {
 					moon := MoonPhase.New(t)
 					isFullMoon := int(math.Floor((moon.Phase()+0.0625)*8)) == 4
@@ -1146,4 +1172,10 @@ func Contains(a []string, x string) bool {
 		}
 	}
 	return false
+}
+
+func isAdmin(ID int) bool {
+	s := os.Getenv("SEGEZHA4_ADMIN_USER_IDS")
+	ids := strings.Split(s, ",")
+	return Contains(ids, fmt.Sprintf("%d", ID))
 }
