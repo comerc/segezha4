@@ -60,7 +60,7 @@ func main() {
 		// URL:    "https://api.bots.mn/telegram/",
 		Token: token,
 		// Poller: webhook,
-		Poller: &tb.LongPoller{Timeout: 10 * time.Second},
+		Poller: &tb.LongPoller{Timeout: 10 * time.Minute},
 	}
 	b, err := tb.NewBot(pref)
 	if err != nil {
