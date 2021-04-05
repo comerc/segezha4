@@ -13,7 +13,9 @@ import (
 
 // MakeScreenshotForImage description
 func MakeScreenshotForImage(linkURL string, width, height float64) []byte {
-	ctx1, cancel1 := chromedp.NewContext(context.Background())
+	ctx0, cancel0 := chromedp.NewRemoteAllocator(context.Background(), getWebSocketDebuggerUrl())
+	defer cancel0()
+	ctx1, cancel1 := chromedp.NewContext(ctx0)
 	defer cancel1()
 	// start the browser without a timeout
 	if err := chromedp.Run(ctx1); err != nil {

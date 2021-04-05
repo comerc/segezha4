@@ -2,9 +2,14 @@ package screenshot
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"image"
 	"image/draw"
 	"image/png"
+	"log"
+	"net/http"
+	"os"
 
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/chromedp"
@@ -44,3 +49,56 @@ func hideIfExists(sel string) func(context.Context) error {
 		return nil
 	}
 }
+
+func getWebSocketDebuggerUrl() string {
+	headlessIP := os.Getenv("HEADLESS_IP")
+	if headlessIP == "" {
+		headlessIP = "localhost"
+	}
+	fmt.Println(headlessIP)
+	resp, err := http.Get(fmt.Sprintf("http://%s:9222/json/version", headlessIP))
+
+	// resp, err := http.Get("http://172.16.0.42:9222/json/version")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var result map[string]interface{}
+
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		log.Fatal(err)
+	}
+	return result["webSocketDebuggerUrl"].(string)
+}
+
+// func GetChrome(timeout time.Duration) (context.Context, context.CancelFunc) {
+// 	// o := append(chromedp.DefaultExecAllocatorOptions[:],
+// 	// 	// chromedp.ProxyServer("socks5://138.59.207.118:9076"),
+// 	// 	chromedp.Flag("blink-settings", "imagesEnabled=false"),
+// 	// )
+// 	// ctx, cancel := chromedp.NewExecAllocator(context.Background(), o...)
+// 	// defer cancel()
+// 	// ctx1, cancel1 := chromedp.NewContext(ctx)
+// 	// defer cancel1()
+// 	// // ctx1, cancel1 := chromedp.NewContext(context.Background())
+// 	// // defer cancel1()
+// 	// // start the browser without a timeout
+// 	// if err := chromedp.Run(ctx1); err != nil {
+// 	// 	log.Println(err)
+// 	// 	return nil
+// 	// }
+// 	// ctx2, cancel2 := context.WithTimeout(ctx1, 100*time.Second)
+// 	// defer cancel2()
+
+// 	// ctx, cancel := chromedp.NewRemoteAllocator(context.Background(), getWebSocketDebuggerUrl())
+// 	// defer cancel()
+// 	// ctx1, cancel1 := chromedp.NewContext(ctx)
+// 	// defer cancel1()
+// 	// // start the browser without a timeout
+// 	// if err := chromedp.Run(ctx1); err != nil {
+// 	// 	log.Println(err)
+// 	// 	// return nil, nil
+// 	// }
+// 	// ctx2, cancel2 := context.WithTimeout(ctx1, timeout)
+// 	// defer cancel2()
+// }

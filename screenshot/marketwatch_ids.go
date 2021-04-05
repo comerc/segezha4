@@ -42,17 +42,10 @@ func init() {
 
 // MakeScreenshotForMarketWatchIDs description
 func MakeScreenshotForMarketWatchIDs(linkURL string, tab MarketWatchTab) []byte {
-	linkURL = "https://marketwatch.com/investing/stock/TSLA"
-	o := append(chromedp.DefaultExecAllocatorOptions[:],
-		// chromedp.ProxyServer("socks5://138.59.207.118:9076"),
-		chromedp.Flag("blink-settings", "imagesEnabled=false"),
-	)
-	ctx, cancel := chromedp.NewExecAllocator(context.Background(), o...)
-	defer cancel()
-	ctx1, cancel1 := chromedp.NewContext(ctx)
+	ctx0, cancel0 := chromedp.NewRemoteAllocator(context.Background(), getWebSocketDebuggerUrl())
+	defer cancel0()
+	ctx1, cancel1 := chromedp.NewContext(ctx0)
 	defer cancel1()
-	// ctx1, cancel1 := chromedp.NewContext(context.Background())
-	// defer cancel1()
 	// start the browser without a timeout
 	if err := chromedp.Run(ctx1); err != nil {
 		log.Println(err)
@@ -60,6 +53,7 @@ func MakeScreenshotForMarketWatchIDs(linkURL string, tab MarketWatchTab) []byte 
 	}
 	ctx2, cancel2 := context.WithTimeout(ctx1, 50*time.Second)
 	defer cancel2()
+	// TODO: отключить картинки
 	// sel := "body > section > div.region.region--full.masthead-elements > div.column.column--full.max-markets > div.element.element--markets.desktop > div.markets--desktop"
 	sel := "body div.markets__table > table"
 	var buf []byte

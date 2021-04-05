@@ -17,7 +17,12 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// TODO: пакетный режим вылетает по общему таймауту
+// TODO: оптимизация chromedp
+// Q: Chrome exits as soon as my Go program finishes
+// A: On Linux, chromedp is configured to avoid leaking resources by force-killing any started Chrome child processes. If you need to launch a long-running Chrome instance, manually start Chrome and connect using RemoteAllocator. https://github.com/chromedp/chromedp/blob/dac8c91f6982c771775a2cc1858b1dcc6bb987a3/allocate_test.go
+
+// TODO: упаковать в Docker chromedp https://hub.docker.com/r/chromedp/headless-shell/
+// TODO: сохранять id узеров бота для рассылки когда /start
 // TODO: пересылать ответы для "Andrew Ka2" к "Andrew Ka"
 // TODO: badger для tickers
 // TODO: автоматизировать пересылку УРОВНИ - про три зелёные кружочка (и фильтр по портфелю)
@@ -42,7 +47,15 @@ import (
 // TODO: выборка с графиками https://finviz.com/screener.ashx?v=212&t=ZM,BA,MU,MS,GE,AA
 // TODO: https://stockcharts.com/h-sc/ui?s=$CPCE https://school.stockcharts.com/doku.php?id=market_indicators:put_call_ratio
 
+var isFirstTime = true
+
 func main() {
+	if isFirstTime {
+		isFirstTime = false
+		// для инициализации Chrome
+		time.Sleep(4 * time.Second)
+	}
+
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading .env file")
 	}
@@ -376,11 +389,14 @@ func main() {
 				sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
 			}
 		} else {
-
 			// simple command mode
 			// TODO: "#ZM!!"
 			re := regexp.MustCompile(`(^|[^A-Za-z])#([A-Za-z]+)(\?!|\?\?|\?|!!|!)`)
 			matches := re.FindAllStringSubmatch(text, -1)
+			if len(matches) == 0 && m.Chat.Type == tb.ChatPrivate {
+				sendText(b, m.Chat.ID, escape("Unknown command, please see /help"))
+				return
+			}
 			executed := make([]string, 0)
 			for _, match := range matches {
 				symbol := match[2]

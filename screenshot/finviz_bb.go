@@ -15,16 +15,9 @@ import (
 
 // MakeScreenshotForFinvizBB description
 func MakeScreenshotForFinvizBB(linkURL string) []byte {
-	// o := append(chromedp.DefaultExecAllocatorOptions[:],
-	// 	// chromedp.ProxyServer("socks5://138.59.207.118:9076"),
-	// 	// chromedp.Flag("blink-settings", "imagesEnabled=false"),
-	// )
-	// ctx, cancel := chromedp.NewExecAllocator(context.Background(), o...)
-	// defer cancel()
-	// ctx1, cancel1 := chromedp.NewContext(ctx)
-	// defer cancel1()
-	// тут нужны картинки!
-	ctx1, cancel1 := chromedp.NewContext(context.Background())
+	ctx0, cancel0 := chromedp.NewRemoteAllocator(context.Background(), getWebSocketDebuggerUrl())
+	defer cancel0()
+	ctx1, cancel1 := chromedp.NewContext(ctx0)
 	defer cancel1()
 	// start the browser without a timeout
 	if err := chromedp.Run(ctx1); err != nil {

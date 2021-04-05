@@ -1,2 +1,13 @@
 .git/
 .env
+config.yml
+.dockerignore
+.gitignore
+docker-compose.yml
+Dockerfile
+LICENSE
+Makefile
+README.md
+RawDataBot.json
+screenshot.png
+segezha4
