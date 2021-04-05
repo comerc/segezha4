@@ -376,11 +376,14 @@ func main() {
 				sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
 			}
 		} else {
-
 			// simple command mode
 			// TODO: "#ZM!!"
 			re := regexp.MustCompile(`(^|[^A-Za-z])#([A-Za-z]+)(\?!|\?\?|\?|!!|!)`)
 			matches := re.FindAllStringSubmatch(text, -1)
+			if len(matches) == 0 && m.Chat.Type == tb.ChatPrivate {
+				sendText(b, m.Chat.ID, escape("Unknown command, please see /help"))
+				return
+			}
 			executed := make([]string, 0)
 			for _, match := range matches {
 				symbol := match[2]
