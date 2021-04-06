@@ -7,7 +7,14 @@ import (
 	ss "github.com/comerc/segezha4/screenshot"
 )
 
+// var isFirstTime = true
+
 func _main() {
+	// if isFirstTime {
+	// 	isFirstTime = false
+	// 	// для инициализации Chrome
+	// 	time.Sleep(4 * time.Second)
+	// }
 
 	// linkURL := "https://money.cnn.com/data/fear-and-greed/"
 	// buf := ss.MakeScreenshotForFear(linkURL)
@@ -15,8 +22,8 @@ func _main() {
 	// linkURL := "https://www.barchart.com/stocks/quotes/$VIX/technical-chart/fullscreen?plot=CANDLE&volume=0&data=I:5&density=L&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(20);EXPMA(50);EXPMA(200);WMA(9);EXPMA(500);EXPMA(1000)&sym=$VIX&grid=1&height=625&studyheight=100"
 	// buf := ss.MakeScreenshotForVIX(linkURL)
 
-	// linkURL := "https://finviz.com/quote.ashx?t=ZM"
-	// buf := ss.MakeScreenshotForFinviz(linkURL)
+	linkURL := "https://finviz.com/quote.ashx?t=GS"
+	buf := ss.MakeScreenshotForFinviz(linkURL)
 
 	// linkURL := "https://finviz.com/"
 	// buf := ss.MakeScreenshotForFinvizIDs(linkURL)
@@ -37,7 +44,7 @@ func _main() {
 	// buf := ss.MakeScreenshotForPage(linkURL, 0, 0, 0, 2042)
 
 	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
-	buf := ss.MakeScreenshotForTipRanks("fb")
+	// buf := ss.MakeScreenshotForTipRanks("tsla")
 
 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
 	// linkURL := "https://www.marketbeat.com/stocks/TSLA"

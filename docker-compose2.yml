@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # segezha4:
+  #   networks:
+  #     - custom2
+  #   build:
+  #     context: ..
+  #     dockerfile: ./Dockerfile
+  #     network: host
+  #   image: segezha4
+  #   volumes:
+  #     - './:/app'
+  #   working_dir: /app
+  #   # expose:
+  #   #   - '8008'
+  #   # ports:
+  #   #   - 8008:8008
+  chromedp:
+    image: chromedp/headless-shell:stable
+    entrypoint:
+      [
+        '/headless-shell/headless-shell',
+        '--no-sandbox',
+        '--remote-debugging-address=0.0.0.0',
+        '--remote-debugging-port=9222',
+        '--disable-gpu',
+        '--headless',
+      ]
+    ports:
+      - '9222:9222'
+    # networks:
+    #   custom2:
+    #     ipv4_address: 173.16.0.42
+# networks:
+#   custom2:
+#     driver: bridge
+#     ipam:
+#       driver: default
+#       config:
+#         - subnet: 173.16.0.0/24

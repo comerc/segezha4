@@ -17,16 +17,16 @@ services:
     # ports:
     #   - 8008:8008
   chromedp:
-    image: chromedp/headless-shell
-    # entrypoint:
-    #   [
-    #     '/headless-shell/headless-shell',
-    #     '--no-sandbox',
-    #     '--remote-debugging-address=0.0.0.0',
-    #     '--remote-debugging-port=9222',
-    #     '--disable-gpu',
-    #     '--headless',
-    #   ]
+    image: chromedp/headless-shell:stable
+    entrypoint:
+      [
+        '/headless-shell/headless-shell',
+        '--no-sandbox',
+        '--remote-debugging-address=0.0.0.0',
+        '--remote-debugging-port=9222',
+        '--disable-gpu',
+        '--headless',
+      ]
     ports:
       - '9222:9222'
     networks:
