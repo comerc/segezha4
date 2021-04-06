@@ -185,16 +185,16 @@ func main() {
 *Simple (Batch) Mode:*
 #TSLA! #TSLA? #TSLA?? #TSLA?! #TSLA!!
 `
-			sendText(b, m.Chat.ID, escape(help))
+			sendText(b, m.Chat.ID, escape(help), false)
 		} else if text == "/pause" {
 			if isAdmin(m.Sender.ID) {
 				pauseDay = time.Now().UTC().Day()
-				sendText(b, m.Chat.ID, "set pause")
+				sendText(b, m.Chat.ID, "set pause", false)
 			}
 		} else if text == "/reset" {
 			if isAdmin(m.Sender.ID) {
 				pauseDay = -1
-				sendText(b, m.Chat.ID, "set reset")
+				sendText(b, m.Chat.ID, "set reset", false)
 			}
 		} else if text == "/bb" {
 			sendFinvizBB(b, m.Chat.ID)
@@ -219,7 +219,7 @@ func main() {
 			payload := re.ReplaceAllString(strings.Trim(m.Payload, " "), " ")
 			symbols := strings.Split(payload, " ")
 			if len(symbols) == 0 {
-				sendText(b, m.Chat.ID, "No symbols")
+				sendText(b, m.Chat.ID, "No symbols", false)
 				return
 			}
 			executed := make([]string, 0)
@@ -231,9 +231,9 @@ func main() {
 					continue
 				}
 				executed = append(executed, strings.ToUpper(symbol))
-				result := sendFinvizImage(b, m.Chat.ID, symbol)
+				result := sendFinvizImage(b, m.Chat.ID, symbol, m.Chat.Type != tb.ChatPrivate)
 				if !result {
-					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
+					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
 				}
 			}
 		} else if strings.HasPrefix(text, "/info ") {
@@ -242,13 +242,13 @@ func main() {
 			arguments := strings.Split(payload, " ")
 			symbols := arguments[1:]
 			if len(symbols) == 0 {
-				sendText(b, m.Chat.ID, "No symbols")
+				sendText(b, m.Chat.ID, "No symbols", false)
 				return
 			}
 			articleCaseName := arguments[0]
 			articleCase := GetExactArticleCase(articleCaseName)
 			if articleCase == nil {
-				sendText(b, m.Chat.ID, "Invalid command")
+				sendText(b, m.Chat.ID, "Invalid command", false)
 				return
 			}
 			executed := make([]string, 0)
@@ -262,7 +262,7 @@ func main() {
 				executed = append(executed, strings.ToUpper(symbol))
 				ticker := GetExactTicker(symbol)
 				if ticker == nil {
-					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
+					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
 					continue
 				}
 				var result bool
@@ -270,12 +270,12 @@ func main() {
 				case ScreenshotModePage:
 					result = sendScreenshotForPage(b, m.Chat.ID, articleCase, ticker)
 				case ScreenshotModeImage:
-					result = sendImage(b, m.Chat.ID, articleCase, ticker)
+					result = sendImage(b, m.Chat.ID, articleCase, ticker, m.Chat.Type != tb.ChatPrivate)
 					// result = sendScreenshotForImage(b, m.Chat.ID, articleCase, ticker)
 				case ScreenshotModeFinviz:
 					result = sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
 					if !result {
-						sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
+						sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
 						result = true
 					}
 				case ScreenshotModeMarketWatch:
@@ -292,7 +292,7 @@ func main() {
 					result = false
 				}
 				if !result {
-					sendLink(b, m.Chat.ID, articleCase, ticker)
+					sendLink(b, m.Chat.ID, articleCase, ticker, m.Chat.Type != tb.ChatPrivate)
 				}
 			}
 			// err := b.Delete(
@@ -314,13 +314,13 @@ func main() {
 			// 	symbol := matches[0][2]
 			// 	ticker := GetExactTicker(symbol)
 			// 	if ticker == nil {
-			// 		sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
+			// 		sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)), false)
 			// 		return
 			// 	}
 			// 	articleCase := GetExactArticleCase("marketwatch.com")
 			// 	result := sendScreenshotForMarketWatch(b, m.Chat.ID, articleCase, ticker)
 			// 	if !result {
-			// 		sendLink(b, m.Chat.ID, articleCase, ticker)
+			// 		sendLink(b, m.Chat.ID, articleCase, ticker, false)
 			// 	}
 		} else if isEarnings(text) {
 			re := regexp.MustCompile(`(^|[^A-Za-z])\$([A-Za-z]+)`)
@@ -334,13 +334,13 @@ func main() {
 				executed = append(executed, strings.ToUpper(symbol))
 				ticker := GetExactTicker(symbol)
 				if ticker == nil {
-					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
+					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
 					continue
 				}
 				articleCase := GetExactArticleCase("marketwatch.com")
 				result := sendScreenshotForMarketWatch(b, m.Chat.ID, articleCase, ticker)
 				if !result {
-					sendLink(b, m.Chat.ID, articleCase, ticker)
+					sendLink(b, m.Chat.ID, articleCase, ticker, m.Chat.Type != tb.ChatPrivate)
 				}
 			}
 		} else if isARKOrWatchList(text) {
@@ -357,13 +357,13 @@ func main() {
 				executed = append(executed, strings.ToUpper(symbol))
 				ticker := GetExactTicker(symbol)
 				if ticker == nil {
-					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
+					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
 					continue
 				}
 				articleCase := GetExactArticleCase("finviz.com")
 				result := sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
 				if !result {
-					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
+					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
 					result = true
 				}
 			}
@@ -379,20 +379,20 @@ func main() {
 				executed = append(executed, strings.ToUpper(symbol))
 				ticker := GetExactTicker(symbol)
 				if ticker == nil {
-					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
+					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
 					continue
 				}
 				articleCase := GetExactArticleCase("finviz.com")
 				result := sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
 				if !result {
-					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
+					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
 					result = true
 				}
 			}
 		} else if symbol := hasDots(text); symbol != "" {
-			result := sendFinvizImage(b, m.Chat.ID, symbol)
+			result := sendFinvizImage(b, m.Chat.ID, symbol, false)
 			if !result {
-				sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
+				sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), false)
 			}
 		} else {
 			// simple command mode
@@ -400,7 +400,7 @@ func main() {
 			re := regexp.MustCompile(`(^|[^A-Za-z])#([A-Za-z]+)(\?!|\?\?|\?|!!|!)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			if len(matches) == 0 && m.Chat.Type == tb.ChatPrivate {
-				sendText(b, m.Chat.ID, escape("Unknown command, please see /help"))
+				sendText(b, m.Chat.ID, escape("Unknown command, please see /help"), false)
 				return
 			}
 			executed := make([]string, 0)
@@ -414,7 +414,7 @@ func main() {
 				// log.Println(symbol + mode)
 				ticker := GetExactTicker(symbol)
 				if ticker == nil {
-					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)))
+					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
 					continue
 				}
 				var (
@@ -436,44 +436,44 @@ func main() {
 					result = sendBarChart(b, m.Chat.ID, ticker.symbol)
 				case "?":
 					articleCase = GetExactArticleCase("stockscores.com")
-					result = sendImage(b, m.Chat.ID, articleCase, ticker)
+					result = sendImage(b, m.Chat.ID, articleCase, ticker, false)
 				case "!!":
 					articleCase = GetExactArticleCase("shortvolume.com")
-					result = sendImage(b, m.Chat.ID, articleCase, ticker)
+					result = sendImage(b, m.Chat.ID, articleCase, ticker, false)
 					if !result {
-						sendLink(b, m.Chat.ID, articleCase, ticker)
+						sendLink(b, m.Chat.ID, articleCase, ticker, false)
 					}
 					articleCase = GetExactArticleCase("stockscores.com")
-					result = sendImage(b, m.Chat.ID, articleCase, ticker)
+					result = sendImage(b, m.Chat.ID, articleCase, ticker, false)
 					if !result {
-						sendLink(b, m.Chat.ID, articleCase, ticker)
+						sendLink(b, m.Chat.ID, articleCase, ticker, false)
 					}
 					articleCase = GetExactArticleCase("finviz.com")
 					result = sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
 					if !result {
-						sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
+						sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), false)
 					}
 					articleCase = GetExactArticleCase("gurufocus.com")
 					result = sendScreenshotForGuruFocus(b, m.Chat.ID, articleCase, ticker)
 					if !result {
-						sendLink(b, m.Chat.ID, articleCase, ticker)
+						sendLink(b, m.Chat.ID, articleCase, ticker, false)
 					}
 					articleCase = GetExactArticleCase("marketbeat.com")
 					result = sendScreenshotForMarketBeat(b, m.Chat.ID, articleCase, ticker)
 					if !result {
-						sendLink(b, m.Chat.ID, articleCase, ticker)
+						sendLink(b, m.Chat.ID, articleCase, ticker, false)
 					}
 					articleCase = GetExactArticleCase("tipranks.com")
 					result = sendScreenshotForTipRanks(b, m.Chat.ID, articleCase, ticker)
 					if !result {
-						sendLink(b, m.Chat.ID, articleCase, ticker)
+						sendLink(b, m.Chat.ID, articleCase, ticker, false)
 					}
 					result = true
 				case "!":
 					articleCase = GetExactArticleCase("finviz.com")
 					result = sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
 					if !result {
-						sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)))
+						sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), false)
 						result = true
 					}
 				default:
@@ -481,7 +481,7 @@ func main() {
 					result = true
 				}
 				if !result {
-					sendLink(b, m.Chat.ID, articleCase, ticker)
+					sendLink(b, m.Chat.ID, articleCase, ticker, false)
 				}
 			}
 		}
@@ -810,8 +810,10 @@ func sendScreenshotForTipRanks(b *tb.Bot, chatID int64, articleCase *ArticleCase
 // 	return true
 // }
 
-func sendFinvizImage(b *tb.Bot, chatID int64, symbol string) bool {
-	time.Sleep(300 * time.Millisecond)
+func sendFinvizImage(b *tb.Bot, chatID int64, symbol string, isSlowMode bool) bool {
+	if isSlowMode {
+		time.Sleep(4 * time.Second) // your bot will not be able to send more than 20 messages per minute to the same group.
+	}
 	imageURL := fmt.Sprintf("https://charts2.finviz.com/chart.ashx?t=%s&ta=1&p=d&r=%d", strings.ToLower(symbol), time.Now().Unix())
 	linkURL := fmt.Sprintf("https://finviz.com/quote.ashx?t=%s", strings.ToLower(symbol))
 	photo := &tb.Photo{
@@ -839,8 +841,10 @@ func sendFinvizImage(b *tb.Bot, chatID int64, symbol string) bool {
 	return true
 }
 
-func sendImage(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) bool {
-	time.Sleep(300 * time.Millisecond)
+func sendImage(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker, isSlowMode bool) bool {
+	if isSlowMode {
+		time.Sleep(4 * time.Second) // your bot will not be able to send more than 20 messages per minute to the same group.
+	}
 	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol, time.Now().Unix())
 	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
 	photo := &tb.Photo{
@@ -868,8 +872,10 @@ func sendImage(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker
 	return true
 }
 
-func sendLink(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) {
-	time.Sleep(300 * time.Millisecond)
+func sendLink(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker, isSlowMode bool) {
+	if isSlowMode {
+		time.Sleep(4 * time.Second) // your bot will not be able to send more than 20 messages per minute to the same group.
+	}
 	description := func() string {
 		if articleCase.name == ArticleCases[0].name {
 			return ticker.title
@@ -897,8 +903,10 @@ func sendLink(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker)
 	}
 }
 
-func sendText(b *tb.Bot, chatID int64, text string) {
-	time.Sleep(300 * time.Millisecond)
+func sendText(b *tb.Bot, chatID int64, text string, isSlowMode bool) {
+	if isSlowMode {
+		time.Sleep(4 * time.Second) // your bot will not be able to send more than 20 messages per minute to the same group.
+	}
 	_, err := b.Send(
 		tb.ChatID(chatID),
 		text,
@@ -948,7 +956,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 					moon := MoonPhase.New(t)
 					isFullMoon := int(math.Floor((moon.Phase()+0.0625)*8)) == 4
 					if isFullMoon {
-						sendText(b, chatID, escape("🌕 #FullMoon"))
+						sendText(b, chatID, escape("🌕 #FullMoon"), false)
 					}
 					sendFear(b, chatID)
 				}
