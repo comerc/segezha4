@@ -17,15 +17,22 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: не убивать инстанс chrome
+// TODO: сохранять id узеров бота для рассылки когда /start
+// TODO: badger для tickers
+// TODO: подсказки, если неправильные команды в приватном чате
+// TODO: параллельная обработка https://gobyexample.ru/worker-pools.html
+
 // TODO: оптимизация chromedp
 // Q: Chrome exits as soon as my Go program finishes
 // A: On Linux, chromedp is configured to avoid leaking resources by force-killing any started Chrome child processes. If you need to launch a long-running Chrome instance, manually start Chrome and connect using RemoteAllocator. https://github.com/chromedp/chromedp/blob/dac8c91f6982c771775a2cc1858b1dcc6bb987a3/allocate_test.go
 
+// https://github.com/chromedp/chromedp/issues/297#issuecomment-487833337
+// https://github.com/GoogleChrome/chrome-launcher/blob/master/docs/chrome-flags-for-tools.md
+
 // TODO: упаковать в Docker chromedp https://hub.docker.com/r/chromedp/headless-shell/
-// TODO: сохранять id узеров бота для рассылки когда /start
+
 // TODO: пересылать ответы для "Andrew Ka2" к "Andrew Ka"
-// TODO: badger для tickers
-// TODO: автоматизировать пересылку УРОВНИ - про три зелёные кружочка (и фильтр по портфелю)
 // TODO: автоматизировать пересылку и разделить отчеты "Инвестиции USA Markets"
 // TODO: /info tipranks.com LIFE
 // TODO: бумажка пробила 9EMA на дневке?
@@ -42,7 +49,6 @@ import (
 // TODO: svg to png
 // TODO: добавить тайм-фрейм #BABA?15M
 // TODO: добавить медленную скользящую #BABA?50EMA / 100EMA / 200EMA
-// TODO: параллельная обработка https://gobyexample.ru/worker-pools.html
 // TODO: добавить биток GBTC
 // TODO: выборка с графиками https://finviz.com/screener.ashx?v=212&t=ZM,BA,MU,MS,GE,AA
 // TODO: https://stockcharts.com/h-sc/ui?s=$CPCE https://school.stockcharts.com/doku.php?id=market_indicators:put_call_ratio
@@ -805,6 +811,7 @@ func sendScreenshotForTipRanks(b *tb.Bot, chatID int64, articleCase *ArticleCase
 // }
 
 func sendFinvizImage(b *tb.Bot, chatID int64, symbol string) bool {
+	time.Sleep(300 * time.Millisecond)
 	imageURL := fmt.Sprintf("https://charts2.finviz.com/chart.ashx?t=%s&ta=1&p=d&r=%d", strings.ToLower(symbol), time.Now().Unix())
 	linkURL := fmt.Sprintf("https://finviz.com/quote.ashx?t=%s", strings.ToLower(symbol))
 	photo := &tb.Photo{
@@ -833,6 +840,7 @@ func sendFinvizImage(b *tb.Bot, chatID int64, symbol string) bool {
 }
 
 func sendImage(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) bool {
+	time.Sleep(300 * time.Millisecond)
 	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol, time.Now().Unix())
 	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
 	photo := &tb.Photo{
@@ -861,6 +869,7 @@ func sendImage(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker
 }
 
 func sendLink(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) {
+	time.Sleep(300 * time.Millisecond)
 	description := func() string {
 		if articleCase.name == ArticleCases[0].name {
 			return ticker.title
@@ -889,6 +898,7 @@ func sendLink(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker)
 }
 
 func sendText(b *tb.Bot, chatID int64, text string) {
+	time.Sleep(300 * time.Millisecond)
 	_, err := b.Send(
 		tb.ChatID(chatID),
 		text,
