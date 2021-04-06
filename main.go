@@ -29,9 +29,13 @@ import (
 
 // https://github.com/chromedp/chromedp/issues/297#issuecomment-487833337
 // https://github.com/GoogleChrome/chrome-launcher/blob/master/docs/chrome-flags-for-tools.md
+// https://devmarkpro.com/chromedp-get-started
+// https://github.com/chromedp/chromedp/issues/687
+// https://github.com/chromedp/docker-headless-shell/blob/master/README.md
 
 // TODO: упаковать в Docker chromedp https://hub.docker.com/r/chromedp/headless-shell/
 
+// TODO: контролировать общую очередь отправки сообщений (if not ChatPrivate) your bot will not be able to send more than 20 messages per minute to the same group.
 // TODO: пересылать ответы для "Andrew Ka2" к "Andrew Ka"
 // TODO: автоматизировать пересылку и разделить отчеты "Инвестиции USA Markets"
 // TODO: /info tipranks.com LIFE
