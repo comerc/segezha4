@@ -1,13 +1,22 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
+	"sync"
+	"time"
 
 	ss "github.com/comerc/segezha4/screenshot"
 )
 
-func _main() {
+type Result struct {
+	buf        []byte
+	isReceived bool
+	isSent     bool
+}
+
+func main() {
 
 	// linkURL := "https://money.cnn.com/data/fear-and-greed/"
 	// buf := ss.MakeScreenshotForFear(linkURL)
@@ -37,7 +46,7 @@ func _main() {
 	// buf := ss.MakeScreenshotForPage(linkURL, 0, 0, 0, 2042)
 
 	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
-	buf := ss.MakeScreenshotForTipRanks("fb")
+	// buf := ss.MakeScreenshotForTipRanks("tsla")
 
 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
 	// linkURL := "https://www.marketbeat.com/stocks/TSLA"
@@ -48,11 +57,112 @@ func _main() {
 
 	// linkURL := "https://finviz.com/map.ashx?t=sec"
 	// buf := ss.MakeScreenshotForFinvizMap(linkURL)
-	if len(buf) == 0 {
-		log.Println("exit buf == 0")
-		return
+	// if len(buf) == 0 {
+	// 	log.Println("exit buf == 0")
+	// 	return
+	// }
+	// if err := ioutil.WriteFile("screenshot.png", buf, 0644); err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	a := []string{"tsla", "fb", "zm", "bynd", "ge", "gm", "mu", "aa"}
+
+	cbs := make([]Callback, len(a))
+
+	for i, symbol := range a {
+		func(i int, symbol string) {
+			cb := func() []byte {
+				return ss.MakeScreenshotForTipRanks(symbol)
+			}
+			cbs[i] = cb
+		}(i, symbol)
 	}
-	if err := ioutil.WriteFile("screenshot.png", buf, 0644); err != nil {
-		log.Fatal(err)
+
+	sendBatch(cbs)
+}
+
+type Callback func() []byte
+
+func sendBatch(cbs []Callback) {
+	done := make(chan bool)
+	defer elapsed("start")()
+	results := make([]Result, len(cbs))
+
+	// opts := append(
+	// 	chromedp.DefaultExecAllocatorOptions[:],
+	// 	// select all the elements after the third element
+	// 	// chromedp.DefaultExecAllocatorOptions[3:],
+	// 	// chromedp.NoFirstRun,
+	// 	// chromedp.NoDefaultBrowserCheck,
+	// 	chromedp.DisableGPU,
+	// )
+
+	// ctx0, cancel0 := chromedp.NewExecAllocator(context.Background(), opts...)
+	// // ctx0, cancel0 := chromedp.NewExecAllocator(context.Background())
+	// defer cancel0()
+
+	// ctx1, cancel1 := chromedp.NewContext(ctx0)
+	// defer cancel1()
+	// // start the browser without a timeout
+	// if err := chromedp.Run(ctx1); err != nil {
+	// 	log.Fatalln(err)
+	// }
+
+	var tokens = make(chan struct{}, 4) // ограничение количества горутин
+	var mu sync.Mutex
+	receivedCount := 0
+	for i, cb := range cbs {
+		tokens <- struct{}{} // захват маркера
+		go func(i int, cb Callback) {
+			// defer elapsed(fmt.Sprintf("screenshot%d.png", i))()
+			// buf := ss.MakeScreenshotForTipRanks(t)
+			buf := cb()
+			<-tokens // освобождение маркера
+			{
+				mu.Lock()
+				defer mu.Unlock()
+				results[i] = Result{
+					buf:        buf,
+					isReceived: true,
+				}
+				receivedCount = receivedCount + 1
+				if receivedCount == len(cbs) {
+					sendAllReceived(results, len(results))
+					done <- true
+				} else {
+					isAllPreviosReceived := true
+					for _, r := range results[:i] {
+						if !r.isReceived {
+							isAllPreviosReceived = false
+							break
+						}
+					}
+					if isAllPreviosReceived {
+						sendAllReceived(results, i+1)
+					}
+				}
+			}
+		}(i, cb)
+	}
+	<-done
+}
+
+func sendAllReceived(results []Result, l int) {
+	for i, r := range results[:l] {
+		if !r.isSent {
+			results[i].isSent = true
+			if len(r.buf) == 0 {
+				log.Println("buf == 0")
+			} else if err := ioutil.WriteFile(fmt.Sprintf("screenshot%d.png", i), r.buf, 0644); err != nil {
+				log.Println(err)
+			}
+		}
+	}
+}
+
+func elapsed(what string) func() {
+	start := time.Now()
+	return func() {
+		fmt.Printf("%s took %v\n", what, time.Since(start))
 	}
 }
