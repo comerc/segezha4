@@ -7,12 +7,13 @@ import (
 	"math"
 	"os"
 	"regexp"
-	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/IvanMenshykov/MoonPhase"
 	ss "github.com/comerc/segezha4/screenshot"
+	"github.com/comerc/segezha4/utils"
 	"github.com/joho/godotenv"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -64,18 +65,12 @@ import (
 // TODO: выборка с графиками https://finviz.com/screener.ashx?v=212&t=ZM,BA,MU,MS,GE,AA
 // TODO: https://stockcharts.com/h-sc/ui?s=$CPCE https://school.stockcharts.com/doku.php?id=market_indicators:put_call_ratio
 
-var isFirstTime = true
-
 func main() {
-	if isFirstTime {
-		isFirstTime = false
-		// для инициализации Chrome
-		time.Sleep(4 * time.Second)
-	}
-
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading .env file")
 	}
+	ss.InitTimeout()
+
 	var (
 		// port      = os.Getenv("PORT")
 		// publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
@@ -238,7 +233,7 @@ func main() {
 				if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
 					symbol = symbol[1:]
 				}
-				if Contains(executed, strings.ToUpper(symbol)) {
+				if utils.Contains(executed, strings.ToUpper(symbol)) {
 					continue
 				}
 				executed = append(executed, strings.ToUpper(symbol))
@@ -267,7 +262,7 @@ func main() {
 				if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
 					symbol = symbol[1:]
 				}
-				if Contains(executed, strings.ToUpper(symbol)) {
+				if utils.Contains(executed, strings.ToUpper(symbol)) {
 					continue
 				}
 				executed = append(executed, strings.ToUpper(symbol))
@@ -339,7 +334,7 @@ func main() {
 			executed := make([]string, 0)
 			for _, match := range matches {
 				symbol := match[2]
-				if Contains(executed, strings.ToUpper(symbol)) {
+				if utils.Contains(executed, strings.ToUpper(symbol)) {
 					continue
 				}
 				executed = append(executed, strings.ToUpper(symbol))
@@ -362,7 +357,7 @@ func main() {
 			executed = append(executed, "WATCH") // for #Watch_list by @usamarke1
 			for _, match := range matches {
 				symbol := match[2]
-				if Contains(executed, strings.ToUpper(symbol)) {
+				if utils.Contains(executed, strings.ToUpper(symbol)) {
 					continue
 				}
 				executed = append(executed, strings.ToUpper(symbol))
@@ -384,7 +379,7 @@ func main() {
 			executed := make([]string, 0)
 			for _, match := range matches {
 				symbol := match[2]
-				if Contains(executed, strings.ToUpper(symbol)) {
+				if utils.Contains(executed, strings.ToUpper(symbol)) {
 					continue
 				}
 				executed = append(executed, strings.ToUpper(symbol))
@@ -405,28 +400,28 @@ func main() {
 			if !result {
 				sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), false)
 			}
-			// } else if strings.HasPrefix(text, "/tipranks ") {
+		} else if strings.HasPrefix(text, "/tipranks ") {
 			// fmt.Println("/tipranks")
-			// re := regexp.MustCompile(",|[ ]+")
-			// payload := re.ReplaceAllString(strings.Trim(m.Payload, " "), " ")
-			// dirtySymbols := strings.Split(payload, " ")
-			// if len(dirtySymbols) == 0 {
-			// 	sendText(b, m.Chat.ID, "No symbols", false)
-			// 	return
-			// }
-			// articleCase := GetExactArticleCase("tipranks.com")
-			// if articleCase == nil {
-			// 	sendText(b, m.Chat.ID, "Invalid command", false)
-			// 	return
-			// }
+			re := regexp.MustCompile(",|[ ]+")
+			payload := re.ReplaceAllString(strings.Trim(m.Payload, " "), " ")
+			dirtySymbols := strings.Split(payload, " ")
+			if len(dirtySymbols) == 0 {
+				sendText(b, m.Chat.ID, "No symbols", false)
+				return
+			}
+			articleCase := GetExactArticleCase("tipranks.com")
+			if articleCase == nil {
+				sendText(b, m.Chat.ID, "Invalid command", false)
+				return
+			}
 			// fmt.Println("dirtySymbols", dirtySymbols)
-			// symbols := normalizeSymbols(dirtySymbols)
+			symbols := normalizeSymbols(dirtySymbols)
 			// fmt.Println("symbols", symbols)
-			// callbacks := make([]getWhat, len(symbols))
-			// for i, symbol := range symbols {
-			// 	callbacks[i] = closeWhat(articleCase, symbol)
-			// }
-			// sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
+			callbacks := make([]getWhat, len(symbols))
+			for i, symbol := range symbols {
+				callbacks[i] = closeWhat(articleCase, symbol)
+			}
+			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		} else {
 			// simple command mode
 			// TODO: "#ZM!!"
@@ -440,7 +435,7 @@ func main() {
 			for _, match := range matches {
 				symbol := match[2]
 				mode := match[3]
-				if Contains(executed, strings.ToUpper(symbol)+mode) {
+				if utils.Contains(executed, strings.ToUpper(symbol)+mode) {
 					continue
 				}
 				executed = append(executed, strings.ToUpper(symbol)+mode)
@@ -523,26 +518,9 @@ func main() {
 	b.Handle(tb.OnText, messageHandler)
 	b.Handle(tb.OnPhoto, messageHandler)
 	pauseDay = -1
-	go runBackgroundTask(b, int64(strToInt(chatID)))
+	go runBackgroundTask(b, int64(utils.ConvertToInt(chatID)))
 	b.Start()
 }
-
-// func contains(slice []string, search string) bool {
-// 	for _, element := range slice {
-// 		if element == search {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
-
-// func parseInt(s string) int64 {
-// 	result, err := strconv.ParseInt(s, 10, 64)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-// 	return result
-// }
 
 func escapeURL(s string) string {
 	re := regexp.MustCompile("[(|)]")
@@ -1199,15 +1177,6 @@ func sendMarketWatchIDs(b *tb.Bot, chatID int64, tab ss.MarketWatchTab) bool {
 	return true
 }
 
-func strToInt(s string) int {
-	n, err := strconv.Atoi(s)
-	if err != nil {
-		log.Println(s, "is not an integer.")
-		return 0
-	}
-	return n
-}
-
 func isEarnings(text string) bool {
 	re := regexp.MustCompile("#ОТЧЕТ")
 	return re.FindStringIndex(text) != nil
@@ -1232,216 +1201,196 @@ func hasDots(text string) string {
 	return ""
 }
 
-func Contains(a []string, x string) bool {
-	for _, n := range a {
-		if x == n {
-			return true
-		}
-	}
-	return false
-}
-
 func isAdmin(ID int) bool {
 	s := os.Getenv("SEGEZHA4_ADMIN_USER_IDS")
 	ids := strings.Split(s, ",")
-	return Contains(ids, fmt.Sprintf("%d", ID))
+	return utils.Contains(ids, fmt.Sprintf("%d", ID))
 }
 
 // **** параллельная обработка
 
-// type ParallelResult struct {
-// 	what       interface{}
-// 	isReceived bool
-// 	isSent     bool
-// }
+type ParallelResult struct {
+	what       interface{}
+	isReceived bool
+	isSent     bool
+}
 
-// type getWhat func() interface{}
+type getWhat func() interface{}
 
-// func closeWhat(articleCase *ArticleCase, symbol string) getWhat {
-// 	return func() interface{} {
-// 		if isNotFoundTicker(symbol) {
-// 			return fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol))
-// 		}
-// 		var result interface{}
-// 		linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
-// 		text := fmt.Sprintf(
-// 			`\#%s by [%s](%s)`,
-// 			symbol,
-// 			escape(articleCase.name),
-// 			linkURL,
-// 		)
-// 		switch articleCase.screenshotMode {
-// 		case ScreenshotModeImage:
-// 			imageURL := fmt.Sprintf(articleCase.imageURL, symbol, time.Now().Unix())
-// 			result = &tb.Photo{
-// 				File:    tb.FromURL(imageURL),
-// 				Caption: text,
-// 			}
-// 		case ScreenshotModeFinviz:
-// 			screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
-// 			if len(screenshot) != 0 {
-// 				result = &tb.Photo{
-// 					File:    tb.FromReader(bytes.NewReader(screenshot)),
-// 					Caption: text,
-// 				}
-// 			}
-// 		case ScreenshotModeMarketWatch:
-// 			screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
-// 			if len(screenshot) != 0 {
-// 				result = &tb.Photo{
-// 					File:    tb.FromReader(bytes.NewReader(screenshot)),
-// 					Caption: text,
-// 				}
-// 			}
-// 		case ScreenshotModeCathiesArk:
-// 			screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
-// 			if len(screenshot) != 0 {
-// 				result = &tb.Photo{
-// 					File:    tb.FromReader(bytes.NewReader(screenshot)),
-// 					Caption: text,
-// 				}
-// 			}
-// 		case ScreenshotModeGuruFocus:
-// 			screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
-// 			if len(screenshot) != 0 {
-// 				result = &tb.Photo{
-// 					File:    tb.FromReader(bytes.NewReader(screenshot)),
-// 					Caption: text,
-// 				}
-// 			}
-// 		case ScreenshotModeMarketBeat:
-// 			screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
-// 			if len(screenshot) != 0 {
-// 				result = &tb.Photo{
-// 					File:    tb.FromReader(bytes.NewReader(screenshot)),
-// 					Caption: text,
-// 				}
-// 			}
-// 		case ScreenshotModeTipRanks:
-// 			screenshot := ss.MakeScreenshotForTipRanks(linkURL)
-// 			if len(screenshot) != 0 {
-// 				result = &tb.Photo{
-// 					File:    tb.FromReader(bytes.NewReader(screenshot)),
-// 					Caption: text,
-// 				}
-// 			}
-// 		}
-// 		if result == nil {
-// 			result = text
-// 		}
-// 		return result
-// 	}
-// }
+func closeWhat(articleCase *ArticleCase, symbol string) getWhat {
+	return func() interface{} {
+		if isNotFoundTicker(symbol) {
+			return fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol))
+		}
+		var result interface{}
+		linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
+		text := fmt.Sprintf(
+			`\#%s by [%s](%s)`,
+			symbol,
+			escape(articleCase.name),
+			linkURL,
+		)
+		switch articleCase.screenshotMode {
+		case ScreenshotModeImage:
+			imageURL := fmt.Sprintf(articleCase.imageURL, symbol, time.Now().Unix())
+			result = &tb.Photo{
+				File:    tb.FromURL(imageURL),
+				Caption: text,
+			}
+		case ScreenshotModeFinviz:
+			screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
+			if len(screenshot) != 0 {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: text,
+				}
+			}
+		case ScreenshotModeMarketWatch:
+			screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
+			if len(screenshot) != 0 {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: text,
+				}
+			}
+		case ScreenshotModeCathiesArk:
+			screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
+			if len(screenshot) != 0 {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: text,
+				}
+			}
+		case ScreenshotModeGuruFocus:
+			screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
+			if len(screenshot) != 0 {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: text,
+				}
+			}
+		case ScreenshotModeMarketBeat:
+			screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
+			if len(screenshot) != 0 {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: text,
+				}
+			}
+		case ScreenshotModeTipRanks:
+			screenshot := ss.MakeScreenshotForTipRanks(linkURL)
+			if len(screenshot) != 0 {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: text,
+				}
+			}
+		}
+		if result == nil {
+			linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
+			result = fmt.Sprintf(`\#%s %s[%s](%s)`,
+				symbol,
+				escape(by(articleCase.description)),
+				escape(articleCase.name),
+				linkURL,
+				// getUserLink(m.Sender),
+			)
+		}
+		return result
+	}
+}
 
-// func sendBatch(b *tb.Bot, chatID int64, isPrivateChat bool, callbacks []getWhat) {
-// 	defer elapsed("start")()
-// 	done := make(chan bool)
-// 	results := make([]ParallelResult, len(callbacks))
-// 	threads := 4 // convertToInt(os.Getenv("SEGEZHA4_THREADS"))
-// 	fmt.Println("threads", threads)
-// 	if threads == 0 {
-// 		threads = 1
-// 	}
-// 	var tokens = make(chan struct{}, threads) // ограничение количества горутин
-// 	var mu sync.Mutex
-// 	receivedCount := 0
-// 	for i, cb := range callbacks {
-// 		tokens <- struct{}{} // захват маркера
-// 		go func(i int, cb getWhat) {
-// 			defer elapsed(fmt.Sprintf("screenshot%d.png", i))()
-// 			what := cb()
-// 			fmt.Println("what", what)
-// 			<-tokens // освобождение маркера
-// 			{
-// 				mu.Lock()
-// 				defer mu.Unlock()
-// 				results[i] = ParallelResult{
-// 					what:       what,
-// 					isReceived: true,
-// 				}
-// 				receivedCount = receivedCount + 1
-// 				if receivedCount == len(callbacks) {
-// 					sendAllReceived(b, chatID, isPrivateChat, results, len(results))
-// 					done <- true
-// 				} else {
-// 					isAllPreviosReceived := true
-// 					for _, r := range results[:i] {
-// 						if !r.isReceived {
-// 							isAllPreviosReceived = false
-// 							break
-// 						}
-// 					}
-// 					if isAllPreviosReceived {
-// 						sendAllReceived(b, chatID, isPrivateChat, results, i+1)
-// 					}
-// 				}
-// 			}
-// 		}(i, cb)
-// 	}
-// 	<-done
-// }
+func sendBatch(b *tb.Bot, chatID int64, isPrivateChat bool, callbacks []getWhat) {
+	defer utils.Elapsed("sendBatch")()
+	done := make(chan bool)
+	results := make([]ParallelResult, len(callbacks))
+	threads := utils.ConvertToInt(os.Getenv("SEGEZHA4_THREADS"))
+	if threads == 0 {
+		threads = 1
+	}
+	var tokens = make(chan struct{}, threads) // ограничение количества горутин
+	var mu sync.Mutex
+	receivedCount := 0
+	for i, cb := range callbacks {
+		tokens <- struct{}{} // захват маркера
+		go func(i int, cb getWhat) {
+			what := cb()
+			<-tokens // освобождение маркера
+			{
+				mu.Lock()
+				defer mu.Unlock()
+				results[i] = ParallelResult{
+					what:       what,
+					isReceived: true,
+				}
+				receivedCount = receivedCount + 1
+				if receivedCount == len(callbacks) {
+					sendAllReceived(b, chatID, isPrivateChat, results, len(results))
+					done <- true
+				} else {
+					isAllPreviosReceived := true
+					for _, r := range results[:i] {
+						if !r.isReceived {
+							isAllPreviosReceived = false
+							break
+						}
+					}
+					if isAllPreviosReceived {
+						sendAllReceived(b, chatID, isPrivateChat, results, i+1)
+					}
+				}
+			}
+		}(i, cb)
+	}
+	<-done
+}
 
-// var lastSend = time.Now().AddDate(0, 0, -1)
+var lastSend = time.Now().AddDate(0, 0, -1)
 
-// func sendAllReceived(b *tb.Bot, chatID int64, isPrivateChat bool, results []ParallelResult, l int) {
-// 	fmt.Println("sendAllReceived")
-// 	for i, r := range results[:l] {
-// 		if !r.isSent {
-// 			if !isPrivateChat {
-// 				// your bot will not be able to send more than 20 messages per minute to the same group.
-// 				diff := time.Since(lastSend)
-// 				if diff < 4*time.Second {
-// 					time.Sleep(4 * time.Second)
-// 					lastSend = time.Now()
-// 				}
-// 			}
-// 			_, err := b.Send(
-// 				tb.ChatID(chatID),
-// 				r.what,
-// 				&tb.SendOptions{
-// 					ParseMode: tb.ModeMarkdownV2,
-// 				},
-// 			)
-// 			if err != nil {
-// 				log.Println(err)
-// 			}
-// 			results[i].isSent = true
-// 		}
-// 	}
-// }
+func sendAllReceived(b *tb.Bot, chatID int64, isPrivateChat bool, results []ParallelResult, l int) {
+	for i, r := range results[:l] {
+		func(i int, r ParallelResult) {
+			if !r.isSent {
+				if !isPrivateChat {
+					// your bot will not be able to send more than 20 messages per minute to the same group.
+					diff := time.Since(lastSend)
+					if diff < 4*time.Second {
+						time.Sleep(4 * time.Second)
+						lastSend = time.Now()
+					}
+				}
+				_, err := b.Send(
+					tb.ChatID(chatID),
+					r.what,
+					&tb.SendOptions{
+						ParseMode: tb.ModeMarkdownV2,
+					},
+				)
+				if err != nil {
+					log.Println(err)
+				}
+				results[i].isSent = true
+			}
+		}(i, r)
+	}
+}
 
-// func elapsed(what string) func() {
-// 	start := time.Now()
-// 	return func() {
-// 		fmt.Printf("%s took %v\n", what, time.Since(start))
-// 	}
-// }
+func isNotFoundTicker(symbol string) bool {
+	// TODO: реализация пополнения тикеров
+	ticker := GetExactTicker(symbol)
+	return ticker == nil
+}
 
-// func isNotFoundTicker(symbol string) bool {
-// 	// TODO: реализация пополнения тикеров
-// 	ticker := GetExactTicker(symbol)
-// 	return ticker == nil
-// }
-
-// func normalizeSymbols(symbols []string) []string {
-// 	result := make([]string, 0)
-// 	for _, symbol := range symbols {
-// 		if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
-// 			symbol = symbol[1:]
-// 		}
-// 		if Contains(result, strings.ToUpper(symbol)) {
-// 			continue
-// 		}
-// 		result = append(result, strings.ToUpper(symbol))
-// 	}
-// 	return result
-// }
-
-// func convertToInt(s string) int {
-// 	i, err := strconv.Atoi(s)
-// 	if err != nil {
-// 		log.Print(err)
-// 		return 0
-// 	}
-// 	return int(i)
-// }
+func normalizeSymbols(symbols []string) []string {
+	result := make([]string, 0)
+	for _, symbol := range symbols {
+		if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
+			symbol = symbol[1:]
+		}
+		if utils.Contains(result, strings.ToUpper(symbol)) {
+			continue
+		}
+		result = append(result, strings.ToUpper(symbol))
+	}
+	return result
+}
