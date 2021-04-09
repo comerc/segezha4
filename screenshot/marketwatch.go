@@ -7,10 +7,12 @@ import (
 
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
+	"github.com/comerc/segezha4/utils"
 )
 
 // MakeScreenshotForMarketWatch description
 func MakeScreenshotForMarketWatch(linkURL string) []byte {
+	defer utils.Elapsed(linkURL)()
 	o := append(chromedp.DefaultExecAllocatorOptions[:],
 		// chromedp.ProxyServer("socks5://138.59.207.118:9076"),
 		chromedp.Flag("blink-settings", "imagesEnabled=false"),
@@ -26,7 +28,7 @@ func MakeScreenshotForMarketWatch(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, 50*time.Second)
+	ctx2, cancel2 := context.WithTimeout(ctx1, timeout)
 	defer cancel2()
 	// var s string
 	var buf []byte

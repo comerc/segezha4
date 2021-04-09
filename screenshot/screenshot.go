@@ -5,14 +5,28 @@ import (
 	"image"
 	"image/draw"
 	"image/png"
+	"os"
+	"time"
 
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/chromedp"
+	"github.com/comerc/segezha4/utils"
 )
+
+var timeout time.Duration
 
 func init() {
 	// image.RegisterFormat("jpeg", "jpeg", jpeg.Decode, jpeg.DecodeConfig)
 	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
+
+}
+
+func InitTimeout() {
+	timeout = time.Duration(utils.ConvertToInt(os.Getenv("SEGEZHA4_TIMEOUT")))
+	if timeout == 0 {
+		timeout = 50
+	}
+	timeout = (timeout * time.Second)
 }
 
 func glueImages(img1, img2 image.Image, src *image.Image) error {

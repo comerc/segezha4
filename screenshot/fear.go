@@ -7,10 +7,12 @@ import (
 
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
+	"github.com/comerc/segezha4/utils"
 )
 
 // MakeScreenshotForFear description
 func MakeScreenshotForFear(linkURL string) []byte {
+	defer utils.Elapsed(linkURL)()
 	ctx1, cancel1 := chromedp.NewContext(context.Background())
 	defer cancel1()
 	// start the browser without a timeout
@@ -18,7 +20,7 @@ func MakeScreenshotForFear(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, 50*time.Second)
+	ctx2, cancel2 := context.WithTimeout(ctx1, timeout)
 	defer cancel2()
 	var buf []byte
 	body := "body > #cnnBody"

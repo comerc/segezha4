@@ -12,10 +12,12 @@ import (
 	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
+	"github.com/comerc/segezha4/utils"
 )
 
 // MakeScreenshotForTipRanks description
 func MakeScreenshotForTipRanks(linkURL string) []byte {
+	defer utils.Elapsed(linkURL)()
 	// o := append(chromedp.DefaultExecAllocatorOptions[:],
 	// 	// chromedp.ProxyServer("socks5://138.59.207.118:9076"),
 	// 	// chromedp.Flag("blink-settings", "imagesEnabled=false"),
@@ -49,7 +51,7 @@ func MakeScreenshotForTipRanks(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, 50*time.Second)
+	ctx2, cancel2 := context.WithTimeout(ctx1, timeout)
 	defer cancel2()
 	sel1 := "body div.client-components-stock-research-smart-score-style__rank"
 	sel2 := "body div.client-components-stock-research-analysts-style__analystTopPart"
