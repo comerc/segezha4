@@ -9,7 +9,7 @@ type ScreenshotMode = string
 
 // ScreenshotMode variants
 const (
-	ScreenshotModePage        ScreenshotMode = "Page"
+	// ScreenshotModePage        ScreenshotMode = "Page"
 	ScreenshotModeImage       ScreenshotMode = "Image"
 	ScreenshotModeFinviz      ScreenshotMode = "Finviz"
 	ScreenshotModeMarketWatch ScreenshotMode = "MarketWatch"
@@ -26,10 +26,10 @@ type ArticleCase struct {
 	linkURL        string
 	imageURL       string
 	screenshotMode ScreenshotMode
-	x              float64
-	y              float64
-	width          float64
-	height         float64
+	// x              float64
+	// y              float64
+	// width          float64
+	// height         float64
 }
 
 // TODO: чаще используемые перемещать наверх

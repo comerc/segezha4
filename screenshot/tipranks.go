@@ -3,31 +3,49 @@ package screenshot
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"image"
 	"image/png"
 	"log"
 	"time"
 
 	"github.com/chromedp/cdproto/cdp"
+	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
 )
 
 // MakeScreenshotForTipRanks description
-func MakeScreenshotForTipRanks(symbol string) []byte {
+func MakeScreenshotForTipRanks(linkURL string) []byte {
 	// o := append(chromedp.DefaultExecAllocatorOptions[:],
-	// 	chromedp.ProxyServer("socks5://138.59.207.118:9076"),
+	// 	// chromedp.ProxyServer("socks5://138.59.207.118:9076"),
 	// 	// chromedp.Flag("blink-settings", "imagesEnabled=false"),
+	// 	// chromedp.DisableGPU,
 	// )
 	// ctx, cancel := chromedp.NewExecAllocator(context.Background(), o...)
 	// defer cancel()
 	// ctx1, cancel1 := chromedp.NewContext(ctx)
 	// defer cancel1()
-	ctx1, cancel1 := chromedp.NewContext(context.Background())
+	// ctx1, cancel1 := chromedp.NewContext(context.Background())
+	// defer cancel1()
+	// start the browser without a timeout
+	// if err := chromedp.Run(ctx1); err != nil {
+	// 	log.Println(err)
+	// 	return nil
+	// }
+	ctx0 := context.Background()
+
+	ctx1, cancel1 := chromedp.NewContext(ctx0)
 	defer cancel1()
 	// start the browser without a timeout
-	if err := chromedp.Run(ctx1); err != nil {
+	if err := chromedp.Run(ctx1, func() chromedp.Tasks {
+		return chromedp.Tasks{
+			network.SetBlockedURLS([]string{
+				"https://blog.tipranks.com/*",
+				"https://randomuser.me/*",
+				"/new-images/stock-research/banner/*",
+			}),
+		}
+	}()); err != nil {
 		log.Println(err)
 		return nil
 	}
@@ -41,7 +59,7 @@ func MakeScreenshotForTipRanks(symbol string) []byte {
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.Emulate(device.IPadlandscape),
-			chromedp.Navigate(fmt.Sprintf("https://www.tipranks.com/stocks/%s/forecast", symbol)),
+			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body > #app "),
 			chromedp.Sleep(4 * time.Second),
 			chromedp.SetAttributeValue("body > #app > div > div > div.tr-app", "style", "display:none"),
