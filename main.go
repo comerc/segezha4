@@ -339,7 +339,7 @@ func main() {
 					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
 					continue
 				}
-				articleCase := GetExactArticleCase("marketwatch.com")
+				articleCase := GetExactArticleCase("marketwatch")
 				result := sendScreenshotForMarketWatch(b, m.Chat.ID, articleCase, ticker)
 				if !result {
 					sendLink(b, m.Chat.ID, articleCase, ticker, m.Chat.Type != tb.ChatPrivate)
@@ -362,7 +362,7 @@ func main() {
 					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
 					continue
 				}
-				articleCase := GetExactArticleCase("finviz.com")
+				articleCase := GetExactArticleCase("finviz")
 				result := sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
 				if !result {
 					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
@@ -384,7 +384,7 @@ func main() {
 					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
 					continue
 				}
-				articleCase := GetExactArticleCase("finviz.com")
+				articleCase := GetExactArticleCase("finviz")
 				result := sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
 				if !result {
 					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
@@ -427,53 +427,53 @@ func main() {
 				// TODO: var modes map[string]myFunc https://golangbot.com/first-class-functions/
 				switch mode {
 				case "?!":
-					articleCase = GetExactArticleCase("marketwatch.com")
+					articleCase = GetExactArticleCase("marketwatch")
 					result = sendScreenshotForMarketWatch(b, m.Chat.ID, articleCase, ticker)
 					// result = sendScreenshotForPage(b, m.Chat.ID, articleCase, ticker)
-					// articleCase = GetExactArticleCase("shortvolume.com")
+					// articleCase = GetExactArticleCase("shortvolume")
 					// result = sendImage(b, m.Chat.ID, articleCase, ticker)
-					// articleCase = GetExactArticleCase("shortvolume.com")
+					// articleCase = GetExactArticleCase("shortvolume")
 					// result = sendScreenshotForImage(b, m.Chat.ID, articleCase, ticker)
 				case "??":
-					articleCase = GetExactArticleCase("barchart.com") // для sendLink
+					articleCase = GetExactArticleCase("barchart") // для sendLink
 					result = sendBarChart(b, m.Chat.ID, ticker.symbol)
 				case "?":
-					articleCase = GetExactArticleCase("stockscores.com")
+					articleCase = GetExactArticleCase("stockscores")
 					result = sendImage(b, m.Chat.ID, articleCase, ticker, false)
 				case "!!":
-					articleCase = GetExactArticleCase("shortvolume.com")
+					articleCase = GetExactArticleCase("shortvolume")
 					result = sendImage(b, m.Chat.ID, articleCase, ticker, false)
 					if !result {
 						sendLink(b, m.Chat.ID, articleCase, ticker, false)
 					}
-					articleCase = GetExactArticleCase("stockscores.com")
+					articleCase = GetExactArticleCase("stockscores")
 					result = sendImage(b, m.Chat.ID, articleCase, ticker, false)
 					if !result {
 						sendLink(b, m.Chat.ID, articleCase, ticker, false)
 					}
-					articleCase = GetExactArticleCase("finviz.com")
+					articleCase = GetExactArticleCase("finviz")
 					result = sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
 					if !result {
 						sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), false)
 					}
-					articleCase = GetExactArticleCase("gurufocus.com")
+					articleCase = GetExactArticleCase("gurufocus")
 					result = sendScreenshotForGuruFocus(b, m.Chat.ID, articleCase, ticker)
 					if !result {
 						sendLink(b, m.Chat.ID, articleCase, ticker, false)
 					}
-					articleCase = GetExactArticleCase("marketbeat.com")
+					articleCase = GetExactArticleCase("marketbeat")
 					result = sendScreenshotForMarketBeat(b, m.Chat.ID, articleCase, ticker)
 					if !result {
 						sendLink(b, m.Chat.ID, articleCase, ticker, false)
 					}
-					articleCase = GetExactArticleCase("tipranks.com")
+					articleCase = GetExactArticleCase("tipranks")
 					result = sendScreenshotForTipRanks(b, m.Chat.ID, articleCase, ticker)
 					if !result {
 						sendLink(b, m.Chat.ID, articleCase, ticker, false)
 					}
 					result = true
 				case "!":
-					articleCase = GetExactArticleCase("finviz.com")
+					articleCase = GetExactArticleCase("finviz")
 					result = sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
 					if !result {
 						sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), false)
