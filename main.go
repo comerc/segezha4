@@ -187,7 +187,6 @@ func main() {
 *Simple (Batch) Mode:*
 #TSLA! #TSLA? #TSLA?? #TSLA?! #TSLA!!
 `
-			// /info - batch mode, for example: /info finviz.com GS MS
 			sendText(b, m.Chat.ID, escape(help), false)
 		} else if text == "/pause" {
 			if isAdmin(m.Sender.ID) {
@@ -234,74 +233,6 @@ func main() {
 				callbacks = append(callbacks, closeWhat(symbol, articleCase))
 			}
 			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
-			// } else if strings.HasPrefix(text, "/info ") {
-			// 	re := regexp.MustCompile(",|[ ]+")
-			// 	payload := re.ReplaceAllString(strings.Trim(m.Payload, " "), " ")
-			// 	arguments := strings.Split(payload, " ")
-			// 	symbols := arguments[1:]
-			// 	if len(symbols) == 0 {
-			// 		sendText(b, m.Chat.ID, "No symbols", false)
-			// 		return
-			// 	}
-			// 	articleCaseName := arguments[0]
-			// 	articleCase := GetExactArticleCase(articleCaseName)
-			// 	if articleCase == nil {
-			// 		sendText(b, m.Chat.ID, "Invalid command", false)
-			// 		return
-			// 	}
-			// 	executed := make([]string, 0)
-			// 	for _, symbol := range symbols {
-			// 		if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
-			// 			symbol = symbol[1:]
-			// 		}
-			// 		if utils.Contains(executed, strings.ToUpper(symbol)) {
-			// 			continue
-			// 		}
-			// 		executed = append(executed, strings.ToUpper(symbol))
-			// 		ticker := GetExactTicker(symbol)
-			// 		if ticker == nil {
-			// 			sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
-			// 			continue
-			// 		}
-			// 		var result bool
-			// 		switch articleCase.screenshotMode {
-			// 		// case ScreenshotModePage:
-			// 		// 	result = sendScreenshotForPage(b, m.Chat.ID, articleCase, ticker)
-			// 		case ScreenshotModeImage:
-			// 			result = sendImage(b, m.Chat.ID, articleCase, ticker, m.Chat.Type != tb.ChatPrivate)
-			// 			// result = sendScreenshotForImage(b, m.Chat.ID, articleCase, ticker)
-			// 		case ScreenshotModeFinviz:
-			// 			result = sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
-			// 			if !result {
-			// 				sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
-			// 				result = true
-			// 			}
-			// 		case ScreenshotModeMarketWatch:
-			// 			result = sendScreenshotForMarketWatch(b, m.Chat.ID, articleCase, ticker)
-			// 		case ScreenshotModeMarketBeat:
-			// 			result = sendScreenshotForMarketBeat(b, m.Chat.ID, articleCase, ticker)
-			// 		case ScreenshotModeCathiesArk:
-			// 			result = sendScreenshotForCathiesArk(b, m.Chat.ID, articleCase, ticker)
-			// 		case ScreenshotModeGuruFocus:
-			// 			result = sendScreenshotForGuruFocus(b, m.Chat.ID, articleCase, ticker)
-			// 		case ScreenshotModeTipRanks:
-			// 			result = sendScreenshotForTipRanks(b, m.Chat.ID, articleCase, ticker)
-			// 		default:
-			// 			result = false
-			// 		}
-			// 		if !result {
-			// 			sendLink(b, m.Chat.ID, articleCase, ticker, m.Chat.Type != tb.ChatPrivate)
-			// 		}
-			// 	}
-			// 	// err := b.Delete(
-			// 	// 	&tb.StoredMessage{
-			// 	// 		MessageID: strconv.Itoa(m.ID),
-			// 	// 		ChatID:    m.Chat.ID,
-			// 	// 	},
-			// 	// )
-			// 	// if err != nil {
-			// 	// 	log.Println(err)
-			// 	// }
 		} else if isEarnings(text) {
 			re := regexp.MustCompile(`(^|[^A-Za-z])\$([A-Za-z]+)`)
 			matches := re.FindAllStringSubmatch(text, -1)
