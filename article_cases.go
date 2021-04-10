@@ -17,6 +17,7 @@ const (
 	ScreenshotModeCathiesArk  ScreenshotMode = "CathiesArk"
 	ScreenshotModeGuruFocus   ScreenshotMode = "GuruFocus"
 	ScreenshotModeTipRanks    ScreenshotMode = "TipRanks"
+	ScreenshotModeBarChart    ScreenshotMode = "BarChart"
 )
 
 // ArticleCase struct
@@ -102,7 +103,10 @@ var ArticleCases = []ArticleCase{
 		// height:         913,
 		screenshotMode: ScreenshotModeTipRanks,
 	},
-	{name: "barchart", linkURL: "https://barchart.com/stocks/quotes/%s/overview", description: "Overview"},
+	{name: "barchart", linkURL: "https://barchart.com/stocks/quotes/%s/overview",
+		description:    "Overview",
+		screenshotMode: ScreenshotModeBarChart,
+	},
 	{name: "finasquare", linkURL: "https://www.finasquare.com/stocks/%s/company-info/overview", description: "Overview"},
 	{name: "stockrow", linkURL: "https://stockrow.com/%s", description: "Overview"},
 	{name: "stockanalysis", linkURL: "https://stockanalysis.com/stocks/%s/", description: "Overview"},

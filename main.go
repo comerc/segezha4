@@ -18,8 +18,6 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// TODO: m.Chat.Type != tb.ChatPrivate :: your bot will not be able to send more than 20 messages per minute to the same group.
-
 // TODO: держать запросы от пользователей в очереди, пока выполняется runBackgroundTask
 
 // TODO: источник по ТА https://finviz.com/screener.ashx?v=210&s=ta_p_tlresistance
@@ -223,15 +221,18 @@ func main() {
 		} else if articleCase := hasArticleCase(text); articleCase != nil {
 			re := regexp.MustCompile(",|[ ]+")
 			payload := re.ReplaceAllString(strings.Trim(m.Payload, " "), " ")
-			dirtySymbols := strings.Split(payload, " ")
-			if len(dirtySymbols) == 0 {
-				sendText(b, m.Chat.ID, "No symbols", false)
-				return
-			}
-			symbols := normalizeSymbols(dirtySymbols)
-			callbacks := make([]getWhat, len(symbols))
-			for i, symbol := range symbols {
-				callbacks[i] = closeWhat(articleCase, symbol)
+			symbols := strings.Split(payload, " ")
+			callbacks := make([]getWhat, 0)
+			executed := make([]string, 0)
+			for _, symbol := range symbols {
+				if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
+					symbol = symbol[1:]
+				}
+				if utils.Contains(executed, strings.ToUpper(symbol)) {
+					continue
+				}
+				executed = append(executed, strings.ToUpper(symbol))
+				callbacks = append(callbacks, closeWhat(symbol, articleCase))
 			}
 			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 			// } else if strings.HasPrefix(text, "/finviz ") {
@@ -392,13 +393,10 @@ func main() {
 				}
 			}
 		} else if symbol := hasDots(text); symbol != "" {
-			result := sendFinvizImage(b, m.Chat.ID, symbol, false)
-			if !result {
-				sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), false)
-			}
+			getWhat := closeWhat(symbol, GetExactArticleCase("chart"))
+			send(b, m.Chat.ID, m.Chat.Type != tb.ChatPrivate, getWhat())
 		} else {
 			// simple command mode
-			// TODO: "#ZM!!"
 			re := regexp.MustCompile(`(^|[^A-Za-z])#([A-Za-z]+)(\?!|\?\?|\?|!!|!)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			if len(matches) == 0 {
@@ -407,6 +405,7 @@ func main() {
 				}
 				return
 			}
+			callbacks := make([]getWhat, 0)
 			executed := make([]string, 0)
 			for _, match := range matches {
 				symbol := match[2]
@@ -415,80 +414,26 @@ func main() {
 					continue
 				}
 				executed = append(executed, strings.ToUpper(symbol)+mode)
-				ticker := GetExactTicker(symbol)
-				if ticker == nil {
-					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
-					continue
-				}
-				var (
-					articleCase *ArticleCase
-					result      bool
-				)
-				// TODO: var modes map[string]myFunc https://golangbot.com/first-class-functions/
 				switch mode {
 				case "?!":
-					articleCase = GetExactArticleCase("marketwatch")
-					result = sendScreenshotForMarketWatch(b, m.Chat.ID, articleCase, ticker)
-					// result = sendScreenshotForPage(b, m.Chat.ID, articleCase, ticker)
-					// articleCase = GetExactArticleCase("shortvolume")
-					// result = sendImage(b, m.Chat.ID, articleCase, ticker)
-					// articleCase = GetExactArticleCase("shortvolume")
-					// result = sendScreenshotForImage(b, m.Chat.ID, articleCase, ticker)
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("marketwatch")))
 				case "??":
-					articleCase = GetExactArticleCase("barchart") // для sendLink
-					result = sendBarChart(b, m.Chat.ID, ticker.symbol)
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("barchart")))
 				case "?":
-					articleCase = GetExactArticleCase("stockscores")
-					result = sendImage(b, m.Chat.ID, articleCase, ticker, false)
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("stockscores")))
 				case "!!":
-					articleCase = GetExactArticleCase("shortvolume")
-					result = sendImage(b, m.Chat.ID, articleCase, ticker, false)
-					if !result {
-						sendLink(b, m.Chat.ID, articleCase, ticker, false)
-					}
-					articleCase = GetExactArticleCase("stockscores")
-					result = sendImage(b, m.Chat.ID, articleCase, ticker, false)
-					if !result {
-						sendLink(b, m.Chat.ID, articleCase, ticker, false)
-					}
-					articleCase = GetExactArticleCase("finviz")
-					result = sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
-					if !result {
-						sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), false)
-					}
-					articleCase = GetExactArticleCase("gurufocus")
-					result = sendScreenshotForGuruFocus(b, m.Chat.ID, articleCase, ticker)
-					if !result {
-						sendLink(b, m.Chat.ID, articleCase, ticker, false)
-					}
-					articleCase = GetExactArticleCase("marketbeat")
-					result = sendScreenshotForMarketBeat(b, m.Chat.ID, articleCase, ticker)
-					if !result {
-						sendLink(b, m.Chat.ID, articleCase, ticker, false)
-					}
-					articleCase = GetExactArticleCase("tipranks")
-					result = sendScreenshotForTipRanks(b, m.Chat.ID, articleCase, ticker)
-					if !result {
-						sendLink(b, m.Chat.ID, articleCase, ticker, false)
-					}
-					result = true
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("shortvolume")))
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("stockscores")))
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("finviz")))
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("gurufocus")))
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("marketbeat")))
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("tipranks")))
 				case "!":
-					articleCase = GetExactArticleCase("finviz")
-					result = sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
-					if !result {
-						sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), false)
-						result = true
-					}
-				default:
-					log.Println("Invalid simple command mode")
-					result = true
-				}
-				if !result {
-					sendLink(b, m.Chat.ID, articleCase, ticker, false)
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("finviz")))
 				}
 			}
+			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		}
-
 	}
 	b.Handle(tb.OnText, messageHandler)
 	b.Handle(tb.OnPhoto, messageHandler)
@@ -1182,6 +1127,121 @@ func isAdmin(ID int) bool {
 	return utils.Contains(ids, fmt.Sprintf("%d", ID))
 }
 
+type getWhat func() interface{}
+
+func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
+	return func() interface{} {
+		tag := func() string {
+			if strings.HasPrefix(symbol, "$") {
+				return ""
+			}
+			return "#"
+		}()
+		// TODO: пополнять базу тикеров и индексов для inline mode
+		if tag == "#" {
+			if isNotFoundTicker(symbol) {
+				return fmt.Sprintf("%s not found", strings.ToUpper(tag+symbol))
+			}
+		}
+		// TODO: not found for $symbol
+		var result interface{}
+		linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
+		defer utils.Elapsed(linkURL)()
+		switch articleCase.screenshotMode {
+		case ScreenshotModeImage:
+			imageURL := fmt.Sprintf(articleCase.imageURL, strings.ToLower(symbol), time.Now().Unix())
+			result = &tb.Photo{
+				File:    tb.FromURL(imageURL),
+				Caption: getCaption(linkURL, tag+symbol),
+			}
+		case ScreenshotModeFinviz:
+			screenshot := ss.MakeScreenshotForFinviz(linkURL)
+			if len(screenshot) != 0 {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: getCaption(linkURL, tag+symbol),
+				}
+			}
+		case ScreenshotModeMarketWatch:
+			screenshot := ss.MakeScreenshotForMarketWatch(linkURL)
+			if len(screenshot) != 0 {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: getCaption(linkURL, tag+symbol),
+				}
+			}
+		case ScreenshotModeCathiesArk:
+			screenshot := ss.MakeScreenshotForCathiesArk(linkURL)
+			if len(screenshot) != 0 {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: getCaption(linkURL, tag+symbol),
+				}
+			}
+		case ScreenshotModeGuruFocus:
+			screenshot := ss.MakeScreenshotForGuruFocus(linkURL)
+			if len(screenshot) != 0 {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: getCaption(linkURL, tag+symbol),
+				}
+			}
+		case ScreenshotModeMarketBeat:
+			screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
+			if len(screenshot) != 0 {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: getCaption(linkURL, tag+symbol),
+				}
+			}
+		case ScreenshotModeTipRanks:
+			screenshot := ss.MakeScreenshotForTipRanks(linkURL)
+			if len(screenshot) != 0 {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: getCaption(linkURL, tag+symbol),
+				}
+			}
+		case ScreenshotModeBarChart:
+			volume, height := func() (string, string) {
+				if strings.HasPrefix(symbol, "$") {
+					return "0", "O"
+				}
+				return "total", "X"
+			}()
+			linkURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=%s&data=I:15&density=%[4]s&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(50);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=500&studyheight=200"
+			screenshot := ss.MakeScreenshotForBarChart(fmt.Sprintf(linkURL, symbol, "/fullscreen", volume, height))
+			if len(screenshot) != 0 {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: getCaption(fmt.Sprintf(linkURL, symbol, "", volume, height), tag+symbol),
+				}
+			}
+		}
+		if result == nil {
+			result = getEmptyText(linkURL, articleCase.description, tag+symbol)
+		}
+		return result
+	}
+}
+
+func getCaption(linkURL, tagSymbol string) string {
+	return fmt.Sprintf("%s by [%s](%s)",
+		escape(strings.ToUpper(tagSymbol)),
+		escape(utils.GetHost(linkURL)),
+		escapeURL(linkURL),
+	)
+}
+
+func getEmptyText(linkURL, description, tagSymbol string) string {
+	return fmt.Sprintf("%s %s[%s](%s)",
+		escape(strings.ToUpper(tagSymbol)),
+		escape(by(description)),
+		escape(utils.GetHost(linkURL)),
+		escapeURL(linkURL),
+	)
+}
+
 // **** параллельная обработка
 
 type ParallelResult struct {
@@ -1190,91 +1250,11 @@ type ParallelResult struct {
 	isSent     bool
 }
 
-type getWhat func() interface{}
-
-func closeWhat(articleCase *ArticleCase, symbol string) getWhat {
-	return func() interface{} {
-		if isNotFoundTicker(symbol) {
-			return fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol))
-		}
-		var result interface{}
-		linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
-		text := fmt.Sprintf(`\#%s by [%s](%s)`,
-			symbol,
-			escape(utils.GetHost(linkURL)),
-			linkURL,
-		)
-		switch articleCase.screenshotMode {
-		case ScreenshotModeImage:
-			imageURL := fmt.Sprintf(articleCase.imageURL, symbol, time.Now().Unix())
-			result = &tb.Photo{
-				File:    tb.FromURL(imageURL),
-				Caption: text,
-			}
-		case ScreenshotModeFinviz:
-			screenshot := ss.MakeScreenshotForFinviz(linkURL)
-			if len(screenshot) != 0 {
-				result = &tb.Photo{
-					File:    tb.FromReader(bytes.NewReader(screenshot)),
-					Caption: text,
-				}
-			}
-		case ScreenshotModeMarketWatch:
-			screenshot := ss.MakeScreenshotForMarketWatch(linkURL)
-			if len(screenshot) != 0 {
-				result = &tb.Photo{
-					File:    tb.FromReader(bytes.NewReader(screenshot)),
-					Caption: text,
-				}
-			}
-		case ScreenshotModeCathiesArk:
-			screenshot := ss.MakeScreenshotForCathiesArk(linkURL)
-			if len(screenshot) != 0 {
-				result = &tb.Photo{
-					File:    tb.FromReader(bytes.NewReader(screenshot)),
-					Caption: text,
-				}
-			}
-		case ScreenshotModeGuruFocus:
-			screenshot := ss.MakeScreenshotForGuruFocus(linkURL)
-			if len(screenshot) != 0 {
-				result = &tb.Photo{
-					File:    tb.FromReader(bytes.NewReader(screenshot)),
-					Caption: text,
-				}
-			}
-		case ScreenshotModeMarketBeat:
-			screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
-			if len(screenshot) != 0 {
-				result = &tb.Photo{
-					File:    tb.FromReader(bytes.NewReader(screenshot)),
-					Caption: text,
-				}
-			}
-		case ScreenshotModeTipRanks:
-			screenshot := ss.MakeScreenshotForTipRanks(linkURL)
-			if len(screenshot) != 0 {
-				result = &tb.Photo{
-					File:    tb.FromReader(bytes.NewReader(screenshot)),
-					Caption: text,
-				}
-			}
-		}
-		if result == nil {
-			linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
-			result = fmt.Sprintf(`\#%s %s[%s](%s)`,
-				symbol,
-				escape(by(articleCase.description)),
-				escape(utils.GetHost(linkURL)),
-				linkURL,
-			)
-		}
-		return result
-	}
-}
-
 func sendBatch(b *tb.Bot, chatID int64, isPrivateChat bool, callbacks []getWhat) {
 	defer utils.Elapsed("sendBatch")()
+	if len(callbacks) == 0 {
+		return
+	}
 	done := make(chan bool)
 	results := make([]ParallelResult, len(callbacks))
 	threads := utils.ConvertToInt(os.Getenv("SEGEZHA4_THREADS"))
@@ -1363,20 +1343,6 @@ func isNotFoundTicker(symbol string) bool {
 	// TODO: реализация пополнения тикеров
 	ticker := GetExactTicker(symbol)
 	return ticker == nil
-}
-
-func normalizeSymbols(symbols []string) []string {
-	result := make([]string, 0)
-	for _, symbol := range symbols {
-		if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
-			symbol = symbol[1:]
-		}
-		if utils.Contains(result, strings.ToUpper(symbol)) {
-			continue
-		}
-		result = append(result, strings.ToUpper(symbol))
-	}
-	return result
 }
 
 func hasArticleCase(text string) *ArticleCase {
