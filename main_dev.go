@@ -1,91 +1,92 @@
 package main
 
-// import (
-// 	"fmt"
-// 	"io/ioutil"
-// 	"log"
-// 	"strings"
-// 	"sync"
-// 	"time"
+import (
+	"log"
 
-// 	ss "github.com/comerc/segezha4/screenshot"
-// 	"github.com/comerc/segezha4/utils"
-// )
+	"github.com/comerc/segezha4/utils"
+	"github.com/joho/godotenv"
+)
 
-// func _main() {
+func _main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+	utils.InitTimeoutFactor()
 
-// 	// linkURL := "https://money.cnn.com/data/fear-and-greed/"
-// 	// buf := ss.MakeScreenshotForFear(linkURL)
+	// linkURL := "https://money.cnn.com/data/fear-and-greed/"
+	// buf := ss.MakeScreenshotForFear(linkURL)
 
-// 	// linkURL := "https://www.barchart.com/stocks/quotes/$VIX/technical-chart/fullscreen?plot=CANDLE&volume=0&data=I:5&density=L&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(20);EXPMA(50);EXPMA(200);WMA(9);EXPMA(500);EXPMA(1000)&sym=$VIX&grid=1&height=625&studyheight=100"
-// 	// buf := ss.MakeScreenshotForVIX(linkURL)
+	// linkURL := "https://www.barchart.com/stocks/quotes/$VIX/technical-chart/fullscreen?plot=CANDLE&volume=0&data=I:5&density=L&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(20);EXPMA(50);EXPMA(200);WMA(9);EXPMA(500);EXPMA(1000)&sym=$VIX&grid=1&height=625&studyheight=100"
+	// buf := ss.MakeScreenshotForVIX(linkURL)
 
-// 	// linkURL := "https://finviz.com/quote.ashx?t=ZM"
-// 	// buf := ss.MakeScreenshotForFinviz(linkURL)
+	// linkURL := "https://finviz.com/quote.ashx?t=ZM"
+	// buf := ss.MakeScreenshotForFinviz(linkURL)
 
-// 	// linkURL := "https://finviz.com/"
-// 	// buf := ss.MakeScreenshotForFinvizIDs(linkURL)
+	// linkURL := "https://finviz.com/"
+	// buf := ss.MakeScreenshotForFinvizIDs(linkURL)
 
-// 	// linkURL := "https://marketwatch.com/"
-// 	// buf := ss.MakeScreenshotForMarketWatchIDs(linkURL, ss.MarketWatchHrefCrypto)
+	// linkURL := "https://marketwatch.com/"
+	// buf := ss.MakeScreenshotForMarketWatchIDs(linkURL, ss.MarketWatchHrefCrypto)
 
-// 	// linkURL := "https://www.marketwatch.com/"
-// 	// buf := ss.MakeScreenshotForMarketWatchIDs(linkURL, ss.MarketWatchTabUS)
+	// linkURL := "https://www.marketwatch.com/"
+	// buf := ss.MakeScreenshotForMarketWatchIDs(linkURL, ss.MarketWatchTabUS)
 
-// 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
-// 	// buf := ss.MakeScreenshotForMarketWatch(linkURL)
+	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
+	// buf := ss.MakeScreenshotForMarketWatch(linkURL)
 
-// 	// linkURL := "https://www.gurufocus.com/stock/amd/summary#"
-// 	// buf := ss.MakeScreenshotForGuruFocus(linkURL)
+	// linkURL := "https://www.gurufocus.com/stock/amd/summary#"
+	// buf := ss.MakeScreenshotForGuruFocus(linkURL)
 
-// 	// linkURL := "https://www.gurufocus.com/stock/irbt/summary#"
-// 	// buf := ss.MakeScreenshotForPage(linkURL, 0, 0, 0, 2042)
+	// linkURL := "https://www.gurufocus.com/stock/irbt/summary#"
+	// buf := ss.MakeScreenshotForPage(linkURL, 0, 0, 0, 2042)
 
-// 	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
-// 	// buf := ss.MakeScreenshotForTipRanks(linkURL)
+	// linkURL := "https://tipranks.com/stocks/ZM/forecast"
+	// buf := ss.MakeScreenshotForTipRanks(linkURL)
 
-// 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
-// 	// linkURL := "https://www.marketbeat.com/stocks/TSLA"
-// 	// buf := ss.MakeScreenshotForMarketBeat(linkURL)
+	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
+	// linkURL := "https://www.marketbeat.com/stocks/TSLA"
+	// buf := ss.MakeScreenshotForMarketBeat(linkURL)
 
-// 	// linkURL := "https://cathiesark.com/ark-combined-holdings-of-flir"
-// 	// buf := ss.MakeScreenshotForCathiesArk(linkURL)
+	// linkURL := "https://cathiesark.com/ark-combined-holdings-of-flir"
+	// buf := ss.MakeScreenshotForCathiesArk(linkURL)
 
-// 	// linkURL := "https://finviz.com/map.ashx?t=sec"
-// 	// buf := ss.MakeScreenshotForFinvizMap(linkURL)
-// 	// if len(buf) == 0 {
-// 	// 	log.Println("exit buf == 0")
-// 	// 	return
-// 	// }
-// 	// if err := ioutil.WriteFile("screenshot.png", buf, 0644); err != nil {
-// 	// 	log.Fatal(err)
-// 	// }
+	// linkURL := "https://finviz.com/map.ashx?t=sec"
+	// buf := ss.MakeScreenshotForFinvizMap(linkURL)
+	// if len(buf) == 0 {
+	// 	log.Println("exit buf == 0")
+	// 	return
+	// }
+	// if err := ioutil.WriteFile("screenshot.png", buf, 0644); err != nil {
+	// 	log.Fatal(err)
+	// }
 
-// 	// o := append(chromedp.DefaultExecAllocatorOptions[:]) // chromedp.ProxyServer("socks5://138.59.207.118:9076"),
-// 	// // chromedp.Flag("blink-settings", "imagesEnabled=false"),
-// 	// // chromedp.DisableGPU,
+	// o := append(chromedp.DefaultExecAllocatorOptions[:],
+	// 	// chromedp.ProxyServer("socks5://138.59.207.118:9076"),
+	// 	// chromedp.Flag("blink-settings", "imagesEnabled=false"),
+	// 	chromedp.DisableGPU,
+	// )
 
-// 	// ctx, cancel := chromedp.NewExecAllocator(context.Background(), o...)
-// 	// defer cancel()
+	// ctx, cancel := chromedp.NewExecAllocator(context.Background(), o...)
+	// defer cancel()
 
-// 	// /info finviz.com TSLA ZM BYND
-// 	// articleCase := GetExactArticleCase("tipranks.com")
-// 	// if articleCase == nil {
-// 	// 	sendText(b, m.Chat.ID, "Invalid command", false)
-// 	// 	return
-// 	// }
-// 	dirtySymbols := []string{"tsla", "fb", "zm", "bynd"}
+	// // /info finviz.com TSLA ZM BYND
+	// // articleCase := GetExactArticleCase("tipranks.com")
+	// // if articleCase == nil {
+	// // 	sendText(b, m.Chat.ID, "Invalid command", false)
+	// // 	return
+	// // }
+	// dirtySymbols := []string{"tsla", "fb", "zm", "bynd"}
 
-// 	symbols := normalizeSymbols(dirtySymbols)
+	// symbols := normalizeSymbols(dirtySymbols)
 
-// 	callbacks := make([]getWhat, len(symbols))
-// 	for i, symbol := range symbols {
-// 		callbacks[i] = closeWhat(symbol)
-// 	}
+	// callbacks := make([]getWhat, len(symbols))
+	// for i, symbol := range symbols {
+	// 	callbacks[i] = closeWhat(symbol)
+	// }
 
-// 	_ = callbacks
-// 	sendBatch(false, callbacks)
-// }
+	// _ = callbacks
+	// sendBatch(ctx, false, callbacks)
+}
 
 // type ParallelResult struct {
 // 	buf        []byte
@@ -93,17 +94,17 @@ package main
 // 	isSent     bool
 // }
 
-// type getWhat func() []byte
+// type getWhat func(ctx context.Context, timeout time.Duration) []byte
 
 // func closeWhat(symbol string) getWhat {
-// 	return func() []byte {
+// 	return func(ctx context.Context, timeout time.Duration) []byte {
 // 		linkURL := fmt.Sprintf("https://tipranks.com/stocks/%s/forecast", symbol)
-// 		return ss.MakeScreenshotForTipRanks(linkURL)
+// 		return ss.MakeScreenshotForTipRanks(ctx, timeout, linkURL)
 // 	}
 // }
 
-// func sendBatch(isPrivateChat bool, callbacks []getWhat) {
-// 	defer elapsed("start")()
+// func sendBatch(ctx context.Context, isPrivateChat bool, callbacks []getWhat) {
+// 	defer utils.Elapsed("start")()
 // 	done := make(chan bool)
 // 	results := make([]ParallelResult, len(callbacks))
 // 	threads := 3
@@ -117,8 +118,11 @@ package main
 // 	for i, cb := range callbacks {
 // 		tokens <- struct{}{} // захват маркера
 // 		go func(i int, cb getWhat) {
-// 			defer elapsed(fmt.Sprintf("screenshot%d.png", i))()
-// 			buf := cb()
+// 			var timeout = 20 * time.Second
+// 			if i == 1 {
+// 				timeout = 10 * time.Second
+// 			}
+// 			buf := cb(ctx, timeout)
 // 			<-tokens // освобождение маркера
 // 			{
 // 				mu.Lock()
@@ -177,13 +181,6 @@ package main
 // 	}
 // }
 
-// func elapsed(what string) func() {
-// 	start := time.Now()
-// 	return func() {
-// 		fmt.Printf("%s took %v\n", what, time.Since(start))
-// 	}
-// }
-
 // func isNotFoundTicker(symbol string) bool {
 // 	// TODO: реализация пополнения тикеров
 // 	// ticker := GetExactTicker(symbol)
@@ -204,7 +201,3 @@ package main
 // 	}
 // 	return result
 // }
-
-func workaround() {
-
-}

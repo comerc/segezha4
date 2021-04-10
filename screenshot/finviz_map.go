@@ -27,7 +27,8 @@ func MakeScreenshotForFinvizMap(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, timeout)
+	const average = 9
+	ctx2, cancel2 := context.WithTimeout(ctx1, utils.GetTimeout(average))
 	defer cancel2()
 	selHeader := "body > table.header"
 	selNavbar := "body > table.navbar"

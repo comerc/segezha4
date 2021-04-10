@@ -35,7 +35,6 @@ func MakeScreenshotForTipRanks(linkURL string) []byte {
 	// 	return nil
 	// }
 	ctx0 := context.Background()
-
 	ctx1, cancel1 := chromedp.NewContext(ctx0)
 	defer cancel1()
 	// start the browser without a timeout
@@ -51,7 +50,8 @@ func MakeScreenshotForTipRanks(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, timeout)
+	const average = 45
+	ctx2, cancel2 := context.WithTimeout(ctx1, utils.GetTimeout(average))
 	defer cancel2()
 	sel1 := "body div.client-components-stock-research-smart-score-style__rank"
 	sel2 := "body div.client-components-stock-research-analysts-style__analystTopPart"

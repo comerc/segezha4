@@ -31,7 +31,8 @@ func MakeScreenshotForGuruFocus(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	ctx2, cancel2 := context.WithTimeout(ctx1, timeout)
+	const average = 26
+	ctx2, cancel2 := context.WithTimeout(ctx1, utils.GetTimeout(average))
 	defer cancel2()
 	var buf []byte
 	if err := chromedp.Run(ctx2, makeScreenshotForGuruFocus(linkURL, 0, 0, 0, 1330, 100, &buf)); err != nil {

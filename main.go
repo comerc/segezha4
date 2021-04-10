@@ -69,7 +69,7 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading .env file")
 	}
-	ss.InitTimeout()
+	utils.InitTimeoutFactor()
 
 	var (
 		// port      = os.Getenv("PORT")
@@ -401,7 +401,6 @@ func main() {
 				sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), false)
 			}
 		} else if strings.HasPrefix(text, "/tipranks ") {
-			// fmt.Println("/tipranks")
 			re := regexp.MustCompile(",|[ ]+")
 			payload := re.ReplaceAllString(strings.Trim(m.Payload, " "), " ")
 			dirtySymbols := strings.Split(payload, " ")
@@ -414,9 +413,7 @@ func main() {
 				sendText(b, m.Chat.ID, "Invalid command", false)
 				return
 			}
-			// fmt.Println("dirtySymbols", dirtySymbols)
 			symbols := normalizeSymbols(dirtySymbols)
-			// fmt.Println("symbols", symbols)
 			callbacks := make([]getWhat, len(symbols))
 			for i, symbol := range symbols {
 				callbacks[i] = closeWhat(articleCase, symbol)
@@ -439,7 +436,6 @@ func main() {
 					continue
 				}
 				executed = append(executed, strings.ToUpper(symbol)+mode)
-				// log.Println(symbol + mode)
 				ticker := GetExactTicker(symbol)
 				if ticker == nil {
 					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
