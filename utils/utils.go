@@ -3,8 +3,10 @@ package utils
 import (
 	"log"
 	"math"
+	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -46,4 +48,15 @@ func InitTimeoutFactor() {
 func GetTimeout(average int) time.Duration {
 	f := (float64(average) / 100) * float64(timeoutFactor)
 	return time.Duration(math.Round(f)) * time.Second
+}
+
+func GetHost(linkURL string) string {
+	u, err := url.Parse(linkURL)
+	if err != nil {
+		log.Println(err)
+	}
+	if strings.HasPrefix(u.Host, "www.") {
+		return u.Host[4:]
+	}
+	return u.Host
 }
