@@ -187,7 +187,6 @@ func main() {
 *Simple (Batch) Mode:*
 #TSLA! #TSLA? #TSLA?? #TSLA?! #TSLA!!
 `
-			// /finviz - batch mode, for example: /finviz TSLA ETSY
 			// /info - batch mode, for example: /info finviz.com GS MS
 			sendText(b, m.Chat.ID, escape(help), false)
 		} else if text == "/pause" {
@@ -235,28 +234,6 @@ func main() {
 				callbacks = append(callbacks, closeWhat(symbol, articleCase))
 			}
 			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
-			// } else if strings.HasPrefix(text, "/finviz ") {
-			// 	re := regexp.MustCompile(",|[ ]+")
-			// 	payload := re.ReplaceAllString(strings.Trim(m.Payload, " "), " ")
-			// 	symbols := strings.Split(payload, " ")
-			// 	if len(symbols) == 0 {
-			// 		sendText(b, m.Chat.ID, "No symbols", false)
-			// 		return
-			// 	}
-			// 	executed := make([]string, 0)
-			// 	for _, symbol := range symbols {
-			// 		if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
-			// 			symbol = symbol[1:]
-			// 		}
-			// 		if utils.Contains(executed, strings.ToUpper(symbol)) {
-			// 			continue
-			// 		}
-			// 		executed = append(executed, strings.ToUpper(symbol))
-			// 		result := sendFinvizImage(b, m.Chat.ID, symbol, m.Chat.Type != tb.ChatPrivate)
-			// 		if !result {
-			// 			sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
-			// 		}
-			// 	}
 			// } else if strings.HasPrefix(text, "/info ") {
 			// 	re := regexp.MustCompile(",|[ ]+")
 			// 	payload := re.ReplaceAllString(strings.Trim(m.Payload, " "), " ")
