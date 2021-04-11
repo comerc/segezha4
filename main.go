@@ -18,13 +18,14 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: /bb@TickerInfoBot
+
 // TODO: в @teslaholics2 при клике по ссылке внутри сообщения /help - /help@TickerInfoBot
 // TODO: держать запросы от пользователей в очереди, пока выполняется runBackgroundTask
 
 // TODO: источник по ТА https://finviz.com/screener.ashx?v=210&s=ta_p_tlresistance
 // TODO: источник по ТА https://ru.investing.com/equities/facebook-inc-technical
 // TODO: Тикеры с точкой BRK.B RDS.A (finviz заменяет на "-")
-// TODO: не убивать инстанс chrome
 // TODO: сохранять id узеров бота для рассылки когда /start
 // TODO: badger для tickers
 // TODO: подсказки, если неправильные команды в приватном чате
@@ -45,7 +46,7 @@ import (
 
 // TODO: пересылать ответы для "Andrew Ka2" к "Andrew Ka"
 // TODO: автоматизировать пересылку и разделить отчеты "Инвестиции USA Markets"
-// TODO: /info tipranks.com LIFE
+// TODO: /tipranks LIFE (не отвечает, т.к. не хватает данных на сайте)
 // TODO: бумажка пробила 9EMA на дневке?
 // TODO: запретить повторы за один день для !! !
 // TODO: виджет из википедии по названию компании
@@ -232,7 +233,7 @@ func main() {
 			executed := make([]string, 0)
 			callbacks := make([]getWhat, 0)
 			for _, symbol := range symbols {
-				if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
+				if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") && !isBarChart(text) {
 					symbol = symbol[1:]
 				}
 				if utils.Contains(executed, strings.ToUpper(symbol)) {
@@ -537,7 +538,7 @@ type getWhat func() interface{}
 func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 	return func() interface{} {
 		tag := func() string {
-			if strings.HasPrefix(symbol, "$") {
+			if strings.HasPrefix(symbol, "$") { // для isBarChart
 				return ""
 			}
 			return "#"
@@ -761,4 +762,8 @@ func hasArticleCase(text string) *ArticleCase {
 
 func closeWhatMarketWatchIDs(tab ss.MarketWatchTab) getWhat {
 	return func() interface{} { return getWhatMarketWatchIDs(tab) }
+}
+
+func isBarChart(text string) bool {
+	return strings.HasPrefix(strings.ToUpper(text), "/BARCHART ")
 }
