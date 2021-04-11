@@ -451,7 +451,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 					moon := MoonPhase.New(t)
 					isFullMoon := int(math.Floor((moon.Phase()+0.0625)*8)) == 4
 					if isFullMoon {
-						callbacks = append(callbacks, func() interface{} { return escape("🌕 #FullMoon") })
+						callbacks = append(callbacks, getWhatFullMoon)
 					}
 					callbacks = append(callbacks, getWhatFear)
 				}
@@ -520,6 +520,10 @@ func getWhatFinvizMap() interface{} {
 		File:    tb.FromReader(bytes.NewReader(screenshot)),
 		Caption: caption,
 	}
+}
+
+func getWhatFullMoon() interface{} {
+	return escape("🌕 #FullMoon")
 }
 
 func getWhatFear() interface{} {
