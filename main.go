@@ -29,7 +29,6 @@ import (
 // TODO: источник по ТА https://finviz.com/screener.ashx?v=210&s=ta_p_tlresistance
 // TODO: источник по ТА https://ru.investing.com/equities/facebook-inc-technical
 // TODO: Тикеры с точкой BRK.B RDS.A (finviz заменяет на "-")
-// TODO: сохранять id узеров бота для рассылки когда /start
 // TODO: badger для tickers
 // TODO: подсказки, если неправильные команды в приватном чате
 // TODO: параллельная обработка https://gobyexample.ru/worker-pools.html
