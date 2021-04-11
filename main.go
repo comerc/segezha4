@@ -23,7 +23,7 @@ import (
 
 // TODO: источник по ТА https://finviz.com/screener.ashx?v=210&s=ta_p_tlresistance
 // TODO: источник по ТА https://ru.investing.com/equities/facebook-inc-technical
-// TODO: Тикеры с точкой BRK.B RDS.A
+// TODO: Тикеры с точкой BRK.B RDS.A (finviz заменяет на "-")
 // TODO: не убивать инстанс chrome
 // TODO: сохранять id узеров бота для рассылки когда /start
 // TODO: badger для tickers
@@ -547,7 +547,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 		if tag == "#" {
 			ticker = GetExactTicker(symbol)
 			if ticker == nil {
-				return fmt.Sprintf("%s not found", strings.ToUpper(tag+symbol))
+				return fmt.Sprintf("%s not found", escape(strings.ToUpper(tag+symbol)))
 			}
 		} else {
 			// TODO: not found for $symbol
