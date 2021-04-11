@@ -7,6 +7,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"sync"
@@ -81,8 +82,12 @@ func main() {
 	// Open the Badger database located in the /tmp/badger directory.
 	// It will be created if it doesn't exist.
 	{
+		path := filepath.Join(".", "data")
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			os.Mkdir(path, os.ModePerm)
+		}
 		var err error
-		db, err = badger.Open(badger.DefaultOptions("/data"))
+		db, err = badger.Open(badger.DefaultOptions(path))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -181,7 +186,7 @@ func main() {
 		log.Println("****")
 		for tab := range ss.MarketWatchTabs {
 			if text == "/"+tab {
-				send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatMarketWatchIDs(tab))
+				send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatMarketWatchIDs(tab))
 				return
 			}
 		}
@@ -209,43 +214,65 @@ func main() {
 *Simple (Batch) Mode:*
 #TSLA! #TSLA? #TSLA?? #TSLA?! #TSLA!!
 `
-			send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, escape(help))
-		} else if text == "/pause" {
-			if isAdmin(m.Sender.ID) {
-				pauseDay = time.Now().UTC().Day()
-				send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, "pause")
+			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, escape(help))
+		} else if text == "/stat" && isAdmin(m.Sender.ID) {
+			var totalKeys, totalValues int64
+			if err := db.View(func(txn *badger.Txn) error {
+				opts := badger.DefaultIteratorOptions
+				opts.PrefetchSize = 10
+				it := txn.NewIterator(opts)
+				defer it.Close()
+				for it.Rewind(); it.Valid(); it.Next() {
+					item := it.Item()
+					k := item.Key()
+					totalKeys += 1
+					if err := item.Value(func(v []byte) error {
+						key := int64(bytesToUint64(k))
+						val := int64(bytesToUint64(v))
+						totalValues += val
+						log.Print(key, val)
+						return nil
+					}); err != nil {
+						return err
+					}
+				}
+				return nil
+			}); err != nil {
+				log.Print(err)
 			}
-		} else if text == "/reset" {
-			if isAdmin(m.Sender.ID) {
-				pauseDay = -1
-				send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, "reset")
-			}
+			log.Printf("keys: %d values: %d", totalKeys, totalValues)
+		} else if text == "/pause" && isAdmin(m.Sender.ID) {
+			pauseDay = time.Now().UTC().Day()
+			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, "pause")
+		} else if text == "/reset" && isAdmin(m.Sender.ID) {
+			pauseDay = -1
+			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, "reset")
 		} else if text == "/bb" {
-			send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFinvizBB())
+			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFinvizBB())
 		} else if text == "/vix" {
 			getWhat := closeWhat("$VIX", GetExactArticleCase("barchart"))
-			send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhat())
+			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhat())
 		} else if text == "/spy" {
 			getWhat := closeWhat("SPY", GetExactArticleCase("barchart"))
-			send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhat())
+			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhat())
 		} else if text == "/index" {
 			callbacks := make([]getWhat, 0)
 			articleCase := GetExactArticleCase("barchart")
 			callbacks = append(callbacks, closeWhat("$INX", articleCase))
 			callbacks = append(callbacks, closeWhat("$NASX", articleCase))
 			callbacks = append(callbacks, closeWhat("$DOWI", articleCase))
-			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
+			sendBatch(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		} else if text == "/volume" {
 			callbacks := make([]getWhat, 0)
 			articleCase := GetExactArticleCase("barchart")
 			callbacks = append(callbacks, closeWhat("SPY", articleCase))
 			callbacks = append(callbacks, closeWhat("QQQ", articleCase))
 			callbacks = append(callbacks, closeWhat("DOW", articleCase))
-			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
+			sendBatch(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		} else if text == "/map" {
-			send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFinvizMap())
+			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFinvizMap())
 		} else if text == "/fear" {
-			send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFear())
+			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFear())
 		} else if articleCase := hasArticleCase(text); articleCase != nil {
 			re := regexp.MustCompile(",|[ ]+")
 			payload := re.ReplaceAllString(strings.Trim(m.Payload, " "), " ")
@@ -262,7 +289,7 @@ func main() {
 				executed = append(executed, strings.ToUpper(symbol))
 				callbacks = append(callbacks, closeWhat(symbol, articleCase))
 			}
-			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
+			sendBatch(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		} else if isEarnings(text) {
 			re := regexp.MustCompile(`(^|[^A-Za-z])\$([A-Za-z]+)`)
 			matches := re.FindAllStringSubmatch(text, -1)
@@ -277,7 +304,7 @@ func main() {
 				executed = append(executed, strings.ToUpper(symbol))
 				callbacks = append(callbacks, closeWhat(symbol, articleCase))
 			}
-			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
+			sendBatch(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		} else if isARKOrWatchList(text) {
 			re := regexp.MustCompile(`(^|[^A-Za-z])#([A-Za-z]+)`)
 			matches := re.FindAllStringSubmatch(text, -1)
@@ -294,7 +321,7 @@ func main() {
 				executed = append(executed, strings.ToUpper(symbol))
 				callbacks = append(callbacks, closeWhat(symbol, articleCase))
 			}
-			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
+			sendBatch(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		} else if isIdeas(text) {
 			re := regexp.MustCompile(`(^|[^A-Za-z])\$([A-Za-z]+)`)
 			matches := re.FindAllStringSubmatch(text, -1)
@@ -309,17 +336,17 @@ func main() {
 				executed = append(executed, strings.ToUpper(symbol))
 				callbacks = append(callbacks, closeWhat(symbol, articleCase))
 			}
-			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
+			sendBatch(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		} else if symbol := hasDots(text); symbol != "" {
 			getWhat := closeWhat(symbol, GetExactArticleCase("chart"))
-			send(b, m.Chat.ID, m.Chat.Type != tb.ChatPrivate, getWhat())
+			send(m.Chat.ID, m.Chat.Type != tb.ChatPrivate, getWhat())
 		} else {
 			// simple command mode
 			re := regexp.MustCompile(`(^|[^A-Za-z])#([A-Za-z]+)(\?!|\?\?|\?|!!|!)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			if len(matches) == 0 {
 				if m.Chat.Type == tb.ChatPrivate {
-					send(b, m.Chat.ID, m.Chat.Type != tb.ChatPrivate, escape("Unknown command, please see /help"))
+					send(m.Chat.ID, m.Chat.Type != tb.ChatPrivate, escape("Unknown command, please see /help"))
 				}
 				return
 			}
@@ -350,7 +377,7 @@ func main() {
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("finviz")))
 				}
 			}
-			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
+			sendBatch(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		}
 	}
 	b.Handle(tb.OnText, messageHandler)
@@ -384,7 +411,10 @@ func by(s string) string {
 	return s + " by "
 }
 
-var pauseDay int
+var (
+	pauseDay   int
+	currentDay int
+)
 
 func runBackgroundTask(b *tb.Bot, chatID int64) {
 	ticker := time.NewTicker(1 * time.Second)
@@ -399,6 +429,14 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 			continue
 		} else if pauseDay > -1 {
 			pauseDay = -1 // reset
+		}
+		if d != currentDay {
+			currentDay = d
+		again:
+			err := db.RunValueLogGC(0.7)
+			if err == nil {
+				goto again
+			}
 		}
 		h := utc.Hour()
 		m := utc.Minute()
@@ -444,7 +482,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 			// callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabFX))
 			// callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabCrypto))
 		}
-		sendBatch(b, chatID, false, callbacks)
+		sendBatch(chatID, false, callbacks)
 
 		// if s%10 == 0 {
 		// 	go func(t time.Time) {
@@ -678,7 +716,7 @@ type ParallelResult struct {
 	isSent     bool
 }
 
-func sendBatch(b *tb.Bot, chatID int64, isPrivateChat bool, callbacks []getWhat) {
+func sendBatch(chatID int64, isPrivateChat bool, callbacks []getWhat) {
 	defer utils.Elapsed("sendBatch")()
 	if len(callbacks) == 0 {
 		return
@@ -709,7 +747,7 @@ func sendBatch(b *tb.Bot, chatID int64, isPrivateChat bool, callbacks []getWhat)
 					for i, r := range results {
 						func(i int, r ParallelResult) {
 							if !r.isSent {
-								send(b, chatID, isPrivateChat, r.what)
+								send(chatID, isPrivateChat, r.what)
 								results[i].isSent = true
 							}
 						}(i, r)
@@ -727,7 +765,7 @@ func sendBatch(b *tb.Bot, chatID int64, isPrivateChat bool, callbacks []getWhat)
 						for i, r := range results[:i+1] {
 							func(i int, r ParallelResult) {
 								if !r.isSent {
-									send(b, chatID, isPrivateChat, r.what)
+									send(chatID, isPrivateChat, r.what)
 									results[i].isSent = true
 								}
 							}(i, r)
@@ -744,7 +782,7 @@ var lastSendByGroup = make(map[int64]time.Time)
 
 const pause = 3 * time.Second
 
-func send(b *tb.Bot, chatID int64, isPrivateChat bool, what interface{}) {
+func send(chatID int64, isPrivateChat bool, what interface{}) {
 	if isPrivateChat {
 		increment(chatID)
 	} else {
