@@ -12,6 +12,7 @@ import (
 
 // MakeScreenshotForMarketWatch description
 func MakeScreenshotForMarketWatch(linkURL string) []byte {
+	defer utils.Elapsed(linkURL)()
 	o := append(chromedp.DefaultExecAllocatorOptions[:],
 		// chromedp.ProxyServer("socks5://138.59.207.118:9076"),
 		chromedp.Flag("blink-settings", "imagesEnabled=false"),

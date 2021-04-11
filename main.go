@@ -18,6 +18,7 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: в @teslaholics2 при клике по ссылке внутри сообщения /help - /help@TickerInfoBot
 // TODO: держать запросы от пользователей в очереди, пока выполняется runBackgroundTask
 
 // TODO: источник по ТА https://finviz.com/screener.ashx?v=210&s=ta_p_tlresistance
@@ -553,7 +554,6 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 		}
 		var result interface{}
 		linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
-		defer utils.Elapsed(linkURL)()
 		switch articleCase.screenshotMode {
 		case ScreenshotModeImage:
 			imageURL := fmt.Sprintf(articleCase.imageURL, strings.ToLower(symbol), time.Now().Unix())

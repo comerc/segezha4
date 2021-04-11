@@ -16,6 +16,7 @@ import (
 
 // MakeScreenshotForMarketBeat description
 func MakeScreenshotForMarketBeat(linkURL string) []byte {
+	defer utils.Elapsed(linkURL)()
 	o := append(chromedp.DefaultExecAllocatorOptions[:],
 		// chromedp.ProxyServer("socks5://138.59.207.118:9076"),
 		chromedp.Flag("blink-settings", "imagesEnabled=false"),
@@ -31,7 +32,7 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	const average = 30 * 2 // *2 !!
+	const average = 25 * 2 // *2 !!
 	ctx2, cancel2 := context.WithTimeout(ctx1, utils.GetTimeout(average))
 	defer cancel2()
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {

@@ -43,6 +43,7 @@ func init() {
 
 // MakeScreenshotForMarketWatchIDs description
 func MakeScreenshotForMarketWatchIDs(linkURL string, tab MarketWatchTab) []byte {
+	defer utils.Elapsed(linkURL)()
 	linkURL = "https://marketwatch.com/investing/stock/TSLA"
 	o := append(chromedp.DefaultExecAllocatorOptions[:],
 		// chromedp.ProxyServer("socks5://138.59.207.118:9076"),
