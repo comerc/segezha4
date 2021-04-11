@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/binary"
 	"fmt"
 	"log"
 	"math"
@@ -14,6 +15,7 @@ import (
 	"github.com/IvanMenshykov/MoonPhase"
 	ss "github.com/comerc/segezha4/screenshot"
 	"github.com/comerc/segezha4/utils"
+	"github.com/dgraph-io/badger"
 	"github.com/joho/godotenv"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -65,11 +67,27 @@ import (
 // TODO: выборка с графиками https://finviz.com/screener.ashx?v=212&t=ZM,BA,MU,MS,GE,AA
 // TODO: https://stockcharts.com/h-sc/ui?s=$CPCE https://school.stockcharts.com/doku.php?id=market_indicators:put_call_ratio
 
+var (
+	db *badger.DB
+	b  *tb.Bot
+)
+
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading .env file")
 	}
 	utils.InitTimeoutFactor()
+
+	// Open the Badger database located in the /tmp/badger directory.
+	// It will be created if it doesn't exist.
+	{
+		var err error
+		db, err = badger.Open(badger.DefaultOptions("/data"))
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	defer db.Close()
 
 	var (
 		// port      = os.Getenv("PORT")
@@ -87,9 +105,12 @@ func main() {
 		// Poller: webhook,
 		Poller: &tb.LongPoller{Timeout: 10 * time.Minute},
 	}
-	b, err := tb.NewBot(pref)
-	if err != nil {
-		log.Fatal(err)
+	{
+		var err error
+		b, err = tb.NewBot(pref)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	// b.Handle(tb.OnCallback, func(*tb.Callback) {
 	// 	log.Println("OnCallback")
@@ -135,11 +156,10 @@ func main() {
 			result.SetResultID(ticker.symbol + "=" + articleCase.name)
 			results[i] = result
 		}
-		err = b.Answer(q, &tb.QueryResponse{
+		if err := b.Answer(q, &tb.QueryResponse{
 			Results:   results,
 			CacheTime: 60,
-		})
-		if err != nil {
+		}); err != nil {
 			log.Println(err)
 		}
 	})
@@ -722,10 +742,12 @@ func sendBatch(b *tb.Bot, chatID int64, isPrivateChat bool, callbacks []getWhat)
 
 var lastSendByGroup = make(map[int64]time.Time)
 
-const pause = 4 * time.Second
+const pause = 3 * time.Second
 
 func send(b *tb.Bot, chatID int64, isPrivateChat bool, what interface{}) {
-	if !isPrivateChat {
+	if isPrivateChat {
+		increment(chatID)
+	} else {
 		// your bot will not be able to send more than 20 messages per minute to the same group.
 		lastSend := lastSendByGroup[chatID]
 		diff := time.Since(lastSend)
@@ -766,4 +788,28 @@ func closeWhatMarketWatchIDs(tab ss.MarketWatchTab) getWhat {
 
 func isBarChart(text string) bool {
 	return strings.HasPrefix(strings.ToUpper(text), "/BARCHART ")
+}
+
+// **** db routines
+
+func uint64ToBytes(i uint64) []byte {
+	var buf [8]byte
+	binary.BigEndian.PutUint64(buf[:], i)
+	return buf[:]
+}
+
+func bytesToUint64(b []byte) uint64 {
+	return binary.BigEndian.Uint64(b)
+}
+
+// Merge function to add two uint64 numbers
+func add(existing, new []byte) []byte {
+	return uint64ToBytes(bytesToUint64(existing) + bytesToUint64(new))
+}
+
+func increment(chatID int64) {
+	key := uint64ToBytes(uint64(chatID))
+	m := db.GetMergeOperator(key, add, 200*time.Millisecond)
+	defer m.Stop()
+	m.Add(uint64ToBytes(1))
 }
