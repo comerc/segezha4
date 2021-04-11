@@ -159,7 +159,7 @@ func main() {
 		log.Println("****")
 		for tab := range ss.MarketWatchTabs {
 			if text == "/"+tab {
-				sendMarketWatchIDs(b, m.Chat.ID, tab)
+				send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatMarketWatchIDs(tab))
 				return
 			}
 		}
@@ -187,41 +187,49 @@ func main() {
 *Simple (Batch) Mode:*
 #TSLA! #TSLA? #TSLA?? #TSLA?! #TSLA!!
 `
-			sendText(b, m.Chat.ID, escape(help), false)
+			send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, escape(help))
 		} else if text == "/pause" {
 			if isAdmin(m.Sender.ID) {
 				pauseDay = time.Now().UTC().Day()
-				sendText(b, m.Chat.ID, "set pause", false)
+				send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, "pause")
 			}
 		} else if text == "/reset" {
 			if isAdmin(m.Sender.ID) {
 				pauseDay = -1
-				sendText(b, m.Chat.ID, "set reset", false)
+				send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, "reset")
 			}
 		} else if text == "/bb" {
-			sendFinvizBB(b, m.Chat.ID)
+			send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFinvizBB())
 		} else if text == "/vix" {
-			sendBarChart(b, m.Chat.ID, "$VIX")
+			getWhat := closeWhat("$VIX", GetExactArticleCase("barchart"))
+			send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhat())
 		} else if text == "/spy" {
-			sendBarChart(b, m.Chat.ID, "SPY")
+			getWhat := closeWhat("SPY", GetExactArticleCase("barchart"))
+			send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhat())
 		} else if text == "/index" {
-			sendBarChart(b, m.Chat.ID, "$INX")
-			sendBarChart(b, m.Chat.ID, "$NASX")
-			sendBarChart(b, m.Chat.ID, "$DOWI")
+			callbacks := make([]getWhat, 0)
+			articleCase := GetExactArticleCase("barchart")
+			callbacks = append(callbacks, closeWhat("$INX", articleCase))
+			callbacks = append(callbacks, closeWhat("$NASX", articleCase))
+			callbacks = append(callbacks, closeWhat("$DOWI", articleCase))
+			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		} else if text == "/volume" {
-			sendBarChart(b, m.Chat.ID, "SPY")
-			sendBarChart(b, m.Chat.ID, "QQQ")
-			sendBarChart(b, m.Chat.ID, "DOW")
+			callbacks := make([]getWhat, 0)
+			articleCase := GetExactArticleCase("barchart")
+			callbacks = append(callbacks, closeWhat("SPY", articleCase))
+			callbacks = append(callbacks, closeWhat("QQQ", articleCase))
+			callbacks = append(callbacks, closeWhat("DOW", articleCase))
+			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		} else if text == "/map" {
-			sendFinvizMap(b, m.Chat.ID)
+			send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFinvizMap())
 		} else if text == "/fear" {
-			sendFear(b, m.Chat.ID)
+			send(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFear())
 		} else if articleCase := hasArticleCase(text); articleCase != nil {
 			re := regexp.MustCompile(",|[ ]+")
 			payload := re.ReplaceAllString(strings.Trim(m.Payload, " "), " ")
 			symbols := strings.Split(payload, " ")
-			callbacks := make([]getWhat, 0)
 			executed := make([]string, 0)
+			callbacks := make([]getWhat, 0)
 			for _, symbol := range symbols {
 				if strings.HasPrefix(symbol, "#") || strings.HasPrefix(symbol, "$") {
 					symbol = symbol[1:]
@@ -237,69 +245,49 @@ func main() {
 			re := regexp.MustCompile(`(^|[^A-Za-z])\$([A-Za-z]+)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			executed := make([]string, 0)
+			articleCase := GetExactArticleCase("marketwatch")
+			callbacks := make([]getWhat, 0)
 			for _, match := range matches {
 				symbol := match[2]
 				if utils.Contains(executed, strings.ToUpper(symbol)) {
 					continue
 				}
 				executed = append(executed, strings.ToUpper(symbol))
-				ticker := GetExactTicker(symbol)
-				if ticker == nil {
-					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
-					continue
-				}
-				articleCase := GetExactArticleCase("marketwatch")
-				result := sendScreenshotForMarketWatch(b, m.Chat.ID, articleCase, ticker)
-				if !result {
-					sendLink(b, m.Chat.ID, articleCase, ticker, m.Chat.Type != tb.ChatPrivate)
-				}
+				callbacks = append(callbacks, closeWhat(symbol, articleCase))
 			}
+			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		} else if isARKOrWatchList(text) {
 			re := regexp.MustCompile(`(^|[^A-Za-z])#([A-Za-z]+)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			executed := make([]string, 0)
 			executed = append(executed, "ARK")
 			executed = append(executed, "WATCH") // for #Watch_list by @usamarke1
+			articleCase := GetExactArticleCase("finviz")
+			callbacks := make([]getWhat, 0)
 			for _, match := range matches {
 				symbol := match[2]
 				if utils.Contains(executed, strings.ToUpper(symbol)) {
 					continue
 				}
 				executed = append(executed, strings.ToUpper(symbol))
-				ticker := GetExactTicker(symbol)
-				if ticker == nil {
-					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
-					continue
-				}
-				articleCase := GetExactArticleCase("finviz")
-				result := sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
-				if !result {
-					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
-					result = true
-				}
+				callbacks = append(callbacks, closeWhat(symbol, articleCase))
 			}
+			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		} else if isIdeas(text) {
 			re := regexp.MustCompile(`(^|[^A-Za-z])\$([A-Za-z]+)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			executed := make([]string, 0)
+			articleCase := GetExactArticleCase("finviz")
+			callbacks := make([]getWhat, 0)
 			for _, match := range matches {
 				symbol := match[2]
 				if utils.Contains(executed, strings.ToUpper(symbol)) {
 					continue
 				}
 				executed = append(executed, strings.ToUpper(symbol))
-				ticker := GetExactTicker(symbol)
-				if ticker == nil {
-					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
-					continue
-				}
-				articleCase := GetExactArticleCase("finviz")
-				result := sendScreenshotForFinviz(b, m.Chat.ID, articleCase, ticker)
-				if !result {
-					sendText(b, m.Chat.ID, fmt.Sprintf(`\#%s not found on finviz\.com`, strings.ToUpper(symbol)), m.Chat.Type != tb.ChatPrivate)
-					result = true
-				}
+				callbacks = append(callbacks, closeWhat(symbol, articleCase))
 			}
+			sendBatch(b, m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		} else if symbol := hasDots(text); symbol != "" {
 			getWhat := closeWhat(symbol, GetExactArticleCase("chart"))
 			send(b, m.Chat.ID, m.Chat.Type != tb.ChatPrivate, getWhat())
@@ -309,7 +297,7 @@ func main() {
 			matches := re.FindAllStringSubmatch(text, -1)
 			if len(matches) == 0 {
 				if m.Chat.Type == tb.ChatPrivate {
-					sendText(b, m.Chat.ID, escape("Unknown command, please see /help"), false)
+					send(b, m.Chat.ID, m.Chat.Type != tb.ChatPrivate, escape("Unknown command, please see /help"))
 				}
 				return
 			}
@@ -360,404 +348,12 @@ func escape(s string) string {
 	return re.ReplaceAllString(s, `\$0`)
 }
 
-// func deleteCommand(b *tb.Bot, m *tb.Message) {
-// 	err := b.Delete(
-// 		&tb.StoredMessage{
-// 			MessageID: strconv.Itoa(m.ID),
-// 			ChatID:    m.Chat.ID,
-// 		},
-// 	)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-// }
-
-// func sendInformer(b *tb.Bot, chatID int64, photo *tb.Photo) {
-// 	_, err := b.Send(
-// 		tb.ChatID(chatID),
-// 		photo,
-// 		&tb.SendOptions{
-// 			ParseMode: tb.ModeMarkdownV2,
-// 		},
-// 	)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-// }
-
 // func getUserLink(u *tb.User) string {
 // 	if u.Username != "" {
 // 		return fmt.Sprintf("@%s", u.Username)
 // 	}
 // 	return fmt.Sprintf("[%s](tg://user?id=%d)", u.FirstName, u.ID)
 // }
-
-// func sendScreenshotForPage(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) bool {
-// 	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
-// 	screenshot := ss.MakeScreenshotForPage(linkURL, articleCase.x, articleCase.y, articleCase.width, articleCase.height)
-// 	if len(screenshot) == 0 {
-// 		return false
-// 	}
-// 	photo := &tb.Photo{
-// 		File: tb.FromReader(bytes.NewReader(screenshot)),
-// 		Caption: fmt.Sprintf(
-// 			`\#%s by [%s](%s)`,
-// 			ticker.symbol,
-// 			escape(articleCase.name),
-// 			linkURL,
-// 			// getUserLink(m.Sender),
-// 		),
-// 	}
-// 	_, err := b.Send(
-// 		tb.ChatID(chatID),
-// 		photo,
-// 		&tb.SendOptions{
-// 			ParseMode: tb.ModeMarkdownV2,
-// 		},
-// 	)
-// 	screenshot = nil
-// 	photo = nil
-// 	if err != nil {
-// 		log.Println(err)
-// 		return false
-// 	}
-// 	return true
-// }
-
-func sendScreenshotForFinviz(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) bool {
-	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
-	screenshot := ss.MakeScreenshotForFinviz(linkURL)
-	if len(screenshot) == 0 {
-		return false
-	}
-	photo := &tb.Photo{
-		File: tb.FromReader(bytes.NewReader(screenshot)),
-		Caption: fmt.Sprintf(
-			`\#%s by [%s](%s)`,
-			ticker.symbol,
-			escape(articleCase.name),
-			linkURL,
-			// getUserLink(m.Sender),
-		),
-	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		photo,
-		&tb.SendOptions{
-			ParseMode: tb.ModeMarkdownV2,
-		},
-	)
-	screenshot = nil
-	photo = nil
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	return true
-}
-
-func sendScreenshotForMarketWatch(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) bool {
-	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
-	screenshot := ss.MakeScreenshotForMarketWatch(linkURL)
-	if len(screenshot) == 0 {
-		return false
-	}
-	photo := &tb.Photo{
-		File: tb.FromReader(bytes.NewReader(screenshot)),
-		Caption: fmt.Sprintf(
-			`\#%s by [%s](%s)`,
-			ticker.symbol,
-			escape(articleCase.name),
-			linkURL,
-			// getUserLink(m.Sender),
-		),
-	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		photo,
-		&tb.SendOptions{
-			ParseMode: tb.ModeMarkdownV2,
-		},
-	)
-	screenshot = nil
-	photo = nil
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	return true
-}
-
-func sendScreenshotForMarketBeat(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) bool {
-	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
-	screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
-	if len(screenshot) == 0 {
-		return false
-	}
-	photo := &tb.Photo{
-		File: tb.FromReader(bytes.NewReader(screenshot)),
-		Caption: fmt.Sprintf(
-			`\#%s by [%s](%s)`,
-			ticker.symbol,
-			escape(articleCase.name),
-			linkURL,
-			// getUserLink(m.Sender),
-		),
-	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		photo,
-		&tb.SendOptions{
-			ParseMode: tb.ModeMarkdownV2,
-		},
-	)
-	screenshot = nil
-	photo = nil
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	return true
-}
-
-func sendScreenshotForCathiesArk(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) bool {
-	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
-	screenshot := ss.MakeScreenshotForCathiesArk(linkURL)
-	if len(screenshot) == 0 {
-		return false
-	}
-	photo := &tb.Photo{
-		File: tb.FromReader(bytes.NewReader(screenshot)),
-		Caption: fmt.Sprintf(
-			`\#%s by [%s](%s)`,
-			ticker.symbol,
-			escape(articleCase.name),
-			linkURL,
-			// getUserLink(m.Sender),
-		),
-	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		photo,
-		&tb.SendOptions{
-			ParseMode: tb.ModeMarkdownV2,
-		},
-	)
-	screenshot = nil
-	photo = nil
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	return true
-}
-
-func sendScreenshotForGuruFocus(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) bool {
-	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
-	screenshot := ss.MakeScreenshotForGuruFocus(linkURL)
-	if len(screenshot) == 0 {
-		return false
-	}
-	photo := &tb.Photo{
-		File: tb.FromReader(bytes.NewReader(screenshot)),
-		Caption: fmt.Sprintf(
-			`\#%s by [%s](%s)`,
-			ticker.symbol,
-			escape(articleCase.name),
-			linkURL,
-			// getUserLink(m.Sender),
-		),
-	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		photo,
-		&tb.SendOptions{
-			ParseMode: tb.ModeMarkdownV2,
-		},
-	)
-	screenshot = nil
-	photo = nil
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	return true
-}
-
-func sendScreenshotForTipRanks(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) bool {
-	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
-	screenshot := ss.MakeScreenshotForTipRanks(linkURL)
-	if len(screenshot) == 0 {
-		return false
-	}
-	photo := &tb.Photo{
-		File: tb.FromReader(bytes.NewReader(screenshot)),
-		Caption: fmt.Sprintf(
-			`\#%s by [%s](%s)`,
-			ticker.symbol,
-			escape(articleCase.name),
-			linkURL,
-			// getUserLink(m.Sender),
-		),
-	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		photo,
-		&tb.SendOptions{
-			ParseMode: tb.ModeMarkdownV2,
-		},
-	)
-	screenshot = nil
-	photo = nil
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	return true
-}
-
-// func sendScreenshotForImage(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker) bool {
-// 	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol)
-// 	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
-// 	screenshot := ss.MakeScreenshotForImage(imageURL, articleCase.width, articleCase.height)
-// 	if len(screenshot) == 0 {
-// 		return false
-// 	}
-// 	photo := &tb.Photo{
-// 		File: tb.FromReader(bytes.NewReader(screenshot)),
-// 		Caption: fmt.Sprintf(
-// 			`\#%s by [%s](%s)`,
-// 			ticker.symbol,
-// 			escape(articleCase.name),
-// 			linkURL,
-// 			// getUserLink(m.Sender),
-// 		),
-// 	}
-// 	_, err := b.Send(
-// 		tb.ChatID(chatID),
-// 		photo,
-// 		&tb.SendOptions{
-// 			ParseMode: tb.ModeMarkdownV2,
-// 		},
-// 	)
-// 	screenshot = nil
-// 	photo = nil
-// 	if err != nil {
-// 		log.Println(err)
-// 		return false
-// 	}
-// 	return true
-// }
-
-func sendFinvizImage(b *tb.Bot, chatID int64, symbol string, isSlowMode bool) bool {
-	if isSlowMode {
-		time.Sleep(4 * time.Second) // your bot will not be able to send more than 20 messages per minute to the same group.
-	}
-	imageURL := fmt.Sprintf("https://charts2.finviz.com/chart.ashx?t=%s&ta=1&p=d&r=%d", strings.ToLower(symbol), time.Now().Unix())
-	linkURL := fmt.Sprintf("https://finviz.com/quote.ashx?t=%s", strings.ToLower(symbol))
-	photo := &tb.Photo{
-		File: tb.FromURL(imageURL),
-		Caption: fmt.Sprintf(
-			`\#%s by [%s](%s)`,
-			strings.ToUpper(symbol),
-			escape("finviz.com"),
-			linkURL,
-			// getUserLink(m.Sender),
-		),
-	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		photo,
-		&tb.SendOptions{
-			ParseMode: tb.ModeMarkdownV2,
-		},
-	)
-	photo = nil
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	return true
-}
-
-func sendImage(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker, isSlowMode bool) bool {
-	if isSlowMode {
-		time.Sleep(4 * time.Second) // your bot will not be able to send more than 20 messages per minute to the same group.
-	}
-	imageURL := fmt.Sprintf(articleCase.imageURL, ticker.symbol, time.Now().Unix())
-	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
-	photo := &tb.Photo{
-		File: tb.FromURL(imageURL),
-		Caption: fmt.Sprintf(
-			`\#%s by [%s](%s)`,
-			ticker.symbol,
-			escape(articleCase.name),
-			linkURL,
-			// getUserLink(m.Sender),
-		),
-	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		photo,
-		&tb.SendOptions{
-			ParseMode: tb.ModeMarkdownV2,
-		},
-	)
-	photo = nil
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	return true
-}
-
-func sendLink(b *tb.Bot, chatID int64, articleCase *ArticleCase, ticker *Ticker, isSlowMode bool) {
-	if isSlowMode {
-		time.Sleep(4 * time.Second) // your bot will not be able to send more than 20 messages per minute to the same group.
-	}
-	description := func() string {
-		if articleCase.name == ArticleCases[0].name {
-			return ticker.title
-		}
-		return articleCase.description
-	}()
-	linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
-	text := fmt.Sprintf(`\#%s %s[%s](%s)`,
-		ticker.symbol,
-		escape(by(description)),
-		escape(utils.GetHost(linkURL)),
-		linkURL,
-		// getUserLink(m.Sender),
-	)
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		text,
-		&tb.SendOptions{
-			ParseMode:             tb.ModeMarkdownV2,
-			DisableWebPagePreview: true,
-		},
-	)
-	if err != nil {
-		log.Println(err)
-	}
-}
-
-func sendText(b *tb.Bot, chatID int64, text string, isSlowMode bool) {
-	if isSlowMode {
-		time.Sleep(4 * time.Second) // your bot will not be able to send more than 20 messages per minute to the same group.
-	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		text,
-		&tb.SendOptions{
-			ParseMode:             tb.ModeMarkdownV2,
-			DisableWebPagePreview: true,
-		},
-	)
-	if err != nil {
-		log.Println(err)
-	}
-}
 
 func by(s string) string {
 	if s == "" {
@@ -789,43 +385,44 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 			delta  = 30
 			summer = 1
 		)
+		callbacks := make([]getWhat, 0)
 		if h == 14-summer && m >= 30 || h > 14-summer && h < 21-summer || h == 21-summer && m < delta {
 			if m%delta == 0 && s == 15 {
 				if h == 14-summer && m >= 30 {
 					moon := MoonPhase.New(t)
 					isFullMoon := int(math.Floor((moon.Phase()+0.0625)*8)) == 4
 					if isFullMoon {
-						sendText(b, chatID, escape("🌕 #FullMoon"), false)
+						callbacks = append(callbacks, func() interface{} { return escape("🌕 #FullMoon") })
 					}
-					sendFear(b, chatID)
+					callbacks = append(callbacks, getWhatFear)
 				}
 				if h >= 15-summer {
-					sendFinvizBB(b, chatID)
-					sendFinvizMap(b, chatID)
+					callbacks = append(callbacks, getWhatFinvizBB)
+					callbacks = append(callbacks, getWhatFinvizMap)
 				}
-				sendBarChart(b, chatID, "$VIX")
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabUS)
+				callbacks = append(callbacks, closeWhat("$VIX", GetExactArticleCase("barchart")))
+				callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabUS))
 				if h >= 8 && h <= 17 {
-					sendMarketWatchIDs(b, chatID, ss.MarketWatchTabEurope)
+					callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabEurope))
 				}
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabRates)
-				// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFutures)
+				callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabRates))
 			}
 		} else if m == 0 && s == 15 {
 			if h >= 8 && h <= 17 {
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabEurope)
+				callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabEurope))
 			}
 			// SPB работает с 7 утра (MSK)
 			if h >= 4 && h <= 9 {
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabAsia)
+				callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabAsia))
 			}
 			if h >= 4 && h <= 14-summer {
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabRates)
-				sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFutures)
+				callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabRates))
+				callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabFutures))
 			}
-			// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabFX)
-			// sendMarketWatchIDs(b, chatID, ss.MarketWatchTabCrypto)
+			// callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabFX))
+			// callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabCrypto))
 		}
+		sendBatch(b, chatID, false, callbacks)
 
 		// if s%10 == 0 {
 		// 	go func(t time.Time) {
@@ -852,157 +449,56 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 	}
 }
 
-func sendBarChart(b *tb.Bot, chatID int64, symbol string) bool {
-	volume, height, tag := func() (string, string, string) {
-		if strings.HasPrefix(symbol, "$") {
-			return "0", "O", ""
-		}
-		return "total", "X", "#"
-	}()
-	linkURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=%s&data=I:15&density=%[4]s&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(50);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=500&studyheight=200"
-	screenshot := ss.MakeScreenshotForBarChart(fmt.Sprintf(linkURL, symbol, "/fullscreen", volume, height))
-	if len(screenshot) == 0 {
-		return false
-	}
-	photo := &tb.Photo{
-		File: tb.FromReader(bytes.NewReader(screenshot)),
-		Caption: fmt.Sprintf(
-			"%s[%s](%s)",
-			escape(by(tag+symbol)),
-			escape("barchart.com"),
-			escapeURL(fmt.Sprintf(linkURL, symbol, "", volume, height)),
-		),
-	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		photo,
-		&tb.SendOptions{
-			ParseMode: tb.ModeMarkdownV2,
-		},
-	)
-	photo = nil
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	return true
-}
-
-func sendFinvizMap(b *tb.Bot, chatID int64) bool {
+func getWhatFinvizMap() interface{} {
 	linkURL := "https://finviz.com/map.ashx?t=sec"
+	caption := getCaption("#map", "", linkURL)
 	screenshot := ss.MakeScreenshotForFinvizMap(linkURL)
 	if len(screenshot) == 0 {
-		return false
+		return caption
 	}
-	photo := &tb.Photo{
-		File: tb.FromReader(bytes.NewReader(screenshot)),
-		Caption: fmt.Sprintf(
-			`\#map by [%s](%s)`,
-			escape("finviz.com"),
-			linkURL,
-		),
+	return &tb.Photo{
+		File:    tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: caption,
 	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		photo,
-		&tb.SendOptions{
-			ParseMode: tb.ModeMarkdownV2,
-		},
-	)
-	photo = nil
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	return true
 }
 
-func sendFear(b *tb.Bot, chatID int64) bool {
+func getWhatFear() interface{} {
 	linkURL := "https://money.cnn.com/data/fear-and-greed/"
+	caption := getCaption("#fear", "", linkURL)
 	screenshot := ss.MakeScreenshotForFear(linkURL)
 	if len(screenshot) == 0 {
-		return false
+		return caption
 	}
-	photo := &tb.Photo{
-		File: tb.FromReader(bytes.NewReader(screenshot)),
-		Caption: fmt.Sprintf(
-			`\#fear by [%s](%s)`,
-			escape("money.cnn.com"),
-			linkURL,
-		),
+	return &tb.Photo{
+		File:    tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: caption,
 	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		photo,
-		&tb.SendOptions{
-			ParseMode: tb.ModeMarkdownV2,
-		},
-	)
-	photo = nil
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	return true
 }
 
-func sendFinvizBB(b *tb.Bot, chatID int64) bool {
+func getWhatFinvizBB() interface{} {
 	linkURL := "https://finviz.com/"
+	caption := getCaption("#bb", "Bull or Bear", linkURL)
 	screenshot := ss.MakeScreenshotForFinvizBB(linkURL)
 	if len(screenshot) == 0 {
-		return false
+		return caption
 	}
-	photo := &tb.Photo{
-		File: tb.FromReader(bytes.NewReader(screenshot)),
-		Caption: fmt.Sprintf(
-			`\#bb Bull or Bear by [%s](%s)`,
-			escape("finviz.com"),
-			linkURL,
-		),
+	return &tb.Photo{
+		File:    tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: caption,
 	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		photo,
-		&tb.SendOptions{
-			ParseMode: tb.ModeMarkdownV2,
-		},
-	)
-	photo = nil
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	return true
 }
 
-func sendMarketWatchIDs(b *tb.Bot, chatID int64, tab ss.MarketWatchTab) bool {
+func getWhatMarketWatchIDs(tab ss.MarketWatchTab) interface{} {
 	linkURL := "https://www.marketwatch.com/"
+	caption := getCaption("#"+tab, "", linkURL)
 	screenshot := ss.MakeScreenshotForMarketWatchIDs(linkURL, tab)
 	if len(screenshot) == 0 {
-		return false
+		return caption
 	}
-	photo := &tb.Photo{
-		File: tb.FromReader(bytes.NewReader(screenshot)),
-		Caption: fmt.Sprintf(
-			`\#%s by [%s](%s)`,
-			escape(tab),
-			escape("marketwatch.com"),
-			linkURL,
-		),
+	return &tb.Photo{
+		File:    tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: caption,
 	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		photo,
-		&tb.SendOptions{
-			ParseMode: tb.ModeMarkdownV2,
-		},
-	)
-	photo = nil
-	if err != nil {
-		log.Println(err)
-		return false
-	}
-	return true
 }
 
 func isEarnings(text string) bool {
@@ -1046,12 +542,15 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			return "#"
 		}()
 		// TODO: пополнять базу тикеров и индексов для inline mode
+		var ticker *Ticker
 		if tag == "#" {
-			if isNotFoundTicker(symbol) {
+			ticker = GetExactTicker(symbol)
+			if ticker == nil {
 				return fmt.Sprintf("%s not found", strings.ToUpper(tag+symbol))
 			}
+		} else {
+			// TODO: not found for $symbol
 		}
-		// TODO: not found for $symbol
 		var result interface{}
 		linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
 		defer utils.Elapsed(linkURL)()
@@ -1060,14 +559,14 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			imageURL := fmt.Sprintf(articleCase.imageURL, strings.ToLower(symbol), time.Now().Unix())
 			result = &tb.Photo{
 				File:    tb.FromURL(imageURL),
-				Caption: getCaption(linkURL, tag+symbol),
+				Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
 			}
 		case ScreenshotModeFinviz:
 			screenshot := ss.MakeScreenshotForFinviz(linkURL)
 			if len(screenshot) != 0 {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
-					Caption: getCaption(linkURL, tag+symbol),
+					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
 				}
 			}
 		case ScreenshotModeMarketWatch:
@@ -1075,7 +574,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			if len(screenshot) != 0 {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
-					Caption: getCaption(linkURL, tag+symbol),
+					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
 				}
 			}
 		case ScreenshotModeCathiesArk:
@@ -1083,7 +582,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			if len(screenshot) != 0 {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
-					Caption: getCaption(linkURL, tag+symbol),
+					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
 				}
 			}
 		case ScreenshotModeGuruFocus:
@@ -1091,7 +590,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			if len(screenshot) != 0 {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
-					Caption: getCaption(linkURL, tag+symbol),
+					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
 				}
 			}
 		case ScreenshotModeMarketBeat:
@@ -1099,7 +598,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			if len(screenshot) != 0 {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
-					Caption: getCaption(linkURL, tag+symbol),
+					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
 				}
 			}
 		case ScreenshotModeTipRanks:
@@ -1107,7 +606,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			if len(screenshot) != 0 {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
-					Caption: getCaption(linkURL, tag+symbol),
+					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
 				}
 			}
 		case ScreenshotModeBarChart:
@@ -1117,33 +616,33 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 				}
 				return "total", "X"
 			}()
-			linkURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=%s&data=I:15&density=%[4]s&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(50);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=500&studyheight=200"
-			screenshot := ss.MakeScreenshotForBarChart(fmt.Sprintf(linkURL, symbol, "/fullscreen", volume, height))
+			srcLinkURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=%s&data=I:15&density=%[4]s&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(50);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=500&studyheight=200"
+			linkURL := fmt.Sprintf(srcLinkURL, symbol, "/fullscreen", volume, height)
+			screenshot := ss.MakeScreenshotForBarChart(linkURL)
 			if len(screenshot) != 0 {
+				linkURL := fmt.Sprintf(srcLinkURL, symbol, "", volume, height)
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
-					Caption: getCaption(fmt.Sprintf(linkURL, symbol, "", volume, height), tag+symbol),
+					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
 				}
 			}
 		}
 		if result == nil {
-			result = getEmptyText(linkURL, articleCase.description, tag+symbol)
+			description := func() string {
+				if articleCase.name == ArticleCases[0].name && ticker != nil {
+					return ticker.title
+				}
+				return articleCase.description
+			}()
+			result = getCaption(strings.ToUpper(tag+symbol), description, linkURL)
 		}
 		return result
 	}
 }
 
-func getCaption(linkURL, tagSymbol string) string {
-	return fmt.Sprintf("%s by [%s](%s)",
-		escape(strings.ToUpper(tagSymbol)),
-		escape(utils.GetHost(linkURL)),
-		escapeURL(linkURL),
-	)
-}
-
-func getEmptyText(linkURL, description, tagSymbol string) string {
+func getCaption(tagSymbol, description, linkURL string) string {
 	return fmt.Sprintf("%s %s[%s](%s)",
-		escape(strings.ToUpper(tagSymbol)),
+		escape(tagSymbol),
 		escape(by(description)),
 		escape(utils.GetHost(linkURL)),
 		escapeURL(linkURL),
@@ -1247,12 +746,6 @@ func send(b *tb.Bot, chatID int64, isPrivateChat bool, what interface{}) {
 	}
 }
 
-func isNotFoundTicker(symbol string) bool {
-	// TODO: реализация пополнения тикеров
-	ticker := GetExactTicker(symbol)
-	return ticker == nil
-}
-
 func hasArticleCase(text string) *ArticleCase {
 	if text != "" {
 		text = strings.ToUpper(text)
@@ -1264,4 +757,8 @@ func hasArticleCase(text string) *ArticleCase {
 		}
 	}
 	return nil
+}
+
+func closeWhatMarketWatchIDs(tab ss.MarketWatchTab) getWhat {
+	return func() interface{} { return getWhatMarketWatchIDs(tab) }
 }
