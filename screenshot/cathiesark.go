@@ -15,7 +15,6 @@ import (
 
 // MakeScreenshotForCathiesArk description
 func MakeScreenshotForCathiesArk(linkURL string) []byte {
-	defer utils.Elapsed(linkURL)()
 	ctx1, cancel1 := chromedp.NewContext(context.Background())
 	defer cancel1()
 	// start the browser without a timeout

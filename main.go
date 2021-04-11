@@ -510,6 +510,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 
 func getWhatFinvizMap() interface{} {
 	linkURL := "https://finviz.com/map.ashx?t=sec"
+	defer utils.Elapsed(linkURL)()
 	caption := getCaption("#map", "", linkURL)
 	screenshot := ss.MakeScreenshotForFinvizMap(linkURL)
 	if len(screenshot) == 0 {
@@ -523,6 +524,7 @@ func getWhatFinvizMap() interface{} {
 
 func getWhatFear() interface{} {
 	linkURL := "https://money.cnn.com/data/fear-and-greed/"
+	defer utils.Elapsed(linkURL)()
 	caption := getCaption("#fear", "", linkURL)
 	screenshot := ss.MakeScreenshotForFear(linkURL)
 	if len(screenshot) == 0 {
@@ -536,6 +538,7 @@ func getWhatFear() interface{} {
 
 func getWhatFinvizBB() interface{} {
 	linkURL := "https://finviz.com/"
+	defer utils.Elapsed(linkURL)()
 	caption := getCaption("#bb", "Bull or Bear", linkURL)
 	screenshot := ss.MakeScreenshotForFinvizBB(linkURL)
 	if len(screenshot) == 0 {
@@ -549,6 +552,7 @@ func getWhatFinvizBB() interface{} {
 
 func getWhatMarketWatchIDs(tab ss.MarketWatchTab) interface{} {
 	linkURL := "https://www.marketwatch.com/"
+	defer utils.Elapsed(linkURL + tab)()
 	caption := getCaption("#"+tab, "", linkURL)
 	screenshot := ss.MakeScreenshotForMarketWatchIDs(linkURL, tab)
 	if len(screenshot) == 0 {
@@ -612,6 +616,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 		}
 		var result interface{}
 		linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
+		defer utils.Elapsed(linkURL)()
 		switch articleCase.screenshotMode {
 		case ScreenshotModeImage:
 			imageURL := fmt.Sprintf(articleCase.imageURL, strings.ToLower(symbol), time.Now().Unix())
@@ -674,11 +679,11 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 				}
 				return "total", "X"
 			}()
-			srcLinkURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=%s&data=I:15&density=%[4]s&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(50);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=500&studyheight=200"
-			linkURL := fmt.Sprintf(srcLinkURL, symbol, "/fullscreen", volume, height)
-			screenshot := ss.MakeScreenshotForBarChart(linkURL)
+			srcURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=%s&data=I:15&density=%[4]s&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(50);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=500&studyheight=200"
+			dscURL := fmt.Sprintf(srcURL, symbol, "/fullscreen", volume, height)
+			screenshot := ss.MakeScreenshotForBarChart(dscURL)
 			if len(screenshot) != 0 {
-				linkURL := fmt.Sprintf(srcLinkURL, symbol, "", volume, height)
+				linkURL := fmt.Sprintf(srcURL, symbol, "", volume, height)
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
 					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),

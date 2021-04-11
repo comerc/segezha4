@@ -104,7 +104,7 @@ func _main() {
 // }
 
 // func sendBatch(ctx context.Context, isPrivateChat bool, callbacks []getWhat) {
-// 	defer utils.Elapsed("start")()
+// 	defer elapsed("start")()
 // 	done := make(chan bool)
 // 	results := make([]ParallelResult, len(callbacks))
 // 	threads := 3
