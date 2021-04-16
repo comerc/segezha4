@@ -5,7 +5,7 @@ import (
 )
 
 // ScreenshotMode description
-type ScreenshotMode = string
+type ScreenshotMode string
 
 // ScreenshotMode variants
 const (

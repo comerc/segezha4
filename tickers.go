@@ -6488,6 +6488,8 @@ var tickers = []Ticker{
 	{symbol: "BFLY", title: "Butterfly Network, Inc."},
 	{symbol: "SPY", title: ""},
 	{symbol: "QQQ", title: ""},
+	{symbol: "CHTR", title: "Charter Communications, Inc."},
+	{symbol: "COIN", title: "Coinbase Global, Inc."},
 }
 
 // func Filter(vs []string, f func(string) bool) []string {
