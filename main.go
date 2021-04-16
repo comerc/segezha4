@@ -193,10 +193,11 @@ func main() {
 	})
 	messageHandler := func(m *tb.Message) {
 		log.Println("****")
+		log.Println("LastEdit:", m.LastEdit)
 		if m.Sender != nil {
-			log.Println(m.Sender.Username)
-			log.Println(m.Sender.FirstName)
-			log.Println(m.Sender.LastName)
+			log.Println("Username:", m.Sender.Username)
+			log.Println("FirstName:", m.Sender.FirstName)
+			log.Println("LastName:", m.Sender.LastName)
 		}
 		log.Println(m.Chat.Username)
 		var text string
