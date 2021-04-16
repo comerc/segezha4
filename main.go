@@ -72,6 +72,30 @@ var (
 	b  *tb.Bot
 )
 
+const help = `*Commands:*
+/help - this message
+/bb - Bull Or Bear
+/map - S&P 500 1 Day Performance Map
+/fear - Fear & Greed Index
+/us - US Indexes
+/europe - Europe Indexes
+/asia - Asia Indexes
+/fx - Currencies
+/rates - Bonds
+/futures - Futures
+/crypto - Crypto Currencies
+/vix - $VIX (15M)
+/spy - SPY (15M)
+/index - Indexes (15M): $INX, $NASX, $DOWI
+/volume - Volumes (15M): SPY, QQQ, DOW
+
+*Inline Menu Mode:*
+@TickerInfoBot TSLA
+
+*Simple (Batch) Mode:*
+#TSLA! #TSLA? #TSLA?? #TSLA?! #TSLA!!
+`
+
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading .env file")
@@ -190,29 +214,6 @@ func main() {
 			}
 		}
 		if text == "/start" || text == "/help" {
-			help := `*Commands:*
-/help - this message
-/bb - Bull Or Bear
-/map - S&P 500 1 Day Performance Map
-/fear - Fear & Greed Index
-/us - US Indexes
-/europe - Europe Indexes
-/asia - Asia Indexes
-/fx - Currencies
-/rates - Bonds
-/futures - Futures
-/crypto - Crypto Currencies
-/vix - $VIX (15M)
-/spy - SPY (15M)
-/index - Indexes (15M): $INX, $NASX, $DOWI
-/volume - Volumes (15M): SPY, QQQ, DOW
-
-*Inline Menu Mode:*
-@TickerInfoBot TSLA
-
-*Simple (Batch) Mode:*
-#TSLA! #TSLA? #TSLA?? #TSLA?! #TSLA!!
-`
 			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, escape(help))
 		} else if text == "/stat" && isAdmin(m.Sender.ID) {
 			var totalKeys, totalValues int64
@@ -309,7 +310,9 @@ func main() {
 			matches := re.FindAllStringSubmatch(text, -1)
 			executed := make([]string, 0)
 			executed = append(executed, "ARK")
-			executed = append(executed, "WATCH") // for #Watch_list by @usamarke1
+			if m.Chat.Username == "usamarke1" {
+				executed = append(executed, "WATCH") // for #Watch_list
+			}
 			articleCase := GetExactArticleCase("finviz")
 			callbacks := make([]getWhat, 0)
 			for _, match := range matches {
@@ -569,12 +572,12 @@ func getWhatMarketWatchIDs(tab ss.MarketWatchTab) interface{} {
 }
 
 func isEarnings(text string) bool {
-	re := regexp.MustCompile("#ОТЧЕТ")
+	re := regexp.MustCompile("#ОТЧЕТ") // TODO: #отчетность by @MarketTwits
 	return re.FindStringIndex(text) != nil
 }
 
 func isARKOrWatchList(text string) bool {
-	re := regexp.MustCompile("#ARK|#Watch_list")
+	re := regexp.MustCompile("#ARK Trading Desk|#Watch_list")
 	return re.FindStringIndex(text) != nil
 }
 
@@ -725,10 +728,10 @@ type ParallelResult struct {
 }
 
 func sendBatch(chatID int64, isPrivateChat bool, callbacks []getWhat) {
-	defer utils.Elapsed("sendBatch")()
 	if len(callbacks) == 0 {
 		return
 	}
+	defer utils.Elapsed("sendBatch")()
 	done := make(chan bool)
 	results := make([]ParallelResult, len(callbacks))
 	threads := utils.ConvertToInt(os.Getenv("SEGEZHA4_THREADS"))
