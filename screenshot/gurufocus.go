@@ -49,9 +49,9 @@ func MakeScreenshotForGuruFocus(linkURL string) []byte {
 // Note: this will override the viewport emulation settings.
 func makeScreenshotForGuruFocus(linkURL string, x, y, width, height float64, quality int64, res *[]byte) chromedp.Tasks {
 	selMainContainer := "body > #__nuxt > #__layout > div > div.main-container"
-	selMoreMargin := selMainContainer + " > section.el-container > main > div.more-margin"
-	selMoreMarginChild1 := selMoreMargin + " > div.responsive-section:nth-child(1)"
-	selMoreMarginChild2 := selMoreMargin + " > div.responsive-section:nth-child(2)"
+	selMoreMarginSection := selMainContainer + " > section.el-container > main > div.more-margin > section.el-container"
+	selMoreMarginChild1 := selMoreMarginSection + " > main.el-main > div.responsive-section:nth-child(1)"
+	selMoreMarginChild2 := selMoreMarginSection + " > main.el-main > div.responsive-section:nth-child(2)"
 	return chromedp.Tasks{
 		chromedp.Emulate(device.IPadPro),
 		chromedp.Navigate(linkURL),
@@ -65,6 +65,7 @@ func makeScreenshotForGuruFocus(linkURL string, x, y, width, height float64, qua
 		// chromedp.SetAttributeValue(selMoreMarginChild1+" > div.adswrapper", "style", "display:none"),
 		// chromedp.SetAttributeValue(selMoreMarginChild1+" > div:nth-child(3)", "style", "display:none"),
 		// chromedp.SetAttributeValue(selMoreMarginChild1+" > div:nth-child(4)", "style", "display:none"),
+		chromedp.SetAttributeValue(selMoreMarginSection+" > div > div > i", "style", "display:none"),
 		chromedp.SetAttributeValue(selMoreMarginChild1, "style", "display:none"),
 		chromedp.SetAttributeValue(selMoreMarginChild2+" > div.stock-competitor.stock-competitors", "style", "display:none"),
 		chromedp.ActionFunc(hideIfExists(selMoreMarginChild2 + " > div.membership-limit-section #warning-signs")),
