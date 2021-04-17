@@ -55,7 +55,8 @@ func MakeScreenshotForTipRanks(linkURL string) []byte {
 	sel1 := "body div.client-components-stock-research-smart-score-style__rank"
 	sel2 := "body div.client-components-stock-research-analysts-style__analystTopPart"
 	sel3 := "body div.client-components-stock-research-individual-investors-style__topSection"
-	sel4 := "body div.client-components-stock-research-bloggers-bloggerStyles__generalOpinions"
+	sel41 := "body div.client-components-stock-research-bloggers-bloggerStyles__generalOpinions"
+	sel42 := "body div.client-components-stock-research-style__emptyContainer"
 	var buf1, buf2, buf3, buf4 []byte
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
@@ -74,8 +75,11 @@ func MakeScreenshotForTipRanks(linkURL string) []byte {
 			chromedp.SetAttributeValue(sel3, "style", "margin: 0 0 10px"),
 			chromedp.ActionFunc(screenshotWithoutPopups(sel3, &buf3)),
 			chromedp.Click("body nav > a:nth-child(4)", chromedp.BySearch),
-			chromedp.SetAttributeValue(sel4, "style", "margin: 0 0 10px"),
-			chromedp.ActionFunc(screenshotWithoutPopups(sel4, &buf4)),
+			// chromedp.SetAttributeValue(sel4, "style", "margin: 0 0 10px"),
+			// chromedp.SetAttributeValue(sel4, "style", "margin: 0 0 10px; height: 174px"),
+			chromedp.ActionFunc(setAttributeValueIfExistViaResult(sel41, "style", "margin: 0 0 10px")),
+			chromedp.ActionFunc(setAttributeValueIfExistViaResult(sel42, "style", "margin: 0 0 10px; height: 174px")),
+			chromedp.ActionFunc(screenshotWithoutPopupsViaResult(&buf4)),
 		}
 	}()); err != nil {
 		log.Println(err)
@@ -174,4 +178,30 @@ func glueForTipRanks(buf1, buf2, buf3, buf4 []byte, src *image.Image) error {
 	img3 = nil
 	img4 = nil
 	return nil
+}
+
+var result string
+
+func setAttributeValueIfExistViaResult(sel, name, value string) func(context.Context) error {
+	return func(ctx context.Context) error {
+		var nodes []*cdp.Node
+		if err := chromedp.Nodes(sel, &nodes, chromedp.AtLeast(0)).Do(ctx); err != nil {
+			return err
+		}
+		if len(nodes) == 0 {
+			return nil
+		}
+		if err := chromedp.SetAttributeValue(sel, name, value).Do(ctx); err != nil {
+			return err
+		} else {
+			result = sel
+		}
+		return nil
+	}
+}
+
+func screenshotWithoutPopupsViaResult(buf *[]byte) func(context.Context) error {
+	return func(context context.Context) error {
+		return screenshotWithoutPopups(result, buf)(context)
+	}
 }

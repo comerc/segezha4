@@ -22,8 +22,6 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// TODO: не работает /gurufocus JNPR
-// TODO: убрать замок /cathiesark
 // TODO: /bb@TickerInfoBot
 
 // TODO: в @teslaholics2 при клике по ссылке внутри сообщения /help - /help@TickerInfoBot
@@ -51,7 +49,6 @@ import (
 
 // TODO: пересылать ответы для "Andrew Ka2" к "Andrew Ka"
 // TODO: автоматизировать пересылку и разделить отчеты "Инвестиции USA Markets"
-// TODO: /tipranks LIFE (не отвечает, т.к. не хватает данных на сайте)
 // TODO: бумажка пробила 9EMA на дневке?
 // TODO: запретить повторы за один день для !! !
 // TODO: виджет из википедии по названию компании
