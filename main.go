@@ -427,6 +427,36 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 	ticker := time.NewTicker(1 * time.Second)
 	for t := range ticker.C {
 		utc := t.UTC()
+		s := utc.Second()
+		if s == 0 {
+			go func() {
+				netClient := &http.Client{
+					Timeout: 10 * time.Second,
+				}
+				isAlarm := false
+				response, err := netClient.Get(fmt.Sprintf("%s?rand=%d", pingURL, time.Now().Unix()))
+				if err != nil {
+					log.Printf("netClient.Get(pingURL): %s", err)
+					isAlarm = true
+				} else if response.StatusCode != 200 {
+					log.Print("netClient.Get(pingURL): response.StatusCode != 200")
+					isAlarm = true
+				}
+				if isAlarm {
+					s := os.Getenv("SEGEZHA4_ADMIN_USER_IDS")
+					IDs := strings.Split(s, ",")
+					for _, ID := range IDs {
+						_, err := b.Send(
+							tb.ChatID(utils.ConvertToInt(ID)),
+							fmt.Sprintf("Not responsed %s", pingURL),
+						)
+						if err != nil {
+							log.Println(err)
+						}
+					}
+				}
+			}()
+		}
 		w := utc.Weekday()
 		if w == 6 || w == 0 {
 			continue
@@ -447,27 +477,6 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 		}
 		h := utc.Hour()
 		m := utc.Minute()
-		s := utc.Second()
-		if s%15 == 0 {
-			go func() {
-				netClient := &http.Client{
-					Timeout: 10 * time.Second,
-				}
-				isAlarm := true
-				response, err := netClient.Get(pingURL)
-				if err != nil {
-					log.Printf("netClient.Get(\"%s\"): %s", pingURL, err)
-				} else if response.StatusCode != 200 {
-					log.Printf("netClient.Get(\"%s\"): response.StatusCode != 200", pingURL)
-				} else {
-					isAlarm = false
-				}
-				if isAlarm {
-					log.Print("Alarm")
-					// send
-				}
-			}()
-		}
 		const (
 			delta  = 30
 			summer = 1
@@ -622,8 +631,8 @@ func hasDots(text string) string {
 
 func isAdmin(ID int) bool {
 	s := os.Getenv("SEGEZHA4_ADMIN_USER_IDS")
-	ids := strings.Split(s, ",")
-	return utils.Contains(ids, fmt.Sprintf("%d", ID))
+	IDs := strings.Split(s, ",")
+	return utils.Contains(IDs, fmt.Sprintf("%d", ID))
 }
 
 type getWhat func() interface{}
