@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -21,6 +22,8 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: не работает /gurufocus JNPR
+// TODO: убрать замок /cathiesark
 // TODO: /bb@TickerInfoBot
 
 // TODO: в @teslaholics2 при клике по ссылке внутри сообщения /help - /help@TickerInfoBot
@@ -120,8 +123,9 @@ func main() {
 	var (
 		// port      = os.Getenv("PORT")
 		// publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
-		chatID = os.Getenv("SEGEZHA4_CHAT_ID") // you must add it to your config vars
-		token  = os.Getenv("SEGEZHA4_SECRET")  // you must add it to your config vars
+		chatID  = os.Getenv("SEGEZHA4_CHAT_ID") // you must add it to your config vars
+		token   = os.Getenv("SEGEZHA4_SECRET")  // you must add it to your config vars
+		pingURL = os.Getenv("SEGEZHA4_PING_URL")
 	)
 	// webhook := &tb.Webhook{
 	// 	Listen:   ":" + port,
@@ -386,7 +390,7 @@ func main() {
 	b.Handle(tb.OnText, messageHandler)
 	b.Handle(tb.OnPhoto, messageHandler)
 	pauseDay = -1
-	go runBackgroundTask(b, int64(utils.ConvertToInt(chatID)))
+	go runBackgroundTask(b, int64(utils.ConvertToInt(chatID)), pingURL)
 	b.Start()
 }
 
@@ -419,7 +423,7 @@ var (
 	currentDay int
 )
 
-func runBackgroundTask(b *tb.Bot, chatID int64) {
+func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 	ticker := time.NewTicker(1 * time.Second)
 	for t := range ticker.C {
 		utc := t.UTC()
@@ -444,6 +448,26 @@ func runBackgroundTask(b *tb.Bot, chatID int64) {
 		h := utc.Hour()
 		m := utc.Minute()
 		s := utc.Second()
+		if s%15 == 0 {
+			go func() {
+				netClient := &http.Client{
+					Timeout: 10 * time.Second,
+				}
+				isAlarm := true
+				response, err := netClient.Get(pingURL)
+				if err != nil {
+					log.Printf("netClient.Get(\"%s\"): %s", pingURL, err)
+				} else if response.StatusCode != 200 {
+					log.Printf("netClient.Get(\"%s\"): response.StatusCode != 200", pingURL)
+				} else {
+					isAlarm = false
+				}
+				if isAlarm {
+					log.Print("Alarm")
+					// send
+				}
+			}()
+		}
 		const (
 			delta  = 30
 			summer = 1
