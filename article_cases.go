@@ -54,7 +54,7 @@ var ArticleCases = []ArticleCase{
 		description:    "Summary",
 		screenshotMode: ScreenshotModeGuruFocus,
 	},
-	{name: "cathiesark", linkURL: "https://cathiesark.com/ark-combined-holdings-of-%s",
+	{name: "ark", linkURL: "https://cathiesark.com/ark-combined-holdings-of-%s",
 		description:    "ARK Invest Fund Holdings",
 		screenshotMode: ScreenshotModeCathiesArk,
 	},
