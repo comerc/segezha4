@@ -22,6 +22,10 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: /crypto dogeusd btcusd ethusd xrpusd bchusd ltcusd xmrusd (https://www.marketwatch.com/investing/cryptocurrency/btcusd)
+
+// TODO: вынести tickers в .json с автоапдейтом
+
 // TODO: в @teslaholics2 при клике по ссылке внутри сообщения /help - /help@TickerInfoBot
 // TODO: держать запросы от пользователей в очереди, пока выполняется runBackgroundTask
 
@@ -97,6 +101,8 @@ const help = `*Commands:*
 `
 
 func main() {
+	log.SetFlags(log.LUTC | log.Ldate | log.Ltime | log.Lshortfile)
+
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading .env file")
 	}
