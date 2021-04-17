@@ -22,8 +22,6 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// TODO: /bb@TickerInfoBot
-
 // TODO: в @teslaholics2 при клике по ссылке внутри сообщения /help - /help@TickerInfoBot
 // TODO: держать запросы от пользователей в очереди, пока выполняется runBackgroundTask
 
@@ -32,6 +30,7 @@ import (
 // TODO: Тикеры с точкой BRK.B RDS.A (finviz заменяет на "-")
 // TODO: badger для tickers
 // TODO: подсказки, если неправильные команды в приватном чате
+// TODO: демо всех тикеров в приватном чате
 // TODO: параллельная обработка https://gobyexample.ru/worker-pools.html
 // TODO: выводить сообщение о лимите по пересылке
 
@@ -61,6 +60,7 @@ import (
 // TODO: поиск по ticker.title
 // TODO: README
 // TODO: svg to png
+// TODO: подключить tradingview.com
 // TODO: добавить тайм-фрейм #BABA?15M
 // TODO: добавить медленную скользящую #BABA?50EMA / 100EMA / 200EMA
 // TODO: добавить биток GBTC
