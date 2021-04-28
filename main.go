@@ -22,6 +22,20 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: badger для tickers и добавлять, когда "not found"
+
+// TODO: бумажка пробила 9EMA на дневке?
+
+// TODO: /intro
+
+// TODO: короткие команды /mw /fv /mb /ew
+
+// TODO: "Самые обсуждаемые акции на форумах" - выдавать графики
+
+// TODO: https://stockcharts.com/h-sc/ui?s=$CPCE https://school.stockcharts.com/doku.php?id=market_indicators:put_call_ratio
+
+// TODO: запретить команды для публичных чатов
+
 // TODO: /crypto dogeusd btcusd ethusd xrpusd bchusd ltcusd xmrusd (https://www.marketwatch.com/investing/cryptocurrency/btcusd)
 
 // TODO: вынести tickers в .json с автоапдейтом
@@ -32,7 +46,6 @@ import (
 // TODO: источник по ТА https://finviz.com/screener.ashx?v=210&s=ta_p_tlresistance
 // TODO: источник по ТА https://ru.investing.com/equities/facebook-inc-technical
 // TODO: Тикеры с точкой BRK.B RDS.A (finviz заменяет на "-")
-// TODO: badger для tickers
 // TODO: подсказки, если неправильные команды в приватном чате
 // TODO: демо всех тикеров в приватном чате
 // TODO: параллельная обработка https://gobyexample.ru/worker-pools.html
@@ -52,7 +65,6 @@ import (
 
 // TODO: пересылать ответы для "Andrew Ka2" к "Andrew Ka"
 // TODO: автоматизировать пересылку и разделить отчеты "Инвестиции USA Markets"
-// TODO: бумажка пробила 9EMA на дневке?
 // TODO: запретить повторы за один день для !! !
 // TODO: виджет из википедии по названию компании
 // TODO: ARK - перемножать кол-во купленных и проданных акций
@@ -67,9 +79,7 @@ import (
 // TODO: подключить tradingview.com
 // TODO: добавить тайм-фрейм #BABA?15M
 // TODO: добавить медленную скользящую #BABA?50EMA / 100EMA / 200EMA
-// TODO: добавить биток GBTC
 // TODO: выборка с графиками https://finviz.com/screener.ashx?v=212&t=ZM,BA,MU,MS,GE,AA
-// TODO: https://stockcharts.com/h-sc/ui?s=$CPCE https://school.stockcharts.com/doku.php?id=market_indicators:put_call_ratio
 
 var (
 	db *badger.DB
@@ -108,8 +118,6 @@ func main() {
 	}
 	utils.InitTimeoutFactor()
 
-	// Open the Badger database located in the /tmp/badger directory.
-	// It will be created if it doesn't exist.
 	{
 		path := filepath.Join(".", "data")
 		if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -407,6 +415,24 @@ func escape(s string) string {
 	return re.ReplaceAllString(s, `\$0`)
 }
 
+// TODO: replace escape() to escapeMarkdown()
+// func escapeMarkdown(s string) string {
+// 	// You can escape the following characters:
+// 	// Asterisk \*
+// 	// Underscore \_
+// 	// Curly braces \{ \}
+// 	// Square brackets \[ \]
+// 	// Brackets \( \)
+// 	// Hash \#
+// 	// Plus \+
+// 	// Minus \-
+// 	// Period \.
+// 	// Exclamation point \!
+// 	a := []string{"*", `\_`, "{", "}", `\[`, `\]`, `\(`, `\)`, "#", "+", `\-`, ".", "!"}
+// 	re := regexp.MustCompile("[" + strings.Join(a, "|") + "]")
+// 	return re.ReplaceAllString(s, `\$0`)
+// }
+
 // func getUserLink(u *tb.User) string {
 // 	if u.Username != "" {
 // 		return fmt.Sprintf("@%s", u.Username)
@@ -428,6 +454,7 @@ var (
 
 func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
 	for t := range ticker.C {
 		utc := t.UTC()
 		s := utc.Second()
@@ -897,5 +924,8 @@ func increment(chatID int64) {
 	key := uint64ToBytes(uint64(chatID))
 	m := db.GetMergeOperator(key, add, 200*time.Millisecond)
 	defer m.Stop()
-	m.Add(uint64ToBytes(1))
+	err := m.Add(uint64ToBytes(1))
+	if err != nil {
+		log.Printf("increment() chatID: %d %s", chatID, err)
+	}
 }
