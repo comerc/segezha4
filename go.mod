@@ -9,6 +9,7 @@ require (
 	github.com/dgraph-io/badger v1.6.2
 	github.com/dgraph-io/badger/v3 v3.2011.1 // indirect
 	github.com/joho/godotenv v1.3.0
+	github.com/radovskyb/watcher v1.0.7
 	// github.com/pkg/errors v0.8.1
 	// golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
 	// github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646

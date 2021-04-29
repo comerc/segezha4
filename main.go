@@ -40,8 +40,6 @@ import (
 
 // TODO: /crypto dogeusd btcusd ethusd xrpusd bchusd ltcusd xmrusd (https://www.marketwatch.com/investing/cryptocurrency/btcusd)
 
-// TODO: вынести tickers в .json с автоапдейтом
-
 // TODO: в @teslaholics2 при клике по ссылке внутри сообщения /help - /help@TickerInfoBot
 // TODO: держать запросы от пользователей в очереди, пока выполняется runBackgroundTask
 
@@ -169,18 +167,18 @@ func main() {
 		}
 		results := make(tb.Results, len(ArticleCases)) // []tb.Result
 		for i, articleCase := range ArticleCases {
-			linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.symbol))
+			linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.Symbol))
 			var result *tb.ArticleResult
 			if i == 0 {
 				result = &tb.ArticleResult{
-					Title:       fmt.Sprintf("%s %s", articleCase.name, ticker.symbol),
-					Description: ticker.title,
+					Title:       fmt.Sprintf("%s %s", articleCase.name, ticker.Symbol),
+					Description: ticker.Title,
 					HideURL:     true,
 					URL:         linkURL,
-					ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.symbol), // from stockanalysis.com
+					ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.Symbol), // from stockanalysis.com
 				}
 			} else {
-				title := fmt.Sprintf("%s %s", articleCase.name, ticker.symbol)
+				title := fmt.Sprintf("%s %s", articleCase.name, ticker.Symbol)
 				if articleCase.screenshotMode != "" {
 					title += " 🎁"
 				}
@@ -194,11 +192,11 @@ func main() {
 			result.SetContent(&tb.InputTextMessageContent{
 				Text: fmt.Sprintf("/%s %s",
 					articleCase.name,
-					ticker.symbol,
+					ticker.Symbol,
 				),
 				DisablePreview: true,
 			})
-			result.SetResultID(ticker.symbol + "=" + articleCase.name)
+			result.SetResultID(ticker.Symbol + "=" + articleCase.name)
 			results[i] = result
 		}
 		if err := b.Answer(q, &tb.QueryResponse{
@@ -766,7 +764,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 		if result == nil {
 			description := func() string {
 				if articleCase.name == ArticleCases[0].name && ticker != nil {
-					return ticker.title
+					return ticker.Title
 				}
 				return articleCase.description
 			}()
