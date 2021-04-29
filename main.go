@@ -22,6 +22,8 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: #AMD!? выдавать "Unknown command, please see /help"
+
 // TODO: badger для tickers и добавлять, когда "not found"
 
 // TODO: бумажка пробила 9EMA на дневке?
