@@ -12,6 +12,14 @@ import (
 	"github.com/radovskyb/watcher"
 )
 
+// var tickersMu sync.Mutex
+
+func getTickers() []Ticker {
+	// tickersMu.Lock()
+	// defer tickersMu.Unlock()
+	return tickers
+}
+
 func init() {
 	go watch(func() {
 		tmp, err := load()
@@ -21,7 +29,7 @@ func init() {
 		}
 		// tickersMu.Lock()
 		// defer tickersMu.Unlock()
-		log.Printf("%#v", tmp)
+		// log.Printf("%#v", tmp)
 		tickers = tmp
 	})
 }
@@ -128,7 +136,7 @@ func GetTickers(search string) []Ticker {
 	result := make([]Ticker, 0)
 	if len(search) > 0 {
 		search = strings.ToUpper(search)
-		for _, ticker := range tickers {
+		for _, ticker := range getTickers() {
 			if strings.HasPrefix(strings.ToUpper(ticker.Symbol), search) {
 				result = append(result, ticker)
 				if len(search) == 1 {
@@ -145,7 +153,7 @@ func GetExactTicker(search string) *Ticker {
 	var result *Ticker
 	if len(search) > 0 {
 		search = strings.ToUpper(search)
-		for _, ticker := range tickers {
+		for _, ticker := range getTickers() {
 			if strings.ToUpper(ticker.Symbol) == search {
 				result = &ticker
 				break
