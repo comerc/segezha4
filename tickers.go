@@ -6494,6 +6494,7 @@ var tickers = []Ticker{
 	{symbol: "TSP", title: "TuSimple Holdings Inc."},
 	{symbol: "PATH", title: "UiPath Inc."},
 	{symbol: "CHPT", title: "Chargepoint Holdings Inc."},
+	{symbol: "SONY", title: "Sony Group Corporation"},
 }
 
 // func Filter(vs []string, f func(string) bool) []string {
