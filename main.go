@@ -201,7 +201,7 @@ func main() {
 		}
 		if err := b.Answer(q, &tb.QueryResponse{
 			Results:   results,
-			CacheTime: 60,
+			CacheTime: 60, // TODO: а если уменьшить?
 		}); err != nil {
 			log.Println(err)
 		}
@@ -886,6 +886,10 @@ func hasArticleCase(text string) *ArticleCase {
 	if text != "" {
 		text = strings.ToUpper(text)
 		for _, articleCase := range ArticleCases {
+			shortCommand := fmt.Sprintf("/%s ", strings.ToUpper(articleCase.shortName))
+			if strings.HasPrefix(text, shortCommand) {
+				return &articleCase
+			}
 			command := fmt.Sprintf("/%s ", strings.ToUpper(articleCase.name))
 			if strings.HasPrefix(text, command) {
 				return &articleCase
