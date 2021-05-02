@@ -102,8 +102,9 @@ func glueForFinviz(buf1, buf2, buf3 []byte, src *image.Image) error {
 
 func takeScreenshotForFinviz(ctx context.Context, buf1, buf2, buf3 *[]byte) error {
 	selChart := "body > div > #app > #chart > #charts"
-	selTitle := "body > div.content > div.container table.fullview-title > tbody"
-	selTable := "body > div.content > div.container > table.snapshot-table2"
+	selTitleContainer := "body > div.content > div.fv-container > table:nth-child(1) > tbody > tr > td"
+	selTitle := "body > div.content > div.fv-container > table:nth-child(1) table:nth-child(1)"
+	selTable := "body > div.content > div.fv-container > table:nth-child(2)"
 	var nodes []*cdp.Node
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
@@ -119,6 +120,7 @@ func takeScreenshotForFinviz(ctx context.Context, buf1, buf2, buf3 *[]byte) erro
 		return chromedp.Tasks{
 			chromedp.SetAttributeValue(selChart, "style", "margin-bottom:10px"),
 			chromedp.Screenshot(selChart, buf1, chromedp.NodeVisible),
+			chromedp.SetAttributeValue(selTitleContainer, "style", "padding:0"),
 			chromedp.Screenshot(selTitle, buf2, chromedp.NodeVisible),
 			chromedp.SetAttributeValue(selTable, "style", "margin-top:16px"),
 			chromedp.Screenshot(selTable, buf3, chromedp.NodeVisible),
