@@ -473,17 +473,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 					isAlarm = true
 				}
 				if isAlarm {
-					s := os.Getenv("SEGEZHA4_ADMIN_USER_IDS")
-					IDs := strings.Split(s, ",")
-					for _, ID := range IDs {
-						_, err := b.Send(
-							tb.ChatID(utils.ConvertToInt(ID)),
-							fmt.Sprintf("Not responsed %s", pingURL),
-						)
-						if err != nil {
-							log.Println(err)
-						}
-					}
+					sendToAdmins(fmt.Sprintf("Not responsed %s", pingURL))
 				}
 			}()
 		}
@@ -581,6 +571,7 @@ func getWhatFinvizMap() interface{} {
 	caption := getCaption("#map", "", linkURL)
 	screenshot := ss.MakeScreenshotForFinvizMap(linkURL)
 	if len(screenshot) == 0 {
+		sendToAdmins("Invalid /map")
 		return caption
 	}
 	return &tb.Photo{
@@ -599,6 +590,7 @@ func getWhatFear() interface{} {
 	caption := getCaption("#fear", "", linkURL)
 	screenshot := ss.MakeScreenshotForFear(linkURL)
 	if len(screenshot) == 0 {
+		sendToAdmins("Invalid /fear")
 		return caption
 	}
 	return &tb.Photo{
@@ -613,6 +605,7 @@ func getWhatFinvizBB() interface{} {
 	caption := getCaption("#bb", "Bull or Bear", linkURL)
 	screenshot := ss.MakeScreenshotForFinvizBB(linkURL)
 	if len(screenshot) == 0 {
+		sendToAdmins("Invalid /bb")
 		return caption
 	}
 	return &tb.Photo{
@@ -627,6 +620,7 @@ func getWhatMarketWatchIDs(tab ss.MarketWatchTab) interface{} {
 	caption := getCaption("#"+tab, "", linkURL)
 	screenshot := ss.MakeScreenshotForMarketWatchIDs(linkURL, tab)
 	if len(screenshot) == 0 {
+		sendToAdmins("Invalid /" + tab)
 		return caption
 	}
 	return &tb.Photo{
@@ -697,7 +691,9 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		case ScreenshotModeFinviz:
 			screenshot := ss.MakeScreenshotForFinviz(linkURL)
-			if len(screenshot) != 0 {
+			if len(screenshot) == 0 {
+				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+			} else {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
 					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
@@ -705,7 +701,9 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		case ScreenshotModeMarketWatch:
 			screenshot := ss.MakeScreenshotForMarketWatch(linkURL)
-			if len(screenshot) != 0 {
+			if len(screenshot) == 0 {
+				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+			} else {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
 					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
@@ -713,7 +711,9 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		case ScreenshotModeCathiesArk:
 			screenshot := ss.MakeScreenshotForCathiesArk(linkURL)
-			if len(screenshot) != 0 {
+			if len(screenshot) == 0 {
+				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+			} else {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
 					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
@@ -721,7 +721,9 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		case ScreenshotModeGuruFocus:
 			screenshot := ss.MakeScreenshotForGuruFocus(linkURL)
-			if len(screenshot) != 0 {
+			if len(screenshot) == 0 {
+				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+			} else {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
 					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
@@ -729,7 +731,9 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		case ScreenshotModeMarketBeat:
 			screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
-			if len(screenshot) != 0 {
+			if len(screenshot) == 0 {
+				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+			} else {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
 					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
@@ -737,7 +741,9 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		case ScreenshotModeTipRanks:
 			screenshot := ss.MakeScreenshotForTipRanks(linkURL)
-			if len(screenshot) != 0 {
+			if len(screenshot) == 0 {
+				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+			} else {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
 					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
@@ -753,7 +759,9 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			srcURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=%s&data=I:15&density=%[4]s&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(50);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=500&studyheight=200"
 			dscURL := fmt.Sprintf(srcURL, symbol, "/fullscreen", volume, height)
 			screenshot := ss.MakeScreenshotForBarChart(dscURL)
-			if len(screenshot) != 0 {
+			if len(screenshot) == 0 {
+				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+			} else {
 				linkURL := fmt.Sprintf(srcURL, symbol, "", volume, height)
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
@@ -931,5 +939,19 @@ func increment(chatID int64) {
 	err := m.Add(uint64ToBytes(1))
 	if err != nil {
 		log.Printf("increment() chatID: %d %s", chatID, err)
+	}
+}
+
+func sendToAdmins(text string) {
+	s := os.Getenv("SEGEZHA4_ADMIN_USER_IDS")
+	IDs := strings.Split(s, ",")
+	for _, ID := range IDs {
+		_, err := b.Send(
+			tb.ChatID(utils.ConvertToInt(ID)),
+			text,
+		)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 }
