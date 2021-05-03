@@ -24,9 +24,6 @@ func _main() {
 	// linkURL := "https://finviz.com/quote.ashx?t=ZM"
 	// buf := ss.MakeScreenshotForFinviz(linkURL)
 
-	// linkURL := "https://finviz.com/"
-	// buf := ss.MakeScreenshotForFinvizIDs(linkURL)
-
 	// linkURL := "https://marketwatch.com/"
 	// buf := ss.MakeScreenshotForMarketWatchIDs(linkURL, ss.MarketWatchHrefCrypto)
 
@@ -42,8 +39,8 @@ func _main() {
 	// linkURL := "https://www.gurufocus.com/stock/irbt/summary#"
 	// buf := ss.MakeScreenshotForPage(linkURL, 0, 0, 0, 2042)
 
-	linkURL := "https://tipranks.com/stocks/life/forecast"
-	buf := ss.MakeScreenshotForTipRanks(linkURL)
+	// linkURL := "https://tipranks.com/stocks/life/forecast"
+	// buf := ss.MakeScreenshotForTipRanks(linkURL)
 
 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
 	// linkURL := "https://www.marketbeat.com/stocks/TSLA"
@@ -52,8 +49,11 @@ func _main() {
 	// linkURL := "https://cathiesark.com/ark-combined-holdings-of-flir"
 	// buf := ss.MakeScreenshotForCathiesArk(linkURL)
 
-	// linkURL := "https://finviz.com/map.ashx?t=sec"
-	// buf := ss.MakeScreenshotForFinvizMap(linkURL)
+	linkURL := "https://finviz.com/map.ashx?t=sec"
+	buf := ss.MakeScreenshotForFinvizMap(linkURL)
+
+	// linkURL := "https://finviz.com/"
+	// buf := ss.MakeScreenshotForFinvizBB(linkURL)
 
 	if len(buf) == 0 {
 		log.Println("exit buf == 0")

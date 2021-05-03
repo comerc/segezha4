@@ -35,8 +35,8 @@ func MakeScreenshotForFinvizBB(linkURL string) []byte {
 	ctx2, cancel2 := context.WithTimeout(ctx1, utils.GetTimeout(average))
 	defer cancel2()
 	var buf1, buf2 []byte
-	sel1 := "body > div.content.is-index > div.container > table > tbody > tr > td table:nth-child(1)"
-	sel2 := "body > div.content.is-index > div.container > table > tbody > tr > td > #homepage > table > tbody > tr > td > table"
+	sel1 := "body > div.content.is-index > div.fv-container > table > tbody > tr > td table:nth-child(1)"
+	sel2 := "body > div.content.is-index > div.fv-container > table > tbody > tr > td > #homepage > table > tbody > tr > td > table"
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
 			network.SetBlockedURLS([]string{"https://dggaenaawxe8z.cloudfront.net/cmp_v2/admiral/finviz.js"}),
