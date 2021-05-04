@@ -171,14 +171,14 @@ func main() {
 			var result *tb.ArticleResult
 			if i == 0 {
 				result = &tb.ArticleResult{
-					Title:       fmt.Sprintf("%s %s", articleCase.name, ticker.Symbol),
+					Title:       fmt.Sprintf("%s / %s %s", articleCase.shortName, articleCase.name, ticker.Symbol),
 					Description: ticker.Title,
 					HideURL:     true,
 					URL:         linkURL,
 					ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.Symbol), // from stockanalysis.com
 				}
 			} else {
-				title := fmt.Sprintf("%s %s", articleCase.name, ticker.Symbol)
+				title := fmt.Sprintf("%s / %s %s", articleCase.shortName, articleCase.name, ticker.Symbol)
 				if articleCase.screenshotMode != "" {
 					title += " 🎁"
 				}
@@ -191,7 +191,7 @@ func main() {
 			}
 			result.SetContent(&tb.InputTextMessageContent{
 				Text: fmt.Sprintf("/%s %s",
-					articleCase.name,
+					articleCase.shortName,
 					ticker.Symbol,
 				),
 				DisablePreview: true,
@@ -230,8 +230,14 @@ func main() {
 			}
 		}
 		if text == "/start" || text == "/help" {
+			// s := ""
+			// for _, articleCase := range ArticleCases {
+			// 	s = s + fmt.Sprintf("\n/%s TSLA - %s", articleCase.shortName, articleCase.name)
+			// }
+			// s = fmt.Sprintf(help, s))
 			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, escape(help))
-		} else if text == "/stat" && isAdmin(m.Sender.ID) {
+		} else if text == "/stats" && isAdmin(m.Sender.ID) {
+			s := ""
 			var totalKeys, totalValues int64
 			if err := db.View(func(txn *badger.Txn) error {
 				opts := badger.DefaultIteratorOptions
@@ -246,7 +252,8 @@ func main() {
 						key := int64(bytesToUint64(k))
 						val := int64(bytesToUint64(v))
 						totalValues += val
-						log.Print(key, val)
+						s = s + fmt.Sprintf("\n%d %d", key, val)
+						// log.Print(key, val)
 						return nil
 					}); err != nil {
 						return err
@@ -256,7 +263,9 @@ func main() {
 			}); err != nil {
 				log.Print(err)
 			}
-			log.Printf("keys: %d values: %d", totalKeys, totalValues)
+			s = s + fmt.Sprintf("\nkeys: %d values: %d", totalKeys, totalValues)
+			sendToAdmins(s)
+			// log.Printf("keys: %d values: %d", totalKeys, totalValues)
 		} else if text == "/pause" && isAdmin(m.Sender.ID) {
 			pauseDay = time.Now().UTC().Day()
 			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, "pause")
