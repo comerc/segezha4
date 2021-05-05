@@ -749,7 +749,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 				}
 			}
 		case ScreenshotModeTipRanks:
-			screenshot := ss.MakeScreenshotForTipRanks(linkURL)
+			screenshot := ss.MakeScreenshotForTipRanks2(linkURL)
 			if len(screenshot) == 0 {
 				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
 			} else {

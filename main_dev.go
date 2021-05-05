@@ -42,6 +42,9 @@ func _main() {
 	// linkURL := "https://tipranks.com/stocks/life/forecast"
 	// buf := ss.MakeScreenshotForTipRanks(linkURL)
 
+	linkURL := "https://tipranks.com/stocks/life/stock-analysis"
+	buf := ss.MakeScreenshotForTipRanks2(linkURL)
+
 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
 	// linkURL := "https://www.marketbeat.com/stocks/TSLA"
 	// buf := ss.MakeScreenshotForMarketBeat(linkURL)
@@ -49,8 +52,8 @@ func _main() {
 	// linkURL := "https://cathiesark.com/ark-combined-holdings-of-flir"
 	// buf := ss.MakeScreenshotForCathiesArk(linkURL)
 
-	linkURL := "https://finviz.com/map.ashx?t=sec"
-	buf := ss.MakeScreenshotForFinvizMap(linkURL)
+	// linkURL := "https://finviz.com/map.ashx?t=sec"
+	// buf := ss.MakeScreenshotForFinvizMap(linkURL)
 
 	// linkURL := "https://finviz.com/"
 	// buf := ss.MakeScreenshotForFinvizBB(linkURL)
