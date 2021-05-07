@@ -22,6 +22,8 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: watch list - Forward P/E < 15, PEG < 1, EPS growth next year > 25%
+
 // TODO: #AMD!? выдавать "Unknown command, please see /help"
 
 // TODO: badger для tickers и добавлять, когда "not found"
@@ -31,8 +33,6 @@ import (
 // TODO: /intro
 
 // TODO: нужна справка на короткие команды /mw /fv /mb /ark
-
-// TODO: "Самые обсуждаемые акции на форумах" - выдавать графики
 
 // TODO: https://stockcharts.com/h-sc/ui?s=$CPCE https://school.stockcharts.com/doku.php?id=market_indicators:put_call_ratio
 
