@@ -14,8 +14,9 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-RawDataBot.json
-screenshot.png
+_stockbeep.json
+_RawDataBot.json
+_screenshot.png
 segezha4
 .env
 data/

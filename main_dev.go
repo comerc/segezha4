@@ -62,7 +62,7 @@ func _main() {
 		log.Println("exit buf == 0")
 		return
 	}
-	if err := ioutil.WriteFile("screenshot.png", buf, 0644); err != nil {
+	if err := ioutil.WriteFile("_screenshot.png", buf, 0644); err != nil {
 		log.Fatal(err)
 	}
 }
