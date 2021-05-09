@@ -22,6 +22,9 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: Виджет "Профиль компании" + перевод https://ru.tradingview.com/widget/symbol-profile/
+// TODO: Виджет "Мини-график" https://ru.tradingview.com/widget/mini-chart/
+
 // TODO: watch list - Forward P/E < 15, PEG < 1, EPS growth next year > 25%
 
 // TODO: #AMD!? выдавать "Unknown command, please see /help"
@@ -119,7 +122,7 @@ func main() {
 	utils.InitTimeoutFactor()
 
 	{
-		path := filepath.Join(".", "data")
+		path := filepath.Join(".", ".data")
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			os.Mkdir(path, os.ModePerm)
 		}
