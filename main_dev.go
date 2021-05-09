@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 
 	ss "github.com/comerc/segezha4/screenshot"
 	"github.com/comerc/segezha4/utils"
@@ -42,8 +45,8 @@ func _main() {
 	// linkURL := "https://tipranks.com/stocks/life/forecast"
 	// buf := ss.MakeScreenshotForTipRanks(linkURL)
 
-	linkURL := "https://tipranks.com/stocks/life/stock-analysis"
-	buf := ss.MakeScreenshotForTipRanks2(linkURL)
+	// linkURL := "https://tipranks.com/stocks/life/stock-analysis"
+	// buf := ss.MakeScreenshotForTipRanks2(linkURL)
 
 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
 	// linkURL := "https://www.marketbeat.com/stocks/TSLA"
@@ -57,6 +60,13 @@ func _main() {
 
 	// linkURL := "https://finviz.com/"
 	// buf := ss.MakeScreenshotForFinvizBB(linkURL)
+
+	path, _ := os.Getwd()
+	path = filepath.Join(path, "tradingview.html")
+	symbol := "MU"
+	interval := "4H"
+	linkURL := fmt.Sprintf("file://%s?%s:%s", path, symbol, interval)
+	buf := ss.MakeScreenshotForTradingView(linkURL)
 
 	if len(buf) == 0 {
 		log.Println("exit buf == 0")

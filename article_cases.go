@@ -10,6 +10,7 @@ type ScreenshotMode string
 // ScreenshotMode variants
 const (
 	// ScreenshotModePage        ScreenshotMode = "Page"
+	ScreenshotModeTradingView ScreenshotMode = "TradingView"
 	ScreenshotModeImage       ScreenshotMode = "Image"
 	ScreenshotModeFinviz      ScreenshotMode = "Finviz"
 	ScreenshotModeMarketWatch ScreenshotMode = "MarketWatch"
@@ -39,7 +40,9 @@ type ArticleCase struct {
 
 // ArticleCases slice
 var ArticleCases = []ArticleCase{
-	{shortName: "tv", name: "tradingview", linkURL: "https://tradingview.com/symbols/%s"},
+	{shortName: "tv", name: "tradingview", linkURL: "https://tradingview.com/symbols/%s",
+		screenshotMode: ScreenshotModeTradingView,
+	},
 	{shortName: "ch", name: "chart", linkURL: "https://finviz.com/quote.ashx?t=%s",
 		description:    "Chart",
 		screenshotMode: ScreenshotModeImage,

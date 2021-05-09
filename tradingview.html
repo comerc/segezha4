@@ -1,0 +1,74 @@
+<html>
+  <head><title>TradingView Widget</title></head>
+  <body>
+<!-- TradingView Widget BEGIN -->
+<div class="tradingview-widget-container">
+  <div id="app"></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <script type="text/javascript">
+const studies = [
+  {
+    id: 'MAWeighted@tv-basicstudies',
+    inputs: {
+      length: 9,
+    },
+  },
+  {
+    id: 'MAExp@tv-basicstudies',
+    inputs: {
+      length: 20,
+    },
+  },
+  {
+    id: 'MAExp@tv-basicstudies',
+    inputs: {
+      length: 50,
+    },
+  },
+  {
+    id: 'MAExp@tv-basicstudies',
+    inputs: {
+      length: 100,
+    },
+  },
+  {
+    id: 'MAExp@tv-basicstudies',
+    inputs: {
+      length: 200,
+    },
+  },
+  {
+    id: 'RSI@tv-basicstudies',
+  },
+  {
+    id: 'ACCD@tv-basicstudies',
+  },
+  // {
+  //   id: 'MACD@tv-basicstudies',
+  // },
+  // {
+  //   id: 'BB@tv-basicstudies',
+  // },
+]
+const queryString = window.location.search
+const s = queryString.substr(1)
+const a = s.split(':')
+const symbol = a[0]
+const interval = a[1] ?? 'D'
+const tw = new TradingView.widget({
+  symbol,
+  interval,
+  hide_top_toolbar: true,
+  theme: 'white',
+  style: 1,
+  timezone: 'Etc/UTC',
+  locale: 'en',
+  autosize: true,
+  studies: studies,
+  container_id: 'app',
+})
+  </script>
+</div>
+<!-- TradingView Widget END -->
+  </body>
+</html>

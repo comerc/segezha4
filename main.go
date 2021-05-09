@@ -162,7 +162,7 @@ func main() {
 	// 	log.Println("OnCallback")
 	// })
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
-		re := regexp.MustCompile("[^A-Za-z]")
+		re := regexp.MustCompile("(?i)[^A-Z]")
 		symbol := re.ReplaceAllString(q.Text, "")
 		ticker := GetExactTicker(symbol)
 		if ticker == nil {
@@ -319,7 +319,7 @@ func main() {
 			}
 			sendBatch(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		} else if isEarnings(text) {
-			re := regexp.MustCompile(`(^|[^A-Za-z])\$([A-Za-z]+)`)
+			re := regexp.MustCompile(`(?i)(^|[^A-Z])\$([A-Z]+)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			executed := make([]string, 0)
 			articleCase := GetExactArticleCase("marketwatch")
@@ -334,7 +334,7 @@ func main() {
 			}
 			sendBatch(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		} else if isARKOrWatchList(text) {
-			re := regexp.MustCompile(`(^|[^A-Za-z])#([A-Za-z]+)`)
+			re := regexp.MustCompile(`(?i)(^|[^A-Z])#([A-Z]+)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			executed := make([]string, 0)
 			executed = append(executed, "ARK")
@@ -353,7 +353,7 @@ func main() {
 			}
 			sendBatch(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
 		} else if isIdeas(text) {
-			re := regexp.MustCompile(`(^|[^A-Za-z])\$([A-Za-z]+)`)
+			re := regexp.MustCompile(`(?i)(^|[^A-Z])\$([A-Z]+)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			executed := make([]string, 0)
 			articleCase := GetExactArticleCase("finviz")
@@ -372,7 +372,7 @@ func main() {
 			send(m.Chat.ID, m.Chat.Type != tb.ChatPrivate, getWhat())
 		} else {
 			// simple command mode
-			re := regexp.MustCompile(`(^|[^A-Za-z])#([A-Za-z]+)(\?!|\?\?|\?|!!|!)`)
+			re := regexp.MustCompile(`(?i)(^|[^A-Z])#([A-Z]+)(\?!|\?\?|\?(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|)|!!|!)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			if len(matches) == 0 {
 				if m.Chat.Type == tb.ChatPrivate {
@@ -385,6 +385,17 @@ func main() {
 			for _, match := range matches {
 				symbol := match[2]
 				mode := match[3]
+				interval := match[4]
+				if interval != "" {
+					mode = "?" // fix "?D"
+					interval = strings.ToUpper(interval)
+					if interval != "D" {
+						symbol += ":" + interval
+					}
+				}
+				if mode == "??" {
+					symbol += ":15"
+				}
 				if utils.Contains(executed, strings.ToUpper(symbol)+mode) {
 					continue
 				}
@@ -393,9 +404,9 @@ func main() {
 				case "?!":
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("marketwatch")))
 				case "??":
-					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("barchart")))
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("tradingview")))
 				case "?":
-					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("stockscores")))
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("tradingview")))
 				case "!!":
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("shortvolume")))
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("stockscores")))
@@ -684,9 +695,11 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 		// TODO: пополнять базу тикеров и индексов для inline mode
 		var ticker *Ticker
 		if tag == "#" {
-			ticker = GetExactTicker(symbol)
+			a := strings.Split(symbol, ":")
+			pureSymbol := a[0]
+			ticker = GetExactTicker(pureSymbol)
 			if ticker == nil {
-				return fmt.Sprintf("%s not found", escape(strings.ToUpper(tag+symbol)))
+				return fmt.Sprintf("%s not found", escape(strings.ToUpper(tag+pureSymbol)))
 			}
 		} else {
 			// TODO: not found for $symbol
@@ -695,6 +708,19 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 		linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
 		defer utils.Elapsed(linkURL)()
 		switch articleCase.screenshotMode {
+		case ScreenshotModeTradingView:
+			path, _ := os.Getwd()
+			filePath := filepath.Join(path, "tradingview.html")
+			fileURL := fmt.Sprintf("file://%s?%s", filePath, symbol)
+			screenshot := ss.MakeScreenshotForTradingView(fileURL)
+			if len(screenshot) == 0 {
+				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+			} else {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
+				}
+			}
 		case ScreenshotModeImage:
 			imageURL := fmt.Sprintf(articleCase.imageURL, strings.ToLower(symbol), time.Now().Unix())
 			result = &tb.Photo{
