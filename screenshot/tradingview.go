@@ -22,7 +22,7 @@ func MakeScreenshotForTradingView(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	const average = 10
+	const average = 12
 	ctx2, cancel2 := context.WithTimeout(ctx1, utils.GetTimeout(average))
 	defer cancel2()
 	var buf []byte

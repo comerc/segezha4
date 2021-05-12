@@ -39,7 +39,7 @@ import (
 
 // TODO: https://stockcharts.com/h-sc/ui?s=$CPCE https://school.stockcharts.com/doku.php?id=market_indicators:put_call_ratio
 
-// TODO: запретить команды для публичных чатов
+// TODO: запретить команды для публичных чатов?
 
 // TODO: /crypto dogeusd btcusd ethusd xrpusd bchusd ltcusd xmrusd (https://www.marketwatch.com/investing/cryptocurrency/btcusd)
 
@@ -80,8 +80,7 @@ import (
 // TODO: README
 // TODO: svg to png
 // TODO: подключить tradingview.com
-// TODO: добавить тайм-фрейм #BABA?15M
-// TODO: добавить медленную скользящую #BABA?50EMA / 100EMA / 200EMA
+// TODO: добавить тайм-фрейм в пакетный режим /tv TSLA?15 TSLA?4H
 // TODO: выборка с графиками https://finviz.com/screener.ashx?v=212&t=ZM,BA,MU,MS,GE,AA
 
 var (
@@ -172,19 +171,19 @@ func main() {
 		for i, articleCase := range ArticleCases {
 			linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.Symbol))
 			var result *tb.ArticleResult
+			title := fmt.Sprintf("%s / %s %s", articleCase.shortName, articleCase.name, ticker.Symbol)
+			if articleCase.screenshotMode != "" {
+				title += " 🎁"
+			}
 			if i == 0 {
 				result = &tb.ArticleResult{
-					Title:       fmt.Sprintf("%s / %s %s", articleCase.shortName, articleCase.name, ticker.Symbol),
+					Title:       title,
 					Description: ticker.Title,
 					HideURL:     true,
 					URL:         linkURL,
 					ThumbURL:    fmt.Sprintf("https://storage.googleapis.com/iexcloud-hl37opg/api/logos/%s.png", ticker.Symbol), // from stockanalysis.com
 				}
 			} else {
-				title := fmt.Sprintf("%s / %s %s", articleCase.shortName, articleCase.name, ticker.Symbol)
-				if articleCase.screenshotMode != "" {
-					title += " 🎁"
-				}
 				result = &tb.ArticleResult{
 					Title:       title,
 					Description: articleCase.description,
@@ -233,6 +232,9 @@ func main() {
 			}
 		}
 		if text == "/start" || text == "/help" {
+			if !m.Private() {
+				return
+			}
 			// s := ""
 			// for _, articleCase := range ArticleCases {
 			// 	s = s + fmt.Sprintf("\n/%s TSLA - %s", articleCase.shortName, articleCase.name)
@@ -408,8 +410,9 @@ func main() {
 				case "?":
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("tradingview")))
 				case "!!":
-					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("shortvolume")))
-					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("stockscores")))
+					// callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("shortvolume")))
+					// callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("stockscores")))
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("tradingview")))
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("finviz")))
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("gurufocus")))
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("marketbeat")))
