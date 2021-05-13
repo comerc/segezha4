@@ -1,5 +1,5 @@
-// https://stackoverflow.com/questions/65940103/how-to-override-the-studies-of-the-tradingview-widget
-// https://stackoverflow.com/questions/67433792/how-to-change-the-colors-on-the-tradingview-advanced-real-time-chart-widget-indi
+// TODO: https://stackoverflow.com/questions/65940103/how-to-override-the-studies-of-the-tradingview-widget
+// TODO: https://stackoverflow.com/questions/67433792/how-to-change-the-colors-on-the-tradingview-advanced-real-time-chart-widget-indi
 
 package screenshot
 
