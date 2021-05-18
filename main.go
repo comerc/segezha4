@@ -609,7 +609,10 @@ func getWhatFinvizMap() interface{} {
 }
 
 func getWhatFullMoon() interface{} {
-	return escape("🌕 #FullMoon")
+	return &tb.Photo{
+		File:    tb.FromDisk("./assets/full_moon.jpg"),
+		Caption: escape("🌕 #FullMoon"),
+	}
 }
 
 func getWhatFear() interface{} {
@@ -1001,6 +1004,6 @@ func sendToAdmins(text string) {
 
 func getWhatIntro() interface{} {
 	return &tb.Photo{
-		File: tb.FromDisk("./intro.jpg"),
+		File: tb.FromDisk("./assets/intro.jpg"),
 	}
 }
