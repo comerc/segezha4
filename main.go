@@ -379,10 +379,11 @@ func main() {
 			re := regexp.MustCompile(`(?i)(^|[^A-Z])#([A-Z]+)(\?!|\?\?|\?(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|)|!!|!)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			if len(matches) == 0 {
-				if m.Chat.Type == tb.ChatPrivate {
+				if m.Chat.Type == tb.ChatPrivate && isAdmin(m.Sender.ID) {
+					sendAboutAdminMessage(m)
+				} else {
 					send(m.Chat.ID, m.Chat.Type != tb.ChatPrivate, escape("Unknown command, please see /help"))
 				}
-				return
 			}
 			callbacks := make([]getWhat, 0)
 			executed := make([]string, 0)
@@ -1006,4 +1007,125 @@ func getWhatIntro() interface{} {
 	return &tb.Photo{
 		File: tb.FromDisk("./assets/intro.jpg"),
 	}
+}
+
+func getAdminMessageSelector(m *tb.Message) *tb.ReplyMarkup {
+	selector := &tb.ReplyMarkup{}
+	rows := make([]tb.Row, 0)
+	btnCopyAll := selector.Data("💥 Переслать всем", fmt.Sprintf("copy_all_%d", time.Now().UTC().UnixNano()))
+	b.Handle(&btnCopyAll, func(c *tb.Callback) {
+		// s := ""
+		// var totalKeys, totalValues int64
+		chatIDs := []int64{}
+		if err := db.View(func(txn *badger.Txn) error {
+			opts := badger.DefaultIteratorOptions
+			opts.PrefetchSize = 10
+			it := txn.NewIterator(opts)
+			defer it.Close()
+			for it.Rewind(); it.Valid(); it.Next() {
+				item := it.Item()
+				k := item.Key()
+				// totalKeys += 1
+				if err := item.Value(func(v []byte) error {
+					key := int64(bytesToUint64(k))
+					// val := int64(1) // int64(bytesToUint64(v))
+					// totalValues += val
+					// s = s + fmt.Sprintf("\n%d %d", key, val)
+					chatIDs = append(chatIDs, key)
+					return nil
+				}); err != nil {
+					return err
+				}
+			}
+			return nil
+		}); err != nil {
+			log.Print(err)
+		}
+		// s = s + fmt.Sprintf("\nkeys: %d values: %d", totalKeys, totalValues)
+		// sendToAdmins(s)
+		// m, err := b.EditReplyMarkup(c.Message, nil)
+		// if err != nil {
+		// 	log.Print(err)
+		// }
+		// // log.Print(m)
+		b.Delete(c.Message)
+		m2 := sendWithReplyMarkup(m.Chat.ID, escape("Выполняется..."), nil)
+		for _, chatID := range chatIDs {
+			if m.Chat.ID == chatID {
+				continue
+			}
+			sendCopy(chatID, m)
+		}
+		b.Delete(m2)
+		b.Respond(c, &tb.CallbackResponse{Text: "Готово!"})
+	})
+	go func() {
+		time.Sleep(1 * time.Minute)
+		b.Handle(&btnCopyAll, nil) // for prevent memory leak
+	}()
+	rows = append(rows, selector.Row(btnCopyAll))
+	selector.Inline(rows...)
+	return selector
+}
+
+func sendCopy(chatID int64, m *tb.Message) {
+	if _, err := b.Copy(
+		tb.ChatID(chatID),
+		m,
+		&tb.SendOptions{
+			ParseMode:             tb.ModeMarkdownV2,
+			DisableWebPagePreview: true,
+		},
+	); err != nil {
+		log.Print(err)
+	}
+}
+
+func sendWithReplyMarkup(chatID int64, what interface{}, replyMarkup *tb.ReplyMarkup) *tb.Message {
+	m, err := b.Send(
+		tb.ChatID(chatID),
+		what,
+		&tb.SendOptions{
+			ParseMode:             tb.ModeMarkdownV2,
+			DisableWebPagePreview: true,
+			ReplyMarkup:           replyMarkup,
+		},
+	)
+	if err != nil {
+		log.Print(err)
+	}
+	return m
+}
+
+func editWithReplyMarkup(m *tb.Message, what interface{}, replyMarkup *tb.ReplyMarkup) {
+	_, err := b.Edit(
+		m,
+		what,
+		&tb.SendOptions{
+			ParseMode:             tb.ModeMarkdownV2,
+			DisableWebPagePreview: true,
+			ReplyMarkup:           replyMarkup,
+		},
+	)
+	if err != nil {
+		log.Print(err)
+	}
+}
+
+const aboutAdminMessageText = `❓ Что делать с полученным сообщением \(%d\):`
+
+func sendAboutAdminMessage(m *tb.Message) {
+	const countdown = 9
+	selector := getAdminMessageSelector(m)
+	commandMessage := sendWithReplyMarkup(m.Chat.ID, fmt.Sprintf(aboutAdminMessageText, countdown), selector)
+	go func() {
+		i := countdown
+		for i > 0 {
+			time.Sleep(1 * time.Second)
+			i--
+			editWithReplyMarkup(commandMessage, fmt.Sprintf(aboutAdminMessageText, i), selector)
+		}
+		time.Sleep(1 * time.Second)
+		b.Delete(commandMessage)
+	}()
 }
