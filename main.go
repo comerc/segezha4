@@ -379,10 +379,12 @@ func main() {
 			re := regexp.MustCompile(`(?i)(^|[^A-Z])#([A-Z]+)(\?!|\?\?|\?(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|)|!!|!)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			if len(matches) == 0 {
-				if m.Chat.Type == tb.ChatPrivate && isAdmin(m.Sender.ID) {
-					sendAboutAdminMessage(m)
-				} else {
-					send(m.Chat.ID, m.Chat.Type != tb.ChatPrivate, escape("Unknown command, please see /help"))
+				if m.Chat.Type == tb.ChatPrivate {
+					if isAdmin(m.Sender.ID) {
+						sendAboutAdminMessage(m)
+					} else {
+						send(m.Chat.ID, m.Chat.Type != tb.ChatPrivate, escape("Unknown command, please see /help"))
+					}
 				}
 			}
 			callbacks := make([]getWhat, 0)
@@ -1051,13 +1053,13 @@ func getAdminMessageSelector(m *tb.Message) *tb.ReplyMarkup {
 		b.Delete(c.Message)
 		m2 := sendWithReplyMarkup(m.Chat.ID, escape("Выполняется..."), nil)
 		for _, chatID := range chatIDs {
-			if m.Chat.ID == chatID {
+			if m.Chat.ID == chatID || chatID < 0 {
 				continue
 			}
 			sendCopy(chatID, m)
 		}
-		b.Delete(m2)
 		b.Respond(c, &tb.CallbackResponse{Text: "Готово!"})
+		b.Delete(m2)
 	})
 	go func() {
 		time.Sleep(1 * time.Minute)
