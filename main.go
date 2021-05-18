@@ -22,6 +22,8 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: выкинуть tickers.json
+
 // TODO: Виджет "Профиль компании" + перевод https://ru.tradingview.com/widget/symbol-profile/
 // TODO: Виджет "Мини-график" https://ru.tradingview.com/widget/mini-chart/
 
@@ -32,8 +34,6 @@ import (
 // TODO: badger для tickers и добавлять, когда "not found"
 
 // TODO: бумажка пробила 9EMA на дневке?
-
-// TODO: /intro
 
 // TODO: нужна справка на короткие команды /mw /fv /mb /ark
 
@@ -100,10 +100,10 @@ const help = `*Commands:*
 /rates - Bonds
 /futures - Futures
 /crypto - Crypto Currencies
-/vix - $VIX (15M)
-/spy - SPY (15M)
-/index - Indexes (15M): $INX, $NASX, $DOWI
-/volume - Volumes (15M): SPY, QQQ, DOW
+/vix - $VIX (15m)
+/spy - SPY (15m)
+/index - Indexes (15m): $INX, $NASX, $DOWI
+/volume - Volumes (15m): SPY, QQQ, DOW
 
 *Inline Menu Mode:*
 @TickerInfoBot TSLA
@@ -241,6 +241,8 @@ func main() {
 			// }
 			// s = fmt.Sprintf(help, s))
 			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, escape(help))
+			time.Sleep(400 * time.Millisecond)
+			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatIntro())
 		} else if text == "/stats" && isAdmin(m.Sender.ID) {
 			s := ""
 			var totalKeys, totalValues int64
@@ -994,5 +996,11 @@ func sendToAdmins(text string) {
 		if err != nil {
 			log.Println(err)
 		}
+	}
+}
+
+func getWhatIntro() interface{} {
+	return &tb.Photo{
+		File: tb.FromDisk("./intro.jpg"),
 	}
 }
