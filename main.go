@@ -91,7 +91,8 @@ var (
 const help = `*Commands:*
 /help - this message
 /bb - Bull Or Bear
-/map - S&P 500 1 Day Performance Map
+/map - S&P500 1 Day Performance Map
+/bestday - S&P500 1 Day Average Returns 
 /fear - Fear & Greed Index
 /us - US Indexes
 /europe - Europe Indexes
@@ -301,6 +302,8 @@ func main() {
 			callbacks = append(callbacks, closeWhat("QQQ", articleCase))
 			callbacks = append(callbacks, closeWhat("DOW", articleCase))
 			sendBatch(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
+		} else if text == "/bestday" {
+			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatBestDay())
 		} else if text == "/map" {
 			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFinvizMap())
 		} else if text == "/fear" {
@@ -542,6 +545,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 						callbacks = append(callbacks, getWhatFullMoon)
 					}
 					callbacks = append(callbacks, getWhatFear)
+					callbacks = append(callbacks, getWhatBestDay)
 				}
 				if h >= 15-summer {
 					callbacks = append(callbacks, getWhatFinvizBB)
@@ -663,6 +667,25 @@ func getWhatMarketWatchIDs(tab ss.MarketWatchTab) interface{} {
 	}
 }
 
+func getWhatBestDay() interface{} {
+	path, _ := os.Getwd()
+	filePath := filepath.Join(path, "assets/bestday.html")
+	now := time.Now()
+	day := fmt.Sprintf("%02d-%02d", now.Month(), now.Day())
+	linkURL := fmt.Sprintf("file://%s?%s", filePath, day)
+	defer utils.Elapsed(linkURL)()
+	caption := escape("#bestday S&P500 1 Day Average Returns (1950-2019)")
+	screenshot := ss.MakeScreenshotForBestDay(linkURL)
+	if len(screenshot) == 0 {
+		sendToAdmins("Invalid /bestday")
+		return caption
+	}
+	return &tb.Photo{
+		File:    tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: caption,
+	}
+}
+
 func isEarnings(text string) bool {
 	re := regexp.MustCompile("#ОТЧЕТ") // TODO: #отчетность by @MarketTwits
 	return re.FindStringIndex(text) != nil
@@ -721,7 +744,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 		switch articleCase.screenshotMode {
 		case ScreenshotModeTradingView:
 			path, _ := os.Getwd()
-			filePath := filepath.Join(path, "tradingview.html")
+			filePath := filepath.Join(path, "assets/tradingview.html")
 			fileURL := fmt.Sprintf("file://%s?%s", filePath, symbol)
 			screenshot := ss.MakeScreenshotForTradingView(fileURL)
 			if len(screenshot) == 0 {
@@ -1058,6 +1081,7 @@ func getAdminMessageSelector(m *tb.Message) *tb.ReplyMarkup {
 			}
 			sendCopy(chatID, m)
 		}
+		// TODO: почему-то не показывает сообщение
 		b.Respond(c, &tb.CallbackResponse{Text: "Готово!"})
 		b.Delete(m2)
 	})

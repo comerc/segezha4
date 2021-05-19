@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	ss "github.com/comerc/segezha4/screenshot"
 	"github.com/comerc/segezha4/utils"
@@ -61,12 +62,19 @@ func _main() {
 	// linkURL := "https://finviz.com/"
 	// buf := ss.MakeScreenshotForFinvizBB(linkURL)
 
+	// path, _ := os.Getwd()
+	// path = filepath.Join(path, "assets/tradingview.html")
+	// symbol := "MU"
+	// interval := "4H"
+	// linkURL := fmt.Sprintf("file://%s?%s:%s", path, symbol, interval)
+	// buf := ss.MakeScreenshotForTradingView(linkURL)
+
 	path, _ := os.Getwd()
-	path = filepath.Join(path, "tradingview.html")
-	symbol := "MU"
-	interval := "4H"
-	linkURL := fmt.Sprintf("file://%s?%s:%s", path, symbol, interval)
-	buf := ss.MakeScreenshotForTradingView(linkURL)
+	path = filepath.Join(path, "assets/bestday.html")
+	now := time.Now()
+	day := fmt.Sprintf("%02d-%02d", now.Month(), now.Day())
+	linkURL := fmt.Sprintf("file://%s?%s", path, day)
+	buf := ss.MakeScreenshotForBestDay(linkURL)
 
 	if len(buf) == 0 {
 		log.Println("exit buf == 0")
