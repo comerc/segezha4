@@ -1,3 +1,4 @@
+// TODO: Стратегия «Три экрана Элдера» https://smart-lab.ru/blog/568328.php https://alpari.com/ru/beginner/articles/tri-ekrana-eldera/
 // TODO: https://stackoverflow.com/questions/65940103/how-to-override-the-studies-of-the-tradingview-widget
 // TODO: https://stackoverflow.com/questions/67433792/how-to-change-the-colors-on-the-tradingview-advanced-real-time-chart-widget-indi
 
