@@ -10,15 +10,16 @@ type ScreenshotMode string
 // ScreenshotMode variants
 const (
 	// ScreenshotModePage        ScreenshotMode = "Page"
-	ScreenshotModeTradingView ScreenshotMode = "TradingView"
-	ScreenshotModeImage       ScreenshotMode = "Image"
-	ScreenshotModeFinviz      ScreenshotMode = "Finviz"
-	ScreenshotModeMarketWatch ScreenshotMode = "MarketWatch"
-	ScreenshotModeMarketBeat  ScreenshotMode = "MarketBeat"
-	ScreenshotModeCathiesArk  ScreenshotMode = "CathiesArk"
-	ScreenshotModeGuruFocus   ScreenshotMode = "GuruFocus"
-	ScreenshotModeTipRanks    ScreenshotMode = "TipRanks"
-	ScreenshotModeBarChart    ScreenshotMode = "BarChart"
+	ScreenshotModeTradingView  ScreenshotMode = "TradingView"
+	ScreenshotModeTradingView2 ScreenshotMode = "TradingView2"
+	ScreenshotModeImage        ScreenshotMode = "Image"
+	ScreenshotModeFinviz       ScreenshotMode = "Finviz"
+	ScreenshotModeMarketWatch  ScreenshotMode = "MarketWatch"
+	ScreenshotModeMarketBeat   ScreenshotMode = "MarketBeat"
+	ScreenshotModeCathiesArk   ScreenshotMode = "CathiesArk"
+	ScreenshotModeGuruFocus    ScreenshotMode = "GuruFocus"
+	ScreenshotModeTipRanks     ScreenshotMode = "TipRanks"
+	ScreenshotModeBarChart     ScreenshotMode = "BarChart"
 )
 
 // ArticleCase struct
@@ -42,6 +43,10 @@ type ArticleCase struct {
 var ArticleCases = []ArticleCase{
 	{shortName: "tv", name: "tradingview", linkURL: "https://tradingview.com/symbols/%s",
 		screenshotMode: ScreenshotModeTradingView,
+	},
+	{shortName: "tv2", name: "tradingview2", linkURL: "https://tradingview.com/symbols/%s",
+		description:    "2 screens for Elder strategy",
+		screenshotMode: ScreenshotModeTradingView2,
 	},
 	{shortName: "ch", name: "chart", linkURL: "https://finviz.com/quote.ashx?t=%s",
 		description:    "Chart",

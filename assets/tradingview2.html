@@ -1,12 +1,21 @@
 <html>
-  <head><title>TradingView Widget</title></head>
+  <head><title>TradingView Widget 2</title></head>
   <body>
 <!-- TradingView Widget BEGIN -->
-<div class="tradingview-widget-container">
-  <div id="tw"></div>
+<div class="tradingview-widget-container" style="height: 1008px"> 
+  <div id="tw1" style="height:50%"></div>
+  <div id="tw2" style="height:50%"></div>
   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
   <script type="text/javascript">
-const studies = [
+const studies1 = [
+  {
+    id: 'BB@tv-basicstudies',
+  },
+  {
+    id: 'MACD@tv-basicstudies',
+  },
+]
+const studies2 = [
   {
     id: 'MAWeighted@tv-basicstudies',
     inputs: {
@@ -38,28 +47,41 @@ const studies = [
     },
   },
   {
-    id: 'RSI@tv-basicstudies',
+    id: 'StochasticRSI@tv-basicstudies',
   },
-  {
-    id: 'ACCD@tv-basicstudies',
-  },
+  // {
+  //   id: 'OBV@tv-basicstudies',
+  // },
 ]
 const queryString = window.location.search
 const s = queryString.substr(1)
 const a = s.split(':')
 const symbol = a[0]
-const interval = a[1] ?? 'D'
-const tw = new TradingView.widget({
+const interval1 = a[1] ?? 'W'
+const interval2 = a[2] ?? 'D'
+const tw1 = new TradingView.widget({
   symbol,
-  interval,
+  interval: interval1,
   hide_top_toolbar: true,
   theme: 'white',
   style: 1,
   timezone: 'Etc/UTC',
   locale: 'en',
   autosize: true,
-  studies,
-  container_id: 'tw',
+  studies: studies1,
+  container_id: 'tw1',
+})
+const tw2 = new TradingView.widget({
+  symbol,
+  interval: interval2,
+  hide_top_toolbar: true,
+  theme: 'white',
+  style: 1,
+  timezone: 'Etc/UTC',
+  locale: 'en',
+  autosize: true,
+  studies: studies2,
+  container_id: 'tw2',
 })
   </script>
 </div>

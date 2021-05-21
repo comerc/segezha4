@@ -379,7 +379,7 @@ func main() {
 			send(m.Chat.ID, m.Chat.Type != tb.ChatPrivate, getWhat())
 		} else {
 			// simple command mode
-			re := regexp.MustCompile(`(?i)(^|[^A-Z])#([A-Z]+)(\?!|\?\?|\?(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|)|!!|!)`)
+			re := regexp.MustCompile(`(?i)(^|[^A-Z])#([A-Z]+)(\?!|\?\?(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|):(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|)|\?\?(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|)|\?(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|)|!!|!)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			if len(matches) == 0 {
 				if m.Chat.Type == tb.ChatPrivate {
@@ -395,16 +395,54 @@ func main() {
 			for _, match := range matches {
 				symbol := match[2]
 				mode := match[3]
-				interval := match[4]
-				if interval != "" {
-					mode = "?" // fix "?D"
-					interval = strings.ToUpper(interval)
-					if interval != "D" {
-						symbol += ":" + interval
+				if strings.HasPrefix(mode, "??") {
+					intervals := mode[2:]
+					if intervals == "" {
+						symbol += " W:D"
+					} else {
+						intervals = strings.ToUpper(intervals)
+						if strings.Contains(intervals, ":") {
+							a := strings.Split(intervals, ":")
+							interval1 := "W"
+							if a[0] != "" {
+								interval1 = a[0]
+							}
+							symbol += " " + interval1
+							interval2 := "D"
+							if len(a) > 1 {
+								interval2 = a[1]
+							}
+							symbol += ":" + interval2
+						} else {
+							// interval2 := intervals
+							// interval1 := map[string]string{
+							// 	"1":  "5",
+							// 	"3":  "15",
+							// 	"5":  "30",
+							// 	"15": "2H",
+							// 	"30": "3H",
+							// 	"45": "D",
+							// 	"1H": "D",
+							// 	"2H": "D",
+							// 	"3H": "D",
+							// 	"4H": "D",
+							// 	"D":  "W",
+							// 	"W":  "M",
+							// 	"M":  "M",
+							// }[interval2]
+							// symbol += " " + interval1 + ":" + interval2
+							symbol += " " + intervals + ":" + intervals
+						}
 					}
-				}
-				if mode == "??" {
-					symbol += ":15"
+					mode = "??"
+				} else if strings.HasPrefix(mode, "?!") {
+					// workaround
+				} else if strings.HasPrefix(mode, "?") {
+					interval := mode[1:]
+					if interval != "" && interval != "D" {
+						symbol += " " + strings.ToUpper(interval)
+					}
+					mode = "?"
 				}
 				if utils.Contains(executed, strings.ToUpper(symbol)+mode) {
 					continue
@@ -414,13 +452,13 @@ func main() {
 				case "?!":
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("marketwatch")))
 				case "??":
-					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("tradingview")))
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("tradingview2")))
 				case "?":
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("tradingview")))
 				case "!!":
 					// callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("shortvolume")))
 					// callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("stockscores")))
-					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("tradingview")))
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("tradingview2")))
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("finviz")))
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("gurufocus")))
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("marketbeat")))
@@ -729,7 +767,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 		// TODO: пополнять базу тикеров и индексов для inline mode
 		var ticker *Ticker
 		if tag == "#" {
-			a := strings.Split(symbol, ":")
+			a := strings.Split(symbol, " ")
 			pureSymbol := a[0]
 			ticker = GetExactTicker(pureSymbol)
 			if ticker == nil {
@@ -745,8 +783,25 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 		case ScreenshotModeTradingView:
 			path, _ := os.Getwd()
 			filePath := filepath.Join(path, "assets/tradingview.html")
-			fileURL := fmt.Sprintf("file://%s?%s", filePath, symbol)
+			fileURL := fmt.Sprintf("file://%s?%s", filePath, strings.Replace(symbol, " ", ":", -1))
 			screenshot := ss.MakeScreenshotForTradingView(fileURL)
+			if len(screenshot) == 0 {
+				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+			} else {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
+				}
+			}
+		case ScreenshotModeTradingView2:
+			a := strings.Split(symbol, " ")
+			if len(a) == 1 {
+				symbol += " W:D"
+			}
+			path, _ := os.Getwd()
+			filePath := filepath.Join(path, "assets/tradingview2.html")
+			fileURL := fmt.Sprintf("file://%s?%s", filePath, strings.Replace(symbol, " ", ":", -1))
+			screenshot := ss.MakeScreenshotForTradingView2(fileURL)
 			if len(screenshot) == 0 {
 				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
 			} else {
@@ -1076,7 +1131,7 @@ func getAdminMessageSelector(m *tb.Message) *tb.ReplyMarkup {
 		b.Delete(c.Message)
 		m2 := sendWithReplyMarkup(m.Chat.ID, escape("Выполняется..."), nil)
 		for _, chatID := range chatIDs {
-			if m.Chat.ID == chatID || chatID < 0 {
+			if m.Chat.ID == chatID {
 				continue
 			}
 			sendCopy(chatID, m)
