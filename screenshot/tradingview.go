@@ -1,3 +1,4 @@
+// TODO: хостить для перехода на интерактивную версию (как и tradingview2) ???
 // TODO: https://stackoverflow.com/questions/65940103/how-to-override-the-studies-of-the-tradingview-widget
 // TODO: https://stackoverflow.com/questions/67433792/how-to-change-the-colors-on-the-tradingview-advanced-real-time-chart-widget-indi
 
