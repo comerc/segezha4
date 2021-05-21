@@ -458,7 +458,7 @@ func main() {
 				case "!!":
 					// callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("shortvolume")))
 					// callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("stockscores")))
-					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("tradingview2")))
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("tradingview")))
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("finviz")))
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("gurufocus")))
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("marketbeat")))
