@@ -1128,16 +1128,15 @@ func getAdminMessageSelector(m *tb.Message) *tb.ReplyMarkup {
 		// 	log.Print(err)
 		// }
 		// // log.Print(m)
+		b.Respond(c, &tb.CallbackResponse{})
 		b.Delete(c.Message)
-		m2 := sendWithReplyMarkup(m.Chat.ID, escape("Выполняется..."), nil)
+		m2 := sendWithReplyMarkup(m.Chat.ID, escape("Выполняется пересылка..."), nil)
 		for _, chatID := range chatIDs {
 			if m.Chat.ID == chatID {
 				continue
 			}
 			sendCopy(chatID, m)
 		}
-		// TODO: почему-то не показывает сообщение
-		b.Respond(c, &tb.CallbackResponse{Text: "Готово!"})
 		b.Delete(m2)
 	})
 	go func() {
