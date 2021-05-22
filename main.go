@@ -381,7 +381,7 @@ func main() {
 			send(m.Chat.ID, m.Chat.Type != tb.ChatPrivate, getWhat())
 		} else {
 			// simple command mode
-			re := regexp.MustCompile(`(?i)(^|[^A-Z])#([A-Z]+)(\?!|\?\?(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|):(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|)|\?\?(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|)|\?(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|)|!!|!)`)
+			re := regexp.MustCompile(`(?i)(^|[^A-Z])#([A-Z]+)(!\?|\?!|\?\?(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|):(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|)|\?\?(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|)|\?(M|W|D|4H|3H|2H|1H|45|30|15|5|3|1|)|!!|!)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			if len(matches) == 0 {
 				if m.Chat.Type == tb.ChatPrivate {
@@ -451,6 +451,7 @@ func main() {
 				}
 				executed = append(executed, strings.ToUpper(symbol)+mode)
 				switch mode {
+				case "!?":
 				case "?!":
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("marketwatch")))
 				case "??":
