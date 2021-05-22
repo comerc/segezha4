@@ -22,6 +22,8 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: /ch - добавить название бумажки в подпись, т.к. нет на картинке
+
 // TODO: выкинуть tickers.json
 
 // TODO: Виджет "Профиль компании" + перевод https://ru.tradingview.com/widget/symbol-profile/
@@ -553,7 +555,11 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 		if w == 6 || w == 0 {
 			continue
 		}
+		month := utc.Month()
 		d := utc.Day()
+		if month == 1 && d == 1 || month == 7 && d == 4 || month == 25 && d == 25 {
+			continue
+		}
 		if d == pauseDay {
 			continue
 		} else if pauseDay > -1 {
@@ -584,32 +590,36 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 					}
 					callbacks = append(callbacks, getWhatFear)
 					callbacks = append(callbacks, getWhatBestDay)
+					callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabAsia))
+					callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabEurope))
+					callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabUS))
+					callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabRates))
+					callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabCrypto))
 				}
 				if h >= 15-summer {
 					callbacks = append(callbacks, getWhatFinvizBB)
 					callbacks = append(callbacks, getWhatFinvizMap)
 				}
 				callbacks = append(callbacks, closeWhat("$VIX", GetExactArticleCase("barchart")))
-				callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabUS))
-				if h >= 8 && h <= 17 {
-					callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabEurope))
-				}
-				callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabRates))
+				// callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabUS))
+				// if h >= 8 && h <= 17 {
+				// 	callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabEurope))
+				// }
+				// callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabRates))
 			}
 		} else if m == 0 && s == 15 {
-			if h >= 8 && h <= 17 {
-				callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabEurope))
-			}
 			// SPB работает с 7 утра (MSK)
 			if h >= 4 && h <= 9 {
 				callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabAsia))
 			}
+			if h >= 8 && h <= 17 {
+				callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabEurope))
+			}
 			if h >= 4 && h <= 14-summer {
-				callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabRates))
 				callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabFutures))
+				callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabCrypto))
 			}
 			// callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabFX))
-			// callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabCrypto))
 		}
 		sendBatch(chatID, false, callbacks)
 
