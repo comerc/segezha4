@@ -451,8 +451,7 @@ func main() {
 				}
 				executed = append(executed, strings.ToUpper(symbol)+mode)
 				switch mode {
-				case "!?":
-				case "?!":
+				case "!?", "?!":
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("marketwatch")))
 				case "??":
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("tradingview2")))
