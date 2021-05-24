@@ -22,6 +22,8 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: https://www.highshortinterest.com/
+
 // TODO: /ch - добавить название бумажки в подпись, т.к. нет на картинке
 
 // TODO: выкинуть tickers.json
@@ -31,13 +33,9 @@ import (
 
 // TODO: watch list - Forward P/E < 15, PEG < 1, EPS growth next year > 25%
 
-// TODO: #AMD!? выдавать "Unknown command, please see /help"
-
 // TODO: badger для tickers и добавлять, когда "not found"
 
 // TODO: бумажка пробила 9EMA на дневке?
-
-// TODO: нужна справка на короткие команды /mw /fv /mb /ark
 
 // TODO: https://stockcharts.com/h-sc/ui?s=$CPCE https://school.stockcharts.com/doku.php?id=market_indicators:put_call_ratio
 
@@ -1104,40 +1102,22 @@ func getAdminMessageSelector(m *tb.Message) *tb.ReplyMarkup {
 	rows := make([]tb.Row, 0)
 	btnCopyAll := selector.Data("💥 Переслать всем", fmt.Sprintf("copy_all_%d", time.Now().UTC().UnixNano()))
 	b.Handle(&btnCopyAll, func(c *tb.Callback) {
-		// s := ""
-		// var totalKeys, totalValues int64
 		chatIDs := []int64{}
 		if err := db.View(func(txn *badger.Txn) error {
 			opts := badger.DefaultIteratorOptions
-			opts.PrefetchSize = 10
+			opts.PrefetchValues = false
 			it := txn.NewIterator(opts)
 			defer it.Close()
 			for it.Rewind(); it.Valid(); it.Next() {
 				item := it.Item()
 				k := item.Key()
-				// totalKeys += 1
-				if err := item.Value(func(v []byte) error {
-					key := int64(bytesToUint64(k))
-					// val := int64(1) // int64(bytesToUint64(v))
-					// totalValues += val
-					// s = s + fmt.Sprintf("\n%d %d", key, val)
-					chatIDs = append(chatIDs, key)
-					return nil
-				}); err != nil {
-					return err
-				}
+				key := int64(bytesToUint64(k))
+				chatIDs = append(chatIDs, key)
 			}
 			return nil
 		}); err != nil {
 			log.Print(err)
 		}
-		// s = s + fmt.Sprintf("\nkeys: %d values: %d", totalKeys, totalValues)
-		// sendToAdmins(s)
-		// m, err := b.EditReplyMarkup(c.Message, nil)
-		// if err != nil {
-		// 	log.Print(err)
-		// }
-		// // log.Print(m)
 		b.Respond(c, &tb.CallbackResponse{})
 		b.Delete(c.Message)
 		m2 := sendWithReplyMarkup(m.Chat.ID, escape("Выполняется пересылка..."), nil)
