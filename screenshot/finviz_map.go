@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/chromedp/chromedp"
-	"github.com/chromedp/chromedp/device"
 	"github.com/comerc/segezha4/utils"
 )
 
@@ -14,6 +13,8 @@ func MakeScreenshotForFinvizMap(linkURL string) []byte {
 	o := append(chromedp.DefaultExecAllocatorOptions[:],
 		// chromedp.ProxyServer("socks5://138.59.207.118:9076"),
 		chromedp.Flag("blink-settings", "imagesEnabled=false"),
+		chromedp.UserAgent("Mozilla/5.0"),
+		chromedp.WindowSize(1600, 1200),
 	)
 	ctx, cancel := chromedp.NewExecAllocator(context.Background(), o...)
 	defer cancel()
@@ -37,13 +38,14 @@ func MakeScreenshotForFinvizMap(linkURL string) []byte {
 	var buf []byte
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
-			chromedp.Emulate(device.KindleFireHDXlandscape),
+			// chromedp.Emulate(device.KindleFireHDXlandscape),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body"),
 			chromedp.SetAttributeValue(selHeader, "style", "display:none"),
 			chromedp.SetAttributeValue(selNavbar, "style", "display:none"),
 			chromedp.SetAttributeValue(selView, "style", "display:none"),
-			chromedp.SetAttributeValue(selChart, "style", "margin:6px 0 0 2px"),
+			// chromedp.SetAttributeValue(selChart, "style", "margin:2px 0 0 2px; width: 788px;height: 438px;"),
+			chromedp.SetAttributeValue(selChart, "style", "margin:2px 1px 1px 2px; width: 1211px; height: 672px;"),
 			chromedp.SetAttributeValue(selFooter, "style", "display:none"),
 			chromedp.Screenshot(selChart, &buf, chromedp.NodeVisible),
 		}

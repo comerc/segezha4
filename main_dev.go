@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
-	"path/filepath"
 
 	ss "github.com/comerc/segezha4/screenshot"
 	"github.com/comerc/segezha4/utils"
@@ -55,8 +52,8 @@ func _main() {
 	// linkURL := "https://cathiesark.com/ark-combined-holdings-of-flir"
 	// buf := ss.MakeScreenshotForCathiesArk(linkURL)
 
-	// linkURL := "https://finviz.com/map.ashx?t=sec"
-	// buf := ss.MakeScreenshotForFinvizMap(linkURL)
+	linkURL := "https://finviz.com/map.ashx?t=sec"
+	buf := ss.MakeScreenshotForFinvizMap(linkURL)
 
 	// linkURL := "https://finviz.com/"
 	// buf := ss.MakeScreenshotForFinvizBB(linkURL)
@@ -68,13 +65,13 @@ func _main() {
 	// linkURL := fmt.Sprintf("file://%s?%s:%s", path, symbol, interval)
 	// buf := ss.MakeScreenshotForTradingView(linkURL)
 
-	path, _ := os.Getwd()
-	path = filepath.Join(path, "assets/tradingview2.html")
-	symbol := "MU"
-	interval1 := "4H"
-	interval2 := "1H"
-	linkURL := fmt.Sprintf("file://%s?%s:%s:%s", path, symbol, interval1, interval2)
-	buf := ss.MakeScreenshotForTradingView2(linkURL)
+	// path, _ := os.Getwd()
+	// path = filepath.Join(path, "assets/tradingview2.html")
+	// symbol := "MU"
+	// interval1 := "4H"
+	// interval2 := "1H"
+	// linkURL := fmt.Sprintf("file://%s?%s:%s:%s", path, symbol, interval1, interval2)
+	// buf := ss.MakeScreenshotForTradingView2(linkURL)
 
 	// path, _ := os.Getwd()
 	// path = filepath.Join(path, "assets/bestday.html")
