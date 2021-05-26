@@ -149,7 +149,8 @@ func main() {
 		// URL:    "https://api.bots.mn/telegram/",
 		Token: token,
 		// Poller: webhook,
-		Poller: &tb.LongPoller{Timeout: 10 * time.Minute},
+		Poller:    &tb.LongPoller{Timeout: 10 * time.Minute},
+		ParseMode: tb.ModeMarkdownV2,
 	}
 	{
 		var err error
@@ -1016,7 +1017,7 @@ func send(chatID int64, isPrivateChat bool, what interface{}) {
 		tb.ChatID(chatID),
 		what,
 		&tb.SendOptions{
-			ParseMode:             tb.ModeMarkdownV2,
+			// ParseMode:             tb.ModeMarkdownV2,
 			DisableWebPagePreview: true,
 		},
 	)
@@ -1143,7 +1144,7 @@ func sendCopy(chatID int64, m *tb.Message) {
 		tb.ChatID(chatID),
 		m,
 		&tb.SendOptions{
-			ParseMode:             tb.ModeMarkdownV2,
+			// ParseMode:             tb.ModeMarkdownV2,
 			DisableWebPagePreview: true,
 		},
 	); err != nil {
@@ -1156,7 +1157,7 @@ func sendWithReplyMarkup(chatID int64, what interface{}, replyMarkup *tb.ReplyMa
 		tb.ChatID(chatID),
 		what,
 		&tb.SendOptions{
-			ParseMode:             tb.ModeMarkdownV2,
+			// ParseMode:             tb.ModeMarkdownV2,
 			DisableWebPagePreview: true,
 			ReplyMarkup:           replyMarkup,
 		},
@@ -1172,7 +1173,7 @@ func editWithReplyMarkup(m *tb.Message, what interface{}, replyMarkup *tb.ReplyM
 		m,
 		what,
 		&tb.SendOptions{
-			ParseMode:             tb.ModeMarkdownV2,
+			// ParseMode:             tb.ModeMarkdownV2,
 			DisableWebPagePreview: true,
 			ReplyMarkup:           replyMarkup,
 		},
