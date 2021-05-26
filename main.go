@@ -1084,7 +1084,11 @@ func sendToAdmins(text string) {
 	for _, ID := range IDs {
 		_, err := b.Send(
 			tb.ChatID(utils.ConvertToInt(ID)),
-			text,
+			escape(text),
+			&tb.SendOptions{
+				// ParseMode:             tb.ModeMarkdownV2,
+				DisableWebPagePreview: true,
+			},
 		)
 		if err != nil {
 			log.Println(err)
