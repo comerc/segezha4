@@ -556,7 +556,11 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 		}
 		month := utc.Month()
 		d := utc.Day()
-		if month == 1 && d == 1 || month == 7 && d == 4 || month == 25 && d == 25 {
+		isNewYear := month == 1 && d == 1
+		isIndependenceDay := month == 7 && d == 4
+		isChristmas := month == 12 && d == 25
+		isMemorialDay := month == 5 && d > 24 && w == 1
+		if isNewYear || isIndependenceDay || isChristmas || isMemorialDay {
 			continue
 		}
 		if d == pauseDay {
