@@ -22,6 +22,8 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: Можно еще из барчарт парсить интересные графики, например, что их та рекомендует. У них еще есть таблица с индикаторами и комментом: покупать продавать
+
 // TODO: https://www.highshortinterest.com/
 
 // TODO: /ch - добавить название бумажки в подпись, т.к. нет на картинке
@@ -341,14 +343,12 @@ func main() {
 				callbacks = append(callbacks, closeWhat(symbol, articleCase))
 			}
 			sendBatch(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
-		} else if isARKOrWatchList(text) {
+		} else if isARK(text) || isWatchList(text) || isInsiders(text) {
 			re := regexp.MustCompile(`(?i)(^|[^A-Z])#([A-Z]+)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			executed := make([]string, 0)
 			executed = append(executed, "ARK")
-			if m.Chat.Username == "usamarke1" {
-				executed = append(executed, "WATCH") // for #Watch_list
-			}
+			executed = append(executed, "WATCH") // for #Watch_list
 			articleCase := GetExactArticleCase("finviz")
 			callbacks := make([]getWhat, 0)
 			for _, match := range matches {
@@ -738,13 +738,24 @@ func isEarnings(text string) bool {
 	return re.FindStringIndex(text) != nil
 }
 
-func isARKOrWatchList(text string) bool {
-	re := regexp.MustCompile("#ARK Trading Desk|#Watch_list")
+func isARK(text string) bool {
+	re := regexp.MustCompile("#ARK Trading Desk")
+	return re.FindStringIndex(text) != nil
+}
+
+func isWatchList(text string) bool {
+	re := regexp.MustCompile("#Watch_list")
+	return re.FindStringIndex(text) != nil
+}
+
+func isInsiders(text string) bool {
+	// United States Flag + Green Square
+	re := regexp.MustCompile(`\x{1F1F8} \x{1F7E9}`)
 	return re.FindStringIndex(text) != nil
 }
 
 func isIdeas(text string) bool {
-	re := regexp.MustCompile("(?i)#Идеи_покупок|#ИдеиПокупок|#ИнвестИдея")
+	re := regexp.MustCompile("(?i)#Идеи_покупок|#ИнвестИдея")
 	return re.FindStringIndex(text) != nil
 }
 
