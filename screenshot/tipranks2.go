@@ -49,7 +49,7 @@ func MakeScreenshotForTipRanks2(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	const average = 10
+	const average = 11
 	ctx2, cancel2 := context.WithTimeout(ctx1, utils.GetTimeout(average))
 	defer cancel2()
 	selArticle := "body > #app > div > div > div:nth-child(2) > article"

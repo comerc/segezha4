@@ -27,7 +27,7 @@ func MakeScreenshotForMarketWatch(linkURL string) []byte {
 		log.Println(err)
 		return nil
 	}
-	const average = 15
+	const average = 16
 
 	ctx2, cancel2 := context.WithTimeout(ctx1, utils.GetTimeout(average))
 	defer cancel2()
