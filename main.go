@@ -22,6 +22,12 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: watermark для /mw
+
+// TODO: информер с текстом оператора
+
+// TODO: dsc* >> dst*
+
 // TODO: Можно еще из барчарт парсить интересные графики, например, что их та рекомендует. У них еще есть таблица с индикаторами и комментом: покупать продавать
 
 // TODO: https://www.highshortinterest.com/
@@ -114,6 +120,9 @@ const help = `*Commands:*
 *Simple (Batch) Mode:*
 #TSLA! #TSLA? #TSLA?? #TSLA?! #TSLA!!
 `
+
+// TODO: добавить в intro
+// const about = "Визуализация данных - наше всё. Кейсы применения: обмен идеями по торговым моментам, сравнение бумажек по одинаковым информерам, принятие решения о сделке по срезу всех информеров на одной бумажке, дополненная реальность для торговых сигналов, периодичная публикация информеров о состоянии индексов, динамика бумажек в портфеле. И тд и тп."
 
 func main() {
 	log.SetFlags(log.LUTC | log.Ldate | log.Ltime | log.Lshortfile)
@@ -821,6 +830,8 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			a := strings.Split(symbol, " ")
 			if len(a) == 1 {
 				symbol += " W:D"
+			} else {
+				linkURL = strings.Split(linkURL, " ")[0]
 			}
 			path, _ := os.Getwd()
 			filePath := filepath.Join(path, "assets/tradingview2.html")
