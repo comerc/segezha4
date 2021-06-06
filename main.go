@@ -26,8 +26,6 @@ import (
 
 // TODO: информер с текстом оператора
 
-// TODO: dsc* >> dst*
-
 // TODO: Можно еще из барчарт парсить интересные графики, например, что их та рекомендует. У них еще есть таблица с индикаторами и комментом: покупать продавать
 
 // TODO: https://www.highshortinterest.com/
@@ -919,8 +917,8 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 				return "total", "X"
 			}()
 			srcURL := "https://www.barchart.com/stocks/quotes/%s/technical-chart%s?plot=CANDLE&volume=%s&data=I:15&density=%[4]s&pricesOn=0&asPctChange=0&logscale=0&im=5&indicators=EXPMA(100);EXPMA(50);EXPMA(20);EXPMA(200);WMA(9);EXPMA(500)&sym=%[1]s&grid=1&height=500&studyheight=200"
-			dscURL := fmt.Sprintf(srcURL, symbol, "/fullscreen", volume, height)
-			screenshot := ss.MakeScreenshotForBarChart(dscURL)
+			dstURL := fmt.Sprintf(srcURL, symbol, "/fullscreen", volume, height)
+			screenshot := ss.MakeScreenshotForBarChart(dstURL)
 			if len(screenshot) == 0 {
 				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
 			} else {
