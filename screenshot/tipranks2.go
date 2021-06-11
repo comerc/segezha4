@@ -140,14 +140,15 @@ func hidePopup2(ctx context.Context, sel string, isPopup *bool) error {
 }
 
 func hideOverlay2(ctx context.Context, isOverlay *bool) error {
+	const classList = `document.querySelector("#tr-stock-page-content").classList`
 	var evaluateResult []byte
-	if err := chromedp.Evaluate(`document.querySelector("#tr-stock-page-content").classList.contains("overlay")`, &evaluateResult).Do(ctx); err != nil {
+	if err := chromedp.Evaluate(classList+`.contains("overlay")`, &evaluateResult).Do(ctx); err != nil {
 		return err
 	}
 	if string(evaluateResult) == "false" {
 		return nil
 	}
-	if err := chromedp.Evaluate(`document.querySelector("#tr-stock-page-content").classList.remove("overlay")`, &evaluateResult).Do(ctx); err != nil {
+	if err := chromedp.Evaluate(classList+`.remove("overlay")`, &evaluateResult).Do(ctx); err != nil {
 		return err
 	}
 	*isOverlay = true
