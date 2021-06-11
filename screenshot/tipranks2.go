@@ -108,6 +108,10 @@ func screenshotWithoutPopups2(sel string, buf *[]byte) func(context.Context) err
 		if isPopup1 || isPopup2 {
 			return fn(ctx)
 		}
+		var evaluateResult []byte
+		if err := chromedp.Evaluate(`document.querySelector("#tr-stock-page-content").classList.remove("overlay")`, &evaluateResult).Do(ctx); err != nil {
+			return err
+		}
 		return nil
 	}
 	return fn
