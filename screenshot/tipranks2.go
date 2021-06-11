@@ -52,24 +52,20 @@ func MakeScreenshotForTipRanks2(linkURL string) []byte {
 	const average = 11
 	ctx2, cancel2 := context.WithTimeout(ctx1, utils.GetTimeout(average))
 	defer cancel2()
-	selArticle := "body > #app > div > div > div:nth-child(2) > article"
-	sel1 := "body div.client-components-stock-research-smart-score-style__rank"
-	sel2 := "body div.client-components-stock-research-smart-score-style__factors"
+	selHeader := "#root > div:nth-child(2) > div.shadowheader.ipad_shadownone"
+	sel1 := "#tr-stock-page-content > div.maxW1200.grow1.flexc__.flexc__.displayflex > div.minW80.z1.flexr__f.maxW1200.mobile_maxWparent > div.tr-box-ui.flexc__.w12.displayflex.minHauto.z0.mb7.mobile_px0.mobile_pr0.mobile_pl0.mobile_w12 > div.flexc__.mt3.bgwhite.displayflex.border1.borderColorwhite-8.shadow1.positionrelative.grow1 > div.w12.displayflex.positionrelative.grow1.ipadpro_pl0.ipadpro_pr0.desktop_flexc__ > div > div.bgwhite.flexcb_.mt0.displayflex.desktop_pl4 > div.flexccc.w12.displayflex > div"
+	sel2 := "#tr-stock-page-content > div.maxW1200.grow1.flexc__.flexc__.displayflex > div.minW80.z1.flexr__f.maxW1200.mobile_maxWparent > div.tr-box-ui.flexc__.w12.displayflex.minHauto.z0.mb7.mobile_px0.mobile_pr0.mobile_pl0.mobile_w12 > div.flexc__.mt3.bgwhite.displayflex.border1.borderColorwhite-8.shadow1.positionrelative.grow1 > div.w12.displayflex.positionrelative.grow1.ipadpro_pl0.ipadpro_pr0.desktop_flexc__ > div > div.bgwhite.flexcb_.mt0.displayflex.grow1.bl1_solid.borderColorgray.desktop_ml0.desktop_mb0.desktop_bordernone > div.pt4.pl3.grow1.flexr_bf"
 	var buf1, buf2 []byte
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
-			chromedp.Emulate(device.IPadlandscape),
+			chromedp.Emulate(device.KindleFireHDXlandscape),
 			chromedp.Navigate(linkURL),
-			chromedp.WaitReady("body > #app "),
+			chromedp.WaitReady("body > #root "),
 			chromedp.Sleep(4 * time.Second),
-			chromedp.SetAttributeValue("body > #app > div > div > div.tr-app", "style", "display:none"),
-			chromedp.SetAttributeValue(selArticle+" > div.client-components-stock-research-tabbed-style__header", "style", "display:none"),
-			chromedp.SetAttributeValue(selArticle+" div.client-components-stock-research-tabbed-style__pageButtons", "style", "display:none"),
-			chromedp.SetAttributeValue(selArticle+" header.client-components-stock-research-smart-score-style__pageHeader", "style", "display:none"),
+			chromedp.SetAttributeValue(selHeader, "style", "display:none"),
 			chromedp.SetAttributeValue(sel1, "style", "margin: 25px 14px"),
 			chromedp.ActionFunc(screenshotWithoutPopups2(sel1, &buf1)),
-			chromedp.SetAttributeValue(selArticle+" section.client-components-stock-research-smart-score-style__topSection", "style", "display:none"),
-			chromedp.SetAttributeValue(sel2, "style", "margin: 0 14px 0"),
+			chromedp.SetAttributeValue(sel2, "style", "margin: 0"),
 			chromedp.ActionFunc(screenshotWithoutPopups2(sel2, &buf2)),
 		}
 	}()); err != nil {
