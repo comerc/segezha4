@@ -98,19 +98,18 @@ func screenshotWithoutPopups2(sel string, buf *[]byte) func(context.Context) err
 		if err := chromedp.Screenshot(sel, buf, chromedp.NodeVisible).Do(ctx); err != nil {
 			return err
 		}
-		var isPopup1, isPopup2 bool
+		var isPopup1, isPopup2, isOverlay bool
 		if err := hidePopup2(ctx, "body #gtm_popup_blocker_iframe", &isPopup1); err != nil {
 			return err
 		}
 		if err := hidePopup2(ctx, "body > #popup-ios-modal-v4", &isPopup2); err != nil {
 			return err
 		}
-		if isPopup1 || isPopup2 {
-			return fn(ctx)
-		}
-		var evaluateResult []byte
-		if err := chromedp.Evaluate(`document.querySelector("#tr-stock-page-content").classList.remove("overlay")`, &evaluateResult).Do(ctx); err != nil {
+		if err := hideOverlay2(ctx, &isOverlay); err != nil {
 			return err
+		}
+		if isPopup1 || isPopup2 || isOverlay {
+			return fn(ctx)
 		}
 		return nil
 	}
@@ -137,6 +136,21 @@ func hidePopup2(ctx context.Context, sel string, isPopup *bool) error {
 		return err
 	}
 	*isPopup = true
+	return nil
+}
+
+func hideOverlay2(ctx context.Context, isOverlay *bool) error {
+	var evaluateResult []byte
+	if err := chromedp.Evaluate(`document.querySelector("#tr-stock-page-content").classList.contains("overlay")`, &evaluateResult).Do(ctx); err != nil {
+		return err
+	}
+	if string(evaluateResult) == "false" {
+		return nil
+	}
+	if err := chromedp.Evaluate(`document.querySelector("#tr-stock-page-content").classList.remove("overlay")`, &evaluateResult).Do(ctx); err != nil {
+		return err
+	}
+	*isOverlay = true
 	return nil
 }
 
