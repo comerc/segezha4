@@ -22,9 +22,9 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// TODO: бот должен редактировать сообщения отчётов с периодическим обновлением в течении 15 минут?
+// TODO: бот должен редактировать сообщения отчётов с периодическим обновлением в течении 15 минут? (реализуемо через юзер-бот)
 
-// TODO: бот должен редактировать сообщения с зелёными кружочками, а не надеяться на задержку в пересылке
+// TODO: бот должен редактировать сообщения с зелёными кружочками, а не надеяться на задержку в пересылке (реализуемо через юзер-бот)
 
 // TODO: настраиваемые кнопки для основных команд (hotkeys)
 
@@ -96,8 +96,13 @@ import (
 // TODO: выборка с графиками https://finviz.com/screener.ashx?v=212&t=ZM,BA,MU,MS,GE,AA
 
 var (
-	db *badger.DB
-	b  *tb.Bot
+	db       *badger.DB
+	b        *tb.Bot
+	mainMenu = &tb.ReplyMarkup{ResizeReplyKeyboard: true}
+	btnBB    = mainMenu.Text("/bb")
+	btnMap   = mainMenu.Text("/map")
+	btnFear  = mainMenu.Text("/fear")
+	btnHelp  = mainMenu.Text("/help")
 )
 
 const help = `*Commands:*
@@ -127,6 +132,11 @@ const help = `*Commands:*
 
 // TODO: добавить в intro
 // const about = "Визуализация данных - наше всё. Кейсы применения: обмен идеями по торговым моментам, сравнение бумажек по одинаковым информерам, принятие решения о сделке по срезу всех информеров на одной бумажке, дополненная реальность для торговых сигналов, периодичная публикация информеров о состоянии индексов, динамика бумажек в портфеле. И тд и тп."
+
+func init() {
+	rows := []tb.Row{mainMenu.Row(btnBB, btnMap, btnFear, btnHelp)}
+	mainMenu.Reply(rows...)
+}
 
 func main() {
 	log.SetFlags(log.LUTC | log.Ldate | log.Ltime | log.Lshortfile)
@@ -225,6 +235,10 @@ func main() {
 			log.Println(err)
 		}
 	})
+	b.Handle(&btnBB, handleBB)
+	b.Handle(&btnMap, handleMap)
+	b.Handle(&btnFear, handleFear)
+	b.Handle(&btnHelp, handleHelp)
 	messageHandler := func(m *tb.Message) {
 		log.Println("****")
 		log.Println("LastEdit:", m.LastEdit)
@@ -249,17 +263,7 @@ func main() {
 			}
 		}
 		if text == "/start" || text == "/help" {
-			if !m.Private() {
-				return
-			}
-			// s := ""
-			// for _, articleCase := range ArticleCases {
-			// 	s = s + fmt.Sprintf("\n/%s TSLA - %s", articleCase.shortName, articleCase.name)
-			// }
-			// s = fmt.Sprintf(help, s))
-			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, escape(help))
-			time.Sleep(400 * time.Millisecond)
-			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatIntro())
+			handleHelp(m)
 		} else if text == "/stats" && isAdmin(m.Sender.ID) {
 			s := ""
 			var totalKeys, totalValues int64
@@ -297,7 +301,7 @@ func main() {
 			pauseDay = -1
 			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, "reset")
 		} else if text == "/bb" {
-			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFinvizBB())
+			handleBB(m)
 		} else if text == "/vix" {
 			getWhat := closeWhat("$VIX", GetExactArticleCase("barchart"))
 			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhat())
@@ -321,9 +325,9 @@ func main() {
 		} else if text == "/bestday" {
 			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatBestDay())
 		} else if text == "/map" {
-			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFinvizMap())
+			handleMap(m)
 		} else if text == "/fear" {
-			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFear())
+			handleFear(m)
 		} else if articleCase := hasArticleCase(text); articleCase != nil {
 			re := regexp.MustCompile(",|[ ]+")
 			payload := re.ReplaceAllString(strings.Trim(m.Payload, " "), " ")
@@ -1031,8 +1035,8 @@ var lastSendByGroup = make(map[int64]time.Time)
 
 const pause = 3 * time.Second
 
-func send(chatID int64, isPrivateChat bool, what interface{}) {
-	if isPrivateChat {
+func send(chatID int64, withIncrementPrivateChat bool, what interface{}, options ...interface{}) {
+	if withIncrementPrivateChat {
 		increment(chatID)
 	} else {
 		// your bot will not be able to send more than 20 messages per minute to the same group.
@@ -1046,10 +1050,15 @@ func send(chatID int64, isPrivateChat bool, what interface{}) {
 	_, err := b.Send(
 		tb.ChatID(chatID),
 		what,
-		&tb.SendOptions{
-			// ParseMode:             tb.ModeMarkdownV2,
-			DisableWebPagePreview: true,
-		},
+		// &tb.SendOptions{
+		// 	// ParseMode:             tb.ModeMarkdownV2,
+		// 	DisableWebPagePreview: true,
+		// },
+		func() []interface{} {
+			result := options
+			result = append(result, tb.NoPreview)
+			return result
+		}()...,
 	)
 	if err != nil {
 		log.Println(err)
@@ -1233,4 +1242,30 @@ func sendAboutAdminMessage(m *tb.Message) {
 		time.Sleep(1 * time.Second)
 		b.Delete(commandMessage)
 	}()
+}
+
+func handleBB(m *tb.Message) {
+	send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFinvizBB())
+}
+
+func handleMap(m *tb.Message) {
+	send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFinvizMap())
+}
+
+func handleFear(m *tb.Message) {
+	send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFear())
+}
+
+func handleHelp(m *tb.Message) {
+	if !m.Private() {
+		return
+	}
+	// s := ""
+	// for _, articleCase := range ArticleCases {
+	// 	s = s + fmt.Sprintf("\n/%s TSLA - %s", articleCase.shortName, articleCase.name)
+	// }
+	// s = fmt.Sprintf(help, s))
+	send(m.Chat.ID, true, escape(help), mainMenu)
+	time.Sleep(400 * time.Millisecond)
+	send(m.Chat.ID, false, getWhatIntro())
 }
