@@ -1171,7 +1171,17 @@ func getAdminMessageSelector(m *tb.Message) *tb.ReplyMarkup {
 			if m.Chat.ID == chatID {
 				continue
 			}
-			sendCopy(chatID, m)
+			if _, err := b.Copy(
+				tb.ChatID(chatID),
+				m,
+				&tb.SendOptions{
+					// ParseMode:             tb.ModeMarkdownV2,
+					DisableWebPagePreview: true,
+					ReplyMarkup:           mainMenu, // restore mainMenu
+				},
+			); err != nil {
+				log.Print(err)
+			}
 		}
 		b.Delete(m2)
 	})
@@ -1182,19 +1192,6 @@ func getAdminMessageSelector(m *tb.Message) *tb.ReplyMarkup {
 	rows = append(rows, selector.Row(btnCopyAll))
 	selector.Inline(rows...)
 	return selector
-}
-
-func sendCopy(chatID int64, m *tb.Message) {
-	if _, err := b.Copy(
-		tb.ChatID(chatID),
-		m,
-		&tb.SendOptions{
-			// ParseMode:             tb.ModeMarkdownV2,
-			DisableWebPagePreview: true,
-		},
-	); err != nil {
-		log.Print(err)
-	}
 }
 
 func sendWithReplyMarkup(chatID int64, what interface{}, replyMarkup *tb.ReplyMarkup) *tb.Message {
