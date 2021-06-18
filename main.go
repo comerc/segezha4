@@ -22,8 +22,6 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// TODO: Quadruple Witching Day - в третью пятницу марта, июня, сентября и декабря
-
 // TODO: бот должен редактировать сообщения отчётов с периодическим обновлением в течении 15 минут? (реализуемо через юзер-бот)
 
 // TODO: бот должен редактировать сообщения с зелёными кружочками, а не надеяться на задержку в пересылке (реализуемо через юзер-бот)
@@ -606,9 +604,15 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 			if m%delta == 0 && s == 15 {
 				if h == 14-summer && m >= 30 {
 					moon := MoonPhase.New(t)
-					isFullMoon := int(math.Floor((moon.Phase()+0.0625)*8)) == 4
+					v := math.Floor((moon.Phase() + 0.0625) * 8 * 10)
+					isFullMoon := v >= 44 && v <= 46
 					if isFullMoon {
 						callbacks = append(callbacks, getWhatFullMoon)
+					}
+					// https://targetbank.ru/den-chetvernogo-koldovstva-na-fondovom-rynke/
+					isQuadrupleWitchingDay := month%3 == 0 && w == 5 && d >= 15 && d < 22
+					if isQuadrupleWitchingDay {
+						callbacks = append(callbacks, getQuadrupleWitchingDay)
 					}
 					callbacks = append(callbacks, getWhatFear)
 					callbacks = append(callbacks, getWhatBestDay)
@@ -689,6 +693,13 @@ func getWhatFullMoon() interface{} {
 	return &tb.Photo{
 		File:    tb.FromDisk("./assets/full_moon.jpg"),
 		Caption: escape("🌕 #FullMoon"),
+	}
+}
+
+func getQuadrupleWitchingDay() interface{} {
+	return &tb.Photo{
+		File:    tb.FromDisk("./assets/quadruple_witching_day.jpg"),
+		Caption: escape("\U0001F9D9 #QuadrupleWitchingDay"),
 	}
 }
 
