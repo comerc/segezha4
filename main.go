@@ -22,6 +22,10 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: https://www.zacks.com/stock/quote/VRTX
+
+// TODO: The API will not allow more than ~30 messages to different users per second
+
 // TODO: бот должен редактировать сообщения отчётов с периодическим обновлением в течении 15 минут? (реализуемо через юзер-бот)
 
 // TODO: бот должен редактировать сообщения с зелёными кружочками, а не надеяться на задержку в пересылке (реализуемо через юзер-бот)
@@ -140,12 +144,10 @@ func init() {
 
 func main() {
 	log.SetFlags(log.LUTC | log.Ldate | log.Ltime | log.Lshortfile)
-
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Error loading .env file")
 	}
 	utils.InitTimeoutFactor()
-
 	{
 		path := filepath.Join(".", ".data")
 		if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -158,7 +160,6 @@ func main() {
 		}
 	}
 	defer db.Close()
-
 	var (
 		// port      = os.Getenv("PORT")
 		// publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
@@ -603,6 +604,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 		if h == 14-summer && m >= 30 || h > 14-summer && h < 21-summer || h == 21-summer && m < delta {
 			if m%delta == 0 && s == 15 {
 				if h == 14-summer && m >= 30 {
+					// TODO: Если фаза луны восходящая и рынок бычий - то это лонг. Если нисходящая фаза луны и рынок медвежий - шорт. Если фазы луны и рынка разнонаправленные - это боковик. (Anthill)
 					moon := MoonPhase.New(t)
 					v := math.Floor((moon.Phase() + 0.0625) * 8 * 10)
 					isFullMoon := v >= 44 && v <= 46
