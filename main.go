@@ -22,6 +22,8 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: источники данных (сайты) и маппинг тикеров на investing.com https://github.com/DaaGER/fast_analyze/blob/master/js/index.js
+
 // TODO: https://www.zacks.com/stock/quote/VRTX
 
 // TODO: The API will not allow more than ~30 messages to different users per second
