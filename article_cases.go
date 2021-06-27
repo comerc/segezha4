@@ -19,6 +19,7 @@ const (
 	ScreenshotModeCathiesArk   ScreenshotMode = "CathiesArk"
 	ScreenshotModeGuruFocus    ScreenshotMode = "GuruFocus"
 	ScreenshotModeTipRanks     ScreenshotMode = "TipRanks"
+	ScreenshotModeZacks        ScreenshotMode = "Zacks"
 	ScreenshotModeBarChart     ScreenshotMode = "BarChart"
 )
 
@@ -111,6 +112,10 @@ var ArticleCases = []ArticleCase{
 		// width:          800 - 64,
 		// height:         913,
 		screenshotMode: ScreenshotModeTipRanks,
+	},
+	{shortName: "zs", name: "zacks", linkURL: "https://zacks.com/stock/quote/%s",
+		description:    "Zacks Rank",
+		screenshotMode: ScreenshotModeZacks,
 	},
 	{shortName: "bch", name: "barchart", linkURL: "https://barchart.com/stocks/quotes/%s/overview",
 		description:    "Overview",

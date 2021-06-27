@@ -22,6 +22,8 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: https://quote-feed.zacks.com/index.php?t=ZM
+
 // TODO: источники данных (сайты) и маппинг тикеров на investing.com https://github.com/DaaGER/fast_analyze/blob/master/js/index.js
 
 // TODO: https://www.zacks.com/stock/quote/VRTX
@@ -484,6 +486,7 @@ func main() {
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("gurufocus")))
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("marketbeat")))
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("tipranks")))
+					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("zacks")))
 				case "!":
 					callbacks = append(callbacks, closeWhat(symbol, GetExactArticleCase("finviz")))
 				}
@@ -936,6 +939,16 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
 				}
 			}
+		case ScreenshotModeZacks:
+			screenshot := ss.MakeScreenshotForZacks(linkURL)
+			if len(screenshot) == 0 {
+				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+			} else {
+				result = &tb.Photo{
+					File:    tb.FromReader(bytes.NewReader(screenshot)),
+					Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
+				}
+			}
 		case ScreenshotModeBarChart:
 			volume, height := func() (string, string) {
 				if strings.HasPrefix(symbol, "$") {
@@ -1189,11 +1202,20 @@ func getAdminMessageSelector(m *tb.Message) *tb.ReplyMarkup {
 			if _, err := b.Copy(
 				tb.ChatID(chatID),
 				m,
-				&tb.SendOptions{
-					// ParseMode:             tb.ModeMarkdownV2,
-					DisableWebPagePreview: true,
-					ReplyMarkup:           mainMenu, // restore mainMenu
-				},
+				func() *tb.SendOptions {
+					if chatID > 0 {
+						return &tb.SendOptions{
+							// ParseMode:             tb.ModeMarkdownV2,
+							DisableWebPagePreview: true,
+							ReplyMarkup:           mainMenu, // restore mainMenu
+						}
+					} else {
+						return &tb.SendOptions{
+							// ParseMode:             tb.ModeMarkdownV2,
+							DisableWebPagePreview: true,
+						}
+					}
+				}(),
 			); err != nil {
 				log.Print(err)
 			}

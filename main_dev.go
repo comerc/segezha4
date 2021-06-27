@@ -52,8 +52,8 @@ func _main() {
 	// linkURL := "https://cathiesark.com/ark-combined-holdings-of-flir"
 	// buf := ss.MakeScreenshotForCathiesArk(linkURL)
 
-	linkURL := "https://finviz.com/map.ashx?t=sec"
-	buf := ss.MakeScreenshotForFinvizMap(linkURL)
+	// linkURL := "https://finviz.com/map.ashx?t=sec"
+	// buf := ss.MakeScreenshotForFinvizMap(linkURL)
 
 	// linkURL := "https://finviz.com/"
 	// buf := ss.MakeScreenshotForFinvizBB(linkURL)
@@ -79,6 +79,9 @@ func _main() {
 	// day := fmt.Sprintf("%02d-%02d", now.Month(), now.Day())
 	// linkURL := fmt.Sprintf("file://%s?%s", path, day)
 	// buf := ss.MakeScreenshotForBestDay(linkURL)
+
+	linkURL := "https://zacks.com/stock/quote/tsla"
+	buf := ss.MakeScreenshotForZacks(linkURL)
 
 	if len(buf) == 0 {
 		log.Println("exit buf == 0")
