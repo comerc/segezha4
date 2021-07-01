@@ -22,11 +22,19 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: фильтр плохих бумажек, чтобы они не попадали на глаза. 😎
+
+// TODO: добавить все ETF в tickets и выдавать их список по /etf https://www.cnbc.com/sector-etfs/
+
+// TODO: кешировать finviz_map
+
+// TODO: разделители _, а не пробелы - чтобы получать командные ссылки
+
+// TODO: StockCharts - афтермаркет
+
 // TODO: https://quote-feed.zacks.com/index.php?t=ZM
 
 // TODO: источники данных (сайты) и маппинг тикеров на investing.com https://github.com/DaaGER/fast_analyze/blob/master/js/index.js
-
-// TODO: https://www.zacks.com/stock/quote/VRTX
 
 // TODO: The API will not allow more than ~30 messages to different users per second
 
