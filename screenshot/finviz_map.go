@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
 	"github.com/comerc/segezha4/utils"
 )
@@ -38,6 +39,28 @@ func MakeScreenshotForFinvizMap(linkURL string) []byte {
 	var buf []byte
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
+			network.SetBlockedURLS([]string{
+				// "*.ashx*",
+				"https://www.googletagmanager.com/gtag/js?id=UA-3261808-1",
+				"https://secure.quantserve.com/quant.js",
+				"https://static.cloudflareinsights.com/beacon.min.js",
+				"https://finviz.com/script/boxover.js?rev=*",
+				"https://finviz.com/js/libs/d3-json.js",
+				"https://finviz.com/script/libs/bowser2.min.js?rev=*",
+				// "https://finviz.com/assets/dist/runtime.*.js",
+				// "https://finviz.com/assets/dist/vendors.*.js",
+				"https://finviz.com/assets/dist/libs_init.*.js",
+				"https://finviz.com/assets/dist/header.*.js",
+				"https://finviz.com/js/dfp.min.js",
+				// "https://finviz.com/js/libs/d3.js",
+				"https://finviz.com/js/libs/hammer.min.js",
+				"https://u5.investingchannel.com/static/uat.js",
+				// "https://finviz.com/assets/dist/map.*.js",
+				"https://finviz.com/js/pv.js?rev=*",
+				"https://finviz.com/js/maps/sec_788.js?rev=*",
+				"chrome-extension://*/js/inject.js",
+				"*.gif", "*.png",
+			}),
 			// chromedp.Emulate(device.KindleFireHDXlandscape),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body"),

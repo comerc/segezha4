@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math"
 	"net/http"
@@ -615,6 +616,24 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 		)
 		callbacks := make([]getWhat, 0)
 		if h == 14-summer && m >= 30 || h > 14-summer && h < 21-summer || h == 21-summer && m < delta {
+			if m%delta != 0 && m%5 == 0 && s == 15 {
+				go func() {
+					linkURL := "https://finviz.com/"
+					screenshot := ss.MakeScreenshotForFinvizBB(linkURL)
+					if len(screenshot) == 0 {
+						log.Print("error MakeScreenshotForFinvizBB() == 0")
+					}
+					writeFileToAssets(screenshot, "bb.png")
+				}()
+				go func() {
+					linkURL := "https://finviz.com/map.ashx?t=sec"
+					screenshot := ss.MakeScreenshotForFinvizMap(linkURL)
+					if len(screenshot) == 0 {
+						log.Print("error MakeScreenshotForFinvizMap() == 0")
+					}
+					writeFileToAssets(screenshot, "map.png")
+				}()
+			}
 			if m%delta == 0 && s == 15 {
 				if h == 14-summer && m >= 30 {
 					// TODO: Если фаза луны восходящая и рынок бычий - то это лонг. Если нисходящая фаза луны и рынок медвежий - шорт. Если фазы луны и рынка разнонаправленные - это боковик. (Anthill)
@@ -698,8 +717,19 @@ func getWhatFinvizMap() interface{} {
 		sendToAdmins("Invalid /map")
 		return caption
 	}
+	go writeFileToAssets(screenshot, "map.png")
 	return &tb.Photo{
 		File:    tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: caption,
+	}
+}
+
+func getWhatFinvizMapFastly() interface{} {
+	linkURL := "https://finviz.com/map.ashx?t=sec"
+	defer utils.Elapsed(linkURL)()
+	caption := getCaption("#map", "", linkURL)
+	return &tb.Photo{
+		File:    tb.FromDisk("./assets/map.png"),
 		Caption: caption,
 	}
 }
@@ -727,8 +757,19 @@ func getWhatFear() interface{} {
 		sendToAdmins("Invalid /fear")
 		return caption
 	}
+	go writeFileToAssets(screenshot, "fear.png")
 	return &tb.Photo{
 		File:    tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: caption,
+	}
+}
+
+func getWhatFearFastly() interface{} {
+	linkURL := "https://money.cnn.com/data/fear-and-greed/"
+	defer utils.Elapsed(linkURL)()
+	caption := getCaption("#fear", "", linkURL)
+	return &tb.Photo{
+		File:    tb.FromDisk("./assets/fear.png"),
 		Caption: caption,
 	}
 }
@@ -742,8 +783,19 @@ func getWhatFinvizBB() interface{} {
 		sendToAdmins("Invalid /bb")
 		return caption
 	}
+	go writeFileToAssets(screenshot, "bb.png")
 	return &tb.Photo{
 		File:    tb.FromReader(bytes.NewReader(screenshot)),
+		Caption: caption,
+	}
+}
+
+func getWhatFinvizBBFastly() interface{} {
+	linkURL := "https://finviz.com/"
+	defer utils.Elapsed(linkURL)()
+	caption := getCaption("#bb", "Bull or Bear", linkURL)
+	return &tb.Photo{
+		File:    tb.FromDisk("./assets/bb.png"),
 		Caption: caption,
 	}
 }
@@ -1289,15 +1341,15 @@ func sendAboutAdminMessage(m *tb.Message) {
 }
 
 func handleBB(m *tb.Message) {
-	send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFinvizBB())
+	send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFinvizBBFastly())
 }
 
 func handleMap(m *tb.Message) {
-	send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFinvizMap())
+	send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFinvizMapFastly())
 }
 
 func handleFear(m *tb.Message) {
-	send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFear())
+	send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatFearFastly())
 }
 
 func handleHelp(m *tb.Message) {
@@ -1312,4 +1364,12 @@ func handleHelp(m *tb.Message) {
 	send(m.Chat.ID, true, escape(help), mainMenu)
 	time.Sleep(400 * time.Millisecond)
 	send(m.Chat.ID, false, getWhatIntro())
+}
+
+func writeFileToAssets(buf []byte, fileName string) {
+	path, _ := os.Getwd()
+	filePath := filepath.Join(path, "assets/"+fileName)
+	if err := ioutil.WriteFile(filePath, buf, 0644); err != nil {
+		log.Print("error writeFileToAssets() ", fileName)
+	}
 }

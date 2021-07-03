@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
 	"github.com/comerc/segezha4/utils"
@@ -27,6 +28,20 @@ func MakeScreenshotForFear(linkURL string) []byte {
 	sel := body + " div.mod-quoteinfo.feargreed"
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
+			network.SetBlockedURLS([]string{
+				// "*.js*",
+				// "*.json*",
+				// "*.png",
+				"*.svg",
+				"*.gif",
+				"*.jpg",
+				"*.mp4",
+				"*.html",
+				"*doubleclick.net*",
+				"*google.com*",
+				"*googlesyndication.com*",
+				"*sharethis.com*",
+			}),
 			chromedp.Emulate(device.IPadPro),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady(body),
