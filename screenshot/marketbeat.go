@@ -3,12 +3,13 @@ package screenshot
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"image"
 	"image/png"
 	"log"
+	"time"
 
 	"github.com/chromedp/cdproto/cdp"
+	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
 	"github.com/comerc/segezha4/utils"
@@ -36,11 +37,35 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 	defer cancel2()
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
+			network.SetBlockedURLS([]string{
+				// "*.ashx*",
+				"https://cdn.onesignal.com/sdks/OneSignalSDK.js",
+				"https://www.marketbeat.com/scripts/modal/mb-modernpopup.js?v=*",
+				"https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js",
+				"https://www.statcounter.com/counter/counter.js",
+				"https://www.googletagmanager.com/gtag/js?id=AW-1050184556",
+				"https://instant.page/*",
+				"https://www.marketbeat.com/cdn-cgi/scripts/*/cloudflare-static/email-decode.min.js",
+				// "https://cdnjs.cloudflare.com/ajax/libs/d3/*/d3.min.js",
+				// "https://www.marketbeat.com/Scripts/charts/dv-charts.js?v=*",
+				"https://cdnjs.cloudflare.com/ajax/libs/hellojs/*/hello.all.js",
+				"https://ajax.googleapis.com/ajax/libs/jquery/*/jquery.min.js",
+				"https://accounts.google.com/gsi/client",
+				"https://cdnjs.cloudflare.com/ajax/libs/popper.js/*/umd/popper.min.js",
+				"https://stackpath.bootstrapcdn.com/bootstrap/*/js/bootstrap.min.js",
+				"https://code.jquery.com/ui/*/jquery-ui.min.js",
+				"https://www.marketbeat.com/scripts/masterscripts9.js?v=*",
+				"https://www.statcounter.com/counter/counter.js",
+				"https://www.google-analytics.com/analytics.js",
+				"chrome-extension://*/js/inject.js",
+				"*.aspx*", "*.json*", "*.png*"}),
 			chromedp.Emulate(device.KindleFireHDX),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body footer"),
-			chromedp.WaitVisible("#optinform-container"),
-			chromedp.SetAttributeValue("#optinform-container", "style", "display:none"),
+			// v2
+			// chromedp.WaitVisible("#optinform-container"),
+			// chromedp.SetAttributeValue("#optinform-container", "style", "display:none"),
+			// v1
 			// chromedp.WaitVisible("#optinform-modal a"),
 			// chromedp.Click("#optinform-modal a", chromedp.NodeVisible),
 		}
@@ -124,6 +149,7 @@ func takeScreenshotForMarketBeat(ctx context.Context, linkSel, chartSel interfac
 		return chromedp.Tasks{
 			chromedp.Click(linkSel, chromedp.NodeVisible),
 			chromedp.WaitReady("body footer"),
+			chromedp.Sleep(1 * time.Second),
 			// chromedp.WaitVisible(chartSel),
 			// chromedp.ScrollIntoView(chartSel),
 			chromedp.SetAttributeValue(pnlAdSenseHeader, "style", "display:none"),
@@ -132,7 +158,6 @@ func takeScreenshotForMarketBeat(ctx context.Context, linkSel, chartSel interfac
 	}()); err != nil {
 		return err
 	}
-
 	selBar := "body > #mb-bar"
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
@@ -151,7 +176,6 @@ func takeScreenshotForMarketBeat(ctx context.Context, linkSel, chartSel interfac
 			return err
 		}
 	}
-
 	titleSel := "#article > #form1 > #cphPrimaryContent_pnlCompany > #shareableArticle > div:nth-child(2) > div > div"
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
@@ -161,22 +185,23 @@ func takeScreenshotForMarketBeat(ctx context.Context, linkSel, chartSel interfac
 	}()); err != nil {
 		return err
 	}
-	sel := fmt.Sprintf("%v > #svg > #yTextGroup > g.footnote", chartSel)
+	// sel := fmt.Sprintf("%v > #svg > #yTextGroup > g.footnote", chartSel)
+	// if err := chromedp.Run(ctx, func() chromedp.Tasks {
+	// 	return chromedp.Tasks{
+	// 		chromedp.Nodes(sel, &nodes, chromedp.AtLeast(0)),
+	// 	}
+	// }()); err != nil {
+	// 	return err
+	// }
+	// if len(nodes) == 0 {
+	// 	return nil
+	// }
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
-			chromedp.Nodes(sel, &nodes, chromedp.AtLeast(0)),
-		}
-	}()); err != nil {
-		return err
-	}
-	if len(nodes) == 0 {
-		return nil
-	}
-	if err := chromedp.Run(ctx, func() chromedp.Tasks {
-		return chromedp.Tasks{
-			chromedp.SetAttributeValue(sel, "style", "display:none"),
-			chromedp.WaitNotVisible(sel),
-			chromedp.Screenshot(chartSel, chartRes, chromedp.NodeVisible),
+			// chromedp.SetAttributeValue(sel, "style", "display:none"),
+			// chromedp.WaitNotVisible(sel),
+			// chromedp.Screenshot(chartSel, chartRes, chromedp.NodeVisible),
+			chromedp.Screenshot("#wrapper", chartRes, chromedp.NodeVisible),
 		}
 	}()); err != nil {
 		return err
