@@ -1259,6 +1259,7 @@ func getAdminMessageSelector(m *tb.Message) *tb.ReplyMarkup {
 			if m.Chat.ID == chatID {
 				continue
 			}
+			time.Sleep(2 * time.Second) // не больше 30 сообщений в минуту (ограничение телеги)
 			if _, err := b.Copy(
 				tb.ChatID(chatID),
 				m,
