@@ -300,7 +300,9 @@ func main() {
 						key := int64(bytesToUint64(k))
 						val := int64(bytesToUint64(v))
 						totalValues += val
-						s = s + fmt.Sprintf("\n%d %d", key, val)
+						if val > 10 {
+							s = s + fmt.Sprintf("\n%d %d", key, val)
+						}
 						// log.Print(key, val)
 						return nil
 					}); err != nil {
