@@ -23,6 +23,14 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: отрабатывать "not found" - пытаюсь найти тикер на finviz
+
+// TODO: Хочется оформлять информер в виде ответа на сообщения с отчётом. Чтобы работал переход.
+
+// TODO: https://swaggystocks.com/dashboard/home
+
+// TODO: http://simplywall.st
+
 // TODO: откуда тянуть данные для индексов https://t.me/c/1363975627/4588
 
 // TODO: /reports от Нурлана
