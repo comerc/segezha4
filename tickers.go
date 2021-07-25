@@ -22,29 +22,40 @@ func getTickers() []Ticker {
 
 func init() {
 	go watch(func() {
-		tmp, err := load()
+		tmp, err := load(filename)
 		if err != nil {
-			log.Printf("Can't initialise config: %s", err)
+			log.Printf("Can't load %s: %s", filename, err)
 			return
 		}
 		// tickersMu.Lock()
 		// defer tickersMu.Unlock()
 		// log.Printf("%#v", tmp)
 		tickers = tmp
+		tmpEx, err := load(filenameEx)
+		if err != nil {
+			log.Printf("Can't load %s: %s", filenameEx, err)
+			return
+		}
+		for _, tickerEx := range tmpEx {
+			if GetExactTicker(tickerEx.Symbol) == nil {
+				tickers = append(tickers, tickerEx)
+			}
+		}
 	})
 }
 
 const filename = "tickers.json"
+const filenameEx = "tickers_ex.json"
 
-var path = filepath.Join(".", filename)
-
-func load() ([]Ticker, error) {
+func load(filename string) ([]Ticker, error) {
 	var (
 		result   []Ticker
 		err      error
 		file     *os.File
 		jsonData []byte
 	)
+
+	path := filepath.Join(".", filename)
 
 	file, err = os.Open(path)
 	if err != nil {
@@ -67,6 +78,9 @@ func load() ([]Ticker, error) {
 
 	return result, err
 }
+
+// !! сначала нужно обновлять tickers_ex.json, а уже потом tickers.json
+var watchPath = filepath.Join(".", filename)
 
 func watch(reload func()) {
 	w := watcher.New()
@@ -96,7 +110,7 @@ func watch(reload func()) {
 	}()
 
 	// Watch this path for changes.
-	if err := w.Add(path); err != nil {
+	if err := w.Add(watchPath); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -110,8 +124,9 @@ func watch(reload func()) {
 
 // Ticker of stock market
 type Ticker struct {
-	Symbol string `json:"symbol"`
-	Title  string `json:"title"`
+	Symbol       string
+	Title        string
+	SimplyWallSt string
 }
 
 // from https://stockanalysis.com/stocks/
@@ -133,8 +148,8 @@ var tickers = []Ticker{}
 
 // GetTickers function
 func GetTickers(search string) []Ticker {
-	result := make([]Ticker, 0)
-	if len(search) > 0 {
+	result := []Ticker{}
+	if search != "" {
 		search = strings.ToUpper(search)
 		for _, ticker := range getTickers() {
 			if strings.HasPrefix(strings.ToUpper(ticker.Symbol), search) {
@@ -151,7 +166,7 @@ func GetTickers(search string) []Ticker {
 // GetExactTicker function
 func GetExactTicker(search string) *Ticker {
 	var result *Ticker
-	if len(search) > 0 {
+	if search != "" {
 		search = strings.ToUpper(search)
 		for _, ticker := range getTickers() {
 			if strings.ToUpper(ticker.Symbol) == search {

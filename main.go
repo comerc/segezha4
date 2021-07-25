@@ -16,14 +16,13 @@ import (
 	"time"
 
 	"github.com/IvanMenshykov/MoonPhase"
+	"github.com/comerc/segezha4/import_tickers"
 	ss "github.com/comerc/segezha4/screenshot"
 	"github.com/comerc/segezha4/utils"
 	"github.com/dgraph-io/badger"
 	"github.com/joho/godotenv"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
-
-// TODO: отрабатывать "not found" - пытаюсь найти тикер на finviz
 
 // TODO: Хочется оформлять информер в виде ответа на сообщения с отчётом. Чтобы работал переход.
 
@@ -68,8 +67,6 @@ import (
 // TODO: https://www.highshortinterest.com/
 
 // TODO: /ch - добавить название бумажки в подпись, т.к. нет на картинке
-
-// TODO: выкинуть tickers.json
 
 // TODO: Виджет "Профиль компании" + перевод https://ru.tradingview.com/widget/symbol-profile/
 // TODO: Виджет "Мини-график" https://ru.tradingview.com/widget/mini-chart/
@@ -616,16 +613,21 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 		} else if pauseDay > -1 {
 			pauseDay = -1 // reset
 		}
-		if d != currentDay {
-			currentDay = d
-		again:
-			err := db.RunValueLogGC(0.7)
-			if err == nil {
-				goto again
-			}
-		}
 		h := utc.Hour()
 		m := utc.Minute()
+		if h == 0 && m == 0 && s == 0 {
+			go import_tickers.Run()
+		}
+		if d != currentDay {
+			currentDay = d
+			go func() {
+			again:
+				err := db.RunValueLogGC(0.7)
+				if err == nil {
+					goto again
+				}
+			}()
+		}
 		const (
 			delta  = 30
 			summer = 1
