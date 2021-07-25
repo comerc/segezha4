@@ -65,7 +65,7 @@ func getData(offset int) int {
 		"id":                 0,
 		"no_result_if_limit": false,
 		"offset":             offset,
-		"rules":              "[[\"order_by\",\"market_cap_movement_7d\",\"desc\"],[\"primary_flag\",\"=\",true],[\"grid_visible_flag\",\"=\",true],[\"market_cap\",\"is_not_null\"],[\"is_fund\",\"=\",false],[\"aor\",[[\"country_name\",\"in\",[\"us\"]]]]]",
+		"rules":              `[["order_by","name","asc"],["primary_flag","=",true],["grid_visible_flag","=",true],["market_cap","is_not_null"],["is_fund","=",false],["aor",[["country_name","in",["us"]]]]]`,
 		"size":               limit,
 		"state":              "read",
 	})
