@@ -58,7 +58,7 @@ func MakeScreenshotForFinvizMap(linkURL string) []byte {
 				// "https://finviz.com/assets/dist/map.*.js",
 				"https://finviz.com/js/pv.js?rev=*",
 				"https://finviz.com/js/maps/sec_788.js?rev=*",
-				"chrome-extension://*/js/inject.js",
+				// "chrome-extension://*/js/inject.js",
 				"*.gif", "*.png",
 			}),
 			// chromedp.Emulate(device.KindleFireHDXlandscape),

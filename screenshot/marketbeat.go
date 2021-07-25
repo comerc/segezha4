@@ -57,7 +57,7 @@ func MakeScreenshotForMarketBeat(linkURL string) []byte {
 				"https://www.marketbeat.com/scripts/masterscripts9.js?v=*",
 				"https://www.statcounter.com/counter/counter.js",
 				"https://www.google-analytics.com/analytics.js",
-				"chrome-extension://*/js/inject.js",
+				// "chrome-extension://*/js/inject.js",
 				"*.aspx*", "*.json*", "*.png*"}),
 			chromedp.Emulate(device.KindleFireHDX),
 			chromedp.Navigate(linkURL),

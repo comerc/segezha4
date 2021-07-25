@@ -62,7 +62,7 @@ func MakeScreenshotForFinvizBB(linkURL string) []byte {
 				"https://finviz.com/assets/dist/map.*.js",
 				"https://finviz.com/js/maps/hp.js?rev=*",
 				"https://finviz.com/js/pv.js?rev=*",
-				"chrome-extension://*/js/inject.js",
+				// "chrome-extension://*/js/inject.js",
 				// "*.gif",
 				"*.woff2",
 			}),
