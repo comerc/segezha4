@@ -34,11 +34,16 @@ type Dst struct {
 }
 
 func Run() {
+	allTickers = make([]*Ticker, 0)
 	steps := 0
 	for step := 0; step <= steps; step++ {
 		offset := step * limit
 		totalRecords := getData(offset)
 		steps = totalRecords / limit
+	}
+	if len(allTickers) == 0 {
+		log.Print("error: allTickers is empty")
+		return
 	}
 	result := make([]*Dst, 0)
 	for _, ticker := range allTickers {

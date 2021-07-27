@@ -2017,7 +2017,8 @@
   },
   {
     "Symbol": "GOOG",
-    "Title": "Alphabet"
+    "Title": "Alphabet",
+    "SimplyWallSt": "/stocks/us/media/nasdaq-goog/alphabet"
   },
   {
     "Symbol": "GOOS",
