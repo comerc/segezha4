@@ -24,6 +24,8 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: упал /bch $vix
+
 // TODO: Хочется оформлять информер в виде ответа на сообщения с отчётом. Чтобы работал переход.
 
 // TODO: https://swaggystocks.com/dashboard/home
@@ -1037,9 +1039,11 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 				aa := strings.Split(a[4], "-")
 				if strings.Compare(ticker.Symbol, "GOOG.L") == 0 {
 					aa[1] = "GOOGL"
+				} else if strings.Contains(ticker.Symbol, ".") {
+					aa[1] = strings.Replace(ticker.Symbol, ".", "-", -1)
 				}
-				s := strings.ToUpper(fmt.Sprintf("%s/%s", aa[0], aa[1]))
-				linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
+				s := fmt.Sprintf("%s/%s", aa[0], aa[1])
+				linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToUpper(s))
 				screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
 				if len(screenshot) == 0 {
 					sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
