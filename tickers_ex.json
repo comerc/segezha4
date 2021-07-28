@@ -508,10 +508,6 @@
     "Title": "Brookfield Renewable Corporation"
   },
   {
-    "Symbol": "BF.A",
-    "Title": "Brown-Forman"
-  },
-  {
     "Symbol": "BF.B",
     "Title": "Brown-Forman"
   },
@@ -646,10 +642,6 @@
   {
     "Symbol": "BRFS",
     "Title": "BRF S.A."
-  },
-  {
-    "Symbol": "BRK.A",
-    "Title": "Berkshire Hathaway"
   },
   {
     "Symbol": "BRK.B",
@@ -1106,10 +1098,6 @@
   {
     "Symbol": "CRCQQ",
     "Title": "California Resources"
-  },
-  {
-    "Symbol": "CRD.A",
-    "Title": "Crawford \u0026 Company"
   },
   {
     "Symbol": "CRD.B",
@@ -2537,10 +2525,6 @@
     "Title": "Juniper Industrial Holdings"
   },
   {
-    "Symbol": "JW.A",
-    "Title": "John Wiley \u0026 Sons"
-  },
-  {
     "Symbol": "JW.B",
     "Title": "John Wiley \u0026 Sons"
   },
@@ -2695,10 +2679,6 @@
   {
     "Symbol": "LGCYQ",
     "Title": "Legacy Reserves"
-  },
-  {
-    "Symbol": "LGF.A",
-    "Title": "Lions Gate Entertainment"
   },
   {
     "Symbol": "LGF.B",
@@ -2995,10 +2975,6 @@
   {
     "Symbol": "MOBL",
     "Title": "MobileIron"
-  },
-  {
-    "Symbol": "MOG.A",
-    "Title": "Moog Inc."
   },
   {
     "Symbol": "MOG.B",
@@ -5135,10 +5111,6 @@
   {
     "Symbol": "TTE",
     "Title": "TotalEnergies SE"
-  },
-  {
-    "Symbol": "RDS.A",
-    "Title": "Royal Dutch Shell plc"
   },
   {
     "Symbol": "SONY",
