@@ -125,7 +125,8 @@
   },
   {
     "Symbol": "AGM.A",
-    "Title": "Federal Agricultural Mortgage"
+    "Title": "Federal Agricultural Mortgage",
+    "SimplyWallSt": "/stocks/us/banks/nyse-agm.a/federal-agricultural-mortgage"
   },
   {
     "Symbol": "AGN",
@@ -157,11 +158,13 @@
   },
   {
     "Symbol": "AKO.A",
-    "Title": "Embotelladora Andina"
+    "Title": "Embotelladora Andina",
+    "SimplyWallSt": "/stocks/us//nyse-ako.a/"
   },
   {
     "Symbol": "AKO.B",
-    "Title": "Embotelladora Andina"
+    "Title": "Embotelladora Andina",
+    "SimplyWallSt": "/stocks/us//nyse-ako.b/"
   },
   {
     "Symbol": "AKRX",
@@ -508,8 +511,9 @@
     "Title": "Brookfield Renewable Corporation"
   },
   {
-    "Symbol": "BF.B",
-    "Title": "Brown-Forman"
+    "Symbol": "BF.A",
+    "Title": "Brown-Forman",
+    "SimplyWallSt": "/stocks/us/food-beverage-tobacco/nyse-bf.a/brown-forman"
   },
   {
     "Symbol": "BFGC",
@@ -540,16 +544,13 @@
     "Title": "Biglari Holdings"
   },
   {
-    "Symbol": "BH.A",
-    "Title": "Biglari Holdings"
-  },
-  {
     "Symbol": "BHP",
     "Title": "BHP Group"
   },
   {
     "Symbol": "BIO.B",
-    "Title": "Bio-Rad Laboratories"
+    "Title": "Bio-Rad Laboratories",
+    "SimplyWallSt": "/stocks/us/pharmaceuticals-biotech/nyse-bio.b/bio-rad-laboratories"
   },
   {
     "Symbol": "BIP",
@@ -645,7 +646,8 @@
   },
   {
     "Symbol": "BRK.B",
-    "Title": "Berkshire Hathaway"
+    "Title": "Berkshire Hathaway",
+    "SimplyWallSt": "/stocks/us/diversified-financials/nyse-brk.b/berkshire-hathaway"
   },
   {
     "Symbol": "BRPA",
@@ -702,10 +704,6 @@
   {
     "Symbol": "BWAY",
     "Title": "Brainsway"
-  },
-  {
-    "Symbol": "BWL.A",
-    "Title": "Bowl America"
   },
   {
     "Symbol": "BXG",
@@ -1100,10 +1098,6 @@
     "Title": "California Resources"
   },
   {
-    "Symbol": "CRD.B",
-    "Title": "Crawford \u0026 Company"
-  },
-  {
     "Symbol": "CRESY",
     "Title": "Cresud"
   },
@@ -1201,11 +1195,8 @@
   },
   {
     "Symbol": "CWEN",
-    "Title": "Clearway Energy"
-  },
-  {
-    "Symbol": "CWEN.A",
-    "Title": "Clearway Energy"
+    "Title": "Clearway Energy",
+    "SimplyWallSt": "/stocks/us//nyse-cwen/"
   },
   {
     "Symbol": "CX",
@@ -1861,7 +1852,8 @@
   },
   {
     "Symbol": "GEF.B",
-    "Title": "Greif"
+    "Title": "Greif",
+    "SimplyWallSt": "/stocks/us/materials/nyse-gef.b/greif"
   },
   {
     "Symbol": "GEL",
@@ -2098,7 +2090,8 @@
   },
   {
     "Symbol": "GTN.A",
-    "Title": "Gray Television"
+    "Title": "Gray Television",
+    "SimplyWallSt": "/stocks/us/media/nyse-gtn.a/gray-television"
   },
   {
     "Symbol": "GTT",
@@ -2166,7 +2159,8 @@
   },
   {
     "Symbol": "HEI.A",
-    "Title": "HEICO Corporation"
+    "Title": "HEICO Corporation",
+    "SimplyWallSt": "/stocks/us/capital-goods/nyse-hei.a/heico"
   },
   {
     "Symbol": "HEP",
@@ -2526,7 +2520,8 @@
   },
   {
     "Symbol": "JW.B",
-    "Title": "John Wiley \u0026 Sons"
+    "Title": "John Wiley \u0026 Sons",
+    "SimplyWallSt": "/stocks/us/media/nyse-jw.b/john-wiley-sons"
   },
   {
     "Symbol": "JWS",
@@ -2662,7 +2657,8 @@
   },
   {
     "Symbol": "LEN.B",
-    "Title": "Lennar"
+    "Title": "Lennar",
+    "SimplyWallSt": "/stocks/us/consumer-durables/nyse-len.b/lennar"
   },
   {
     "Symbol": "LFAC",
@@ -2682,7 +2678,8 @@
   },
   {
     "Symbol": "LGF.B",
-    "Title": "Lions Gate Entertainment"
+    "Title": "Lions Gate Entertainment",
+    "SimplyWallSt": "/stocks/us/media/nyse-lgf.b/lions-gate-entertainment"
   },
   {
     "Symbol": "LGVW",
@@ -2926,7 +2923,8 @@
   },
   {
     "Symbol": "MKC.V",
-    "Title": "McCormick"
+    "Title": "McCormick",
+    "SimplyWallSt": "/stocks/us/food-beverage-tobacco/nyse-mkc.v/mccormick"
   },
   {
     "Symbol": "MKRS",
@@ -2978,7 +2976,8 @@
   },
   {
     "Symbol": "MOG.B",
-    "Title": "Moog Inc."
+    "Title": "Moog Inc.",
+    "SimplyWallSt": "/stocks/us/capital-goods/nyse-mog.b/moog"
   },
   {
     "Symbol": "MOGO",
@@ -3426,11 +3425,13 @@
   },
   {
     "Symbol": "PBR",
-    "Title": "Petroleo Brasileiro"
+    "Title": "Petroleo Brasileiro",
+    "SimplyWallSt": "/stocks///nyse-pbr/"
   },
   {
     "Symbol": "PBR.A",
-    "Title": "Petroleo Brasileiro"
+    "Title": "Petroleo Brasileiro",
+    "SimplyWallSt": "/stocks///nyse-pbr.a/"
   },
   {
     "Symbol": "PCOM",
@@ -3726,11 +3727,13 @@
   },
   {
     "Symbol": "RDS.A",
-    "Title": "Royal Dutch Shell"
+    "Title": "Royal Dutch Shell",
+    "SimplyWallSt": "/stocks/us/energy/nyse-rds.a/royal-dutch-shell"
   },
   {
     "Symbol": "RDS.B",
-    "Title": "Royal Dutch Shell"
+    "Title": "Royal Dutch Shell",
+    "SimplyWallSt": "/stocks/us/energy/nyse-rds.b/royal-dutch-shell"
   },
   {
     "Symbol": "RDY",
@@ -4954,7 +4957,8 @@
   },
   {
     "Symbol": "WSO.B",
-    "Title": "Watsco"
+    "Title": "Watsco",
+    "SimplyWallSt": "/stocks/us/capital-goods/nyse-wso.b/watsco"
   },
   {
     "Symbol": "WUBA",
