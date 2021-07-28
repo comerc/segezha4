@@ -61,7 +61,7 @@ func makeScreenshotForGuruFocus(linkURL string, x, y, width, height float64, qua
 		chromedp.SetAttributeValue("body > div.v-modal", "style", "display:none"),
 		chromedp.Sleep(4 * time.Second),
 		chromedp.SetAttributeValue(selMainContainer+" > div.navbar", "style", "display:none"),
-		chromedp.SetAttributeValue(selMainContainer+" > div:nth-child(2)", "style", "display:none"),
+		chromedp.SetAttributeValue(selMainContainer+" > div:nth-child(3)", "style", "display:none"),
 		// // chromedp.SetAttributeValue(selMoreMarginChild1+" > div.adswrapper", "style", "display:none"),
 		// // chromedp.SetAttributeValue(selMoreMarginChild1+" > div:nth-child(3)", "style", "display:none"),
 		// // chromedp.SetAttributeValue(selMoreMarginChild1+" > div:nth-child(4)", "style", "display:none"),
