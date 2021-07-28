@@ -920,7 +920,11 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 		defer utils.Elapsed(fmt.Sprintf("/%s %s", articleCase.shortName, strings.ToLower(symbol)))()
 		switch articleCase.screenshotMode {
 		case ScreenshotModeTradingView:
-			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
+			s := symbol
+			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+				s = ticker.Symbol
+			}
+			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
 			path, _ := os.Getwd()
 			filePath := filepath.Join(path, "assets/tradingview.html")
 			fileURL := fmt.Sprintf("file://%s?%s", filePath, strings.Replace(symbol, " ", ":", -1))
@@ -934,7 +938,11 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 				}
 			}
 		case ScreenshotModeTradingView2:
-			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
+			s := symbol
+			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+				s = ticker.Symbol
+			}
+			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
 			a := strings.Split(symbol, " ")
 			if len(a) == 1 {
 				symbol += " W:D"
@@ -954,14 +962,22 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 				}
 			}
 		case ScreenshotModeImage:
-			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
+			s := symbol
+			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+				s = ticker.Symbol
+			}
+			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
 			imageURL := fmt.Sprintf(articleCase.imageURL, strings.ToLower(symbol), time.Now().Unix())
 			result = &tb.Photo{
 				File:    tb.FromURL(imageURL),
 				Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
 			}
 		case ScreenshotModeFinviz:
-			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
+			s := symbol
+			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+				s = strings.Replace(ticker.Symbol, ".", "-", -1)
+			}
+			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
 			screenshot := ss.MakeScreenshotForFinviz(linkURL)
 			if len(screenshot) == 0 {
 				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
@@ -998,7 +1014,11 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 				}
 			}
 		case ScreenshotModeGuruFocus:
-			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
+			s := symbol
+			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+				s = ticker.Symbol
+			}
+			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
 			screenshot := ss.MakeScreenshotForGuruFocus(linkURL)
 			if len(screenshot) == 0 {
 				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
@@ -1015,6 +1035,9 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			} else {
 				a := strings.Split(ticker.SimplyWallSt, "/")
 				aa := strings.Split(a[4], "-")
+				if strings.Compare(ticker.Symbol, "GOOG.L") == 0 {
+					aa[1] = "GOOGL"
+				}
 				s := strings.ToUpper(fmt.Sprintf("%s/%s", aa[0], aa[1]))
 				linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
 				screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
@@ -1028,7 +1051,11 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 				}
 			}
 		case ScreenshotModeTipRanks:
-			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
+			s := symbol
+			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+				s = ticker.Symbol
+			}
+			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
 			screenshot := ss.MakeScreenshotForTipRanks2(linkURL)
 			if len(screenshot) == 0 {
 				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
@@ -1039,7 +1066,11 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 				}
 			}
 		case ScreenshotModeZacks:
-			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
+			s := symbol
+			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+				s = ticker.Symbol
+			}
+			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
 			screenshot := ss.MakeScreenshotForZacks(linkURL)
 			if len(screenshot) == 0 {
 				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
@@ -1050,7 +1081,11 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 				}
 			}
 		case ScreenshotModeBarChart:
-			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
+			s := symbol
+			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+				s = ticker.Symbol
+			}
+			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
 			volume, height := func() (string, string) {
 				if strings.HasPrefix(symbol, "$") {
 					return "0", "O"
