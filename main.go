@@ -916,8 +916,14 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			// TODO: not found for $symbol
 		}
 		var result interface{}
-		linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
-		defer utils.Elapsed(linkURL)()
+		s := symbol
+		if articleCase.screenshotMode == ScreenshotModeMarketBeat && ticker.SimplyWallSt != "" {
+			a := strings.Split(ticker.SimplyWallSt, "/")
+			aa := strings.Split(a[4], "-")
+			s = strings.ToUpper(fmt.Sprintf("%s/%s", aa[0], aa[1]))
+		}
+		linkURL := fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
+		defer utils.Elapsed(fmt.Sprintf("/%s %s", articleCase.shortName, strings.ToLower(symbol)))()
 		switch articleCase.screenshotMode {
 		case ScreenshotModeTradingView:
 			path, _ := os.Getwd()
