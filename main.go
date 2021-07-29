@@ -24,6 +24,10 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: оптимизировать /sm
+
+// TODO: объединить /bb и /map в один информер
+
 // TODO: Invalid /simplywallst #COP
 // TODO: Invalid /simplywallst #PBR
 // TODO: Invalid /simplywallst #RMD
@@ -346,7 +350,8 @@ func main() {
 						val := int64(bytesToUint64(v))
 						totalValues += val
 						if val > 10 {
-							s = s + fmt.Sprintf("\n%d %d", key, val)
+							// s = s + fmt.Sprintf("\n%d %d", key, val)
+							s = s + fmt.Sprintf("\n[%[1]d](tg://user?id=%[1]d) %d", key, val)
 						}
 						// log.Print(key, val)
 						return nil
