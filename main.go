@@ -24,6 +24,44 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: Invalid /simplywallst #COP
+// TODO: Invalid /simplywallst #PBR
+// TODO: Invalid /simplywallst #RMD
+// TODO: Invalid /simplywallst #SCCO
+// TODO: Invalid /simplywallst #JFIN
+// TODO: Invalid /simplywallst #STLD
+// TODO: Invalid /simplywallst #BLUE
+// TODO: Invalid /finviz #DISCA
+// TODO: Invalid /finviz #CMCSA
+
+// 2021/07/29 14:27:36 util.go:18: runtime error: invalid memory address or nil pointer dereference
+// gopkg.in/tucnak/telebot%2ev2.(*Bot).debug
+//         /home/aka/go/pkg/mod/gopkg.in/tucnak/telebot.v2@v2.3.5/util.go:14
+// gopkg.in/tucnak/telebot%2ev2.(*Bot).deferDebug
+//         /home/aka/go/pkg/mod/gopkg.in/tucnak/telebot.v2@v2.3.5/util.go:25
+// runtime.gopanic
+//         /usr/local/go/src/runtime/panic.go:965
+// runtime.panicmem
+//         /usr/local/go/src/runtime/panic.go:212
+// runtime.sigpanic
+//         /usr/local/go/src/runtime/signal_unix.go:734
+// main.closeWhat.func1
+//         /home/aka/segezha4/main.go:1119
+// main.main.func2
+//         /home/aka/segezha4/main.go:342
+// gopkg.in/tucnak/telebot%2ev2.(*Bot).handle.func1
+//         /home/aka/go/pkg/mod/gopkg.in/tucnak/telebot.v2@v2.3.5/bot.go:462
+// gopkg.in/tucnak/telebot%2ev2.(*Bot).runHandler.func1
+//         /home/aka/go/pkg/mod/gopkg.in/tucnak/telebot.v2@v2.3.5/util.go:35
+// runtime.goexit
+//         /usr/local/go/src/runtime/asm_amd64.s:1371
+
+// TODO: обогощать информером сообщения MarketTwits #wsb #акции #sentiment #WISH
+
+// TODO: отправлять раз в сутки какие-то информеры (разнообразить) в подключенные группы
+
+// TODO: собирать метрики сколько каким информером пользуются
+
 // TODO: упал /bch $vix
 
 // TODO: Хочется оформлять информер в виде ответа на сообщения с отчётом. Чтобы работал переход.
@@ -331,9 +369,9 @@ func main() {
 			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, "reset")
 		} else if text == "/bb" {
 			handleBB(m)
-		} else if text == "/vix" {
-			getWhat := closeWhat("$VIX", GetExactArticleCase("barchart"))
-			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhat())
+			// } else if text == "/vix" {
+			// 	getWhat := closeWhat("$VIX", GetExactArticleCase("barchart"))
+			// 	send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhat())
 		} else if text == "/spy" {
 			getWhat := closeWhat("SPY", GetExactArticleCase("barchart"))
 			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhat())
@@ -680,7 +718,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 					callbacks = append(callbacks, getWhatFinvizBB)
 					callbacks = append(callbacks, getWhatFinvizMap)
 				}
-				callbacks = append(callbacks, closeWhat("$VIX", GetExactArticleCase("barchart")))
+				// callbacks = append(callbacks, closeWhat("$VIX", GetExactArticleCase("barchart")))
 				// callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabUS))
 				// if h >= 8 && h <= 17 {
 				// 	callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabEurope))
@@ -921,6 +959,30 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 		linkURL := ""
 		defer utils.Elapsed(fmt.Sprintf("/%s %s", articleCase.shortName, strings.ToLower(symbol)))()
 		switch articleCase.screenshotMode {
+		case ScreenshotModeSimplyWallSt:
+			if ticker.SimplyWallSt == "" {
+				linkURL = fmt.Sprintf(articleCase.linkURL, "/")
+				result = nil
+			} else {
+				linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.SimplyWallSt))
+				screenshot1, screenshot2 := ss.MakeScreenshotForSimplyWallSt(linkURL)
+				if len(screenshot1) == 0 {
+					sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+				} else {
+					a := make([]interface{}, 0)
+					a = append(a,
+						&tb.Photo{
+							File:    tb.FromReader(bytes.NewReader(screenshot1)),
+							Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
+						})
+					a = append(a,
+						&tb.Photo{
+							File:    tb.FromReader(bytes.NewReader(screenshot2)),
+							Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
+						})
+					result = a
+				}
+			}
 		case ScreenshotModeTradingView:
 			s := symbol
 			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
@@ -1206,32 +1268,39 @@ var lastSendByGroup = make(map[int64]time.Time)
 const pause = 3 * time.Second
 
 func send(chatID int64, withIncrementPrivateChat bool, what interface{}, options ...interface{}) {
-	if withIncrementPrivateChat {
-		increment(chatID)
-	} else {
-		// your bot will not be able to send more than 20 messages per minute to the same group.
-		lastSend := lastSendByGroup[chatID]
-		diff := time.Since(lastSend)
-		if diff < pause {
-			time.Sleep(pause)
-		}
-		lastSendByGroup[chatID] = time.Now()
+	whats, ok := what.([]interface{})
+	if !ok {
+		whats = make([]interface{}, 0)
+		whats = append(whats, what)
 	}
-	_, err := b.Send(
-		tb.ChatID(chatID),
-		what,
-		// &tb.SendOptions{
-		// 	// ParseMode:             tb.ModeMarkdownV2,
-		// 	DisableWebPagePreview: true,
-		// },
-		func() []interface{} {
-			result := options
-			result = append(result, tb.NoPreview)
-			return result
-		}()...,
-	)
-	if err != nil {
-		log.Println(err)
+	for _, what := range whats {
+		if withIncrementPrivateChat {
+			increment(chatID)
+		} else {
+			// your bot will not be able to send more than 20 messages per minute to the same group.
+			lastSend := lastSendByGroup[chatID]
+			diff := time.Since(lastSend)
+			if diff < pause {
+				time.Sleep(pause)
+			}
+			lastSendByGroup[chatID] = time.Now()
+		}
+		_, err := b.Send(
+			tb.ChatID(chatID),
+			what,
+			// &tb.SendOptions{
+			// 	// ParseMode:             tb.ModeMarkdownV2,
+			// 	DisableWebPagePreview: true,
+			// },
+			func() []interface{} {
+				result := options
+				result = append(result, tb.NoPreview)
+				return result
+			}()...,
+		)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 }
 

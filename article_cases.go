@@ -10,6 +10,7 @@ type ScreenshotMode string
 // ScreenshotMode variants
 const (
 	// ScreenshotModePage        ScreenshotMode = "Page"
+	ScreenshotModeSimplyWallSt ScreenshotMode = "SimplyWallSt"
 	ScreenshotModeTradingView  ScreenshotMode = "TradingView"
 	ScreenshotModeTradingView2 ScreenshotMode = "TradingView2"
 	ScreenshotModeImage        ScreenshotMode = "Image"
@@ -59,6 +60,10 @@ var ArticleCases = []ArticleCase{
 		screenshotMode: ScreenshotModeFinviz,
 		// y:              215,
 		// height:         845 - 91, /* (banner) */
+	},
+	{shortName: "sw", name: "simplywallst", linkURL: "https://simplywall.st%s",
+		description:    "Fair Value",
+		screenshotMode: ScreenshotModeSimplyWallSt,
 	},
 	{shortName: "gf", name: "gurufocus", linkURL: "https://gurufocus.com/stock/%s/summary#",
 		description:    "Summary",

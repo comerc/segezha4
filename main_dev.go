@@ -33,8 +33,8 @@ func _main() {
 	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
 	// buf := ss.MakeScreenshotForMarketWatch(linkURL)
 
-	linkURL := "https://www.gurufocus.com/stock/amd/summary#"
-	buf := ss.MakeScreenshotForGuruFocus(linkURL)
+	// linkURL := "https://www.gurufocus.com/stock/amd/summary#"
+	// buf := ss.MakeScreenshotForGuruFocus(linkURL)
 
 	// linkURL := "https://www.gurufocus.com/stock/irbt/summary#"
 	// buf := ss.MakeScreenshotForPage(linkURL, 0, 0, 0, 2042)
@@ -82,6 +82,9 @@ func _main() {
 
 	// linkURL := "https://zacks.com/stock/quote/tsla"
 	// buf := ss.MakeScreenshotForZacks(linkURL)
+
+	linkURL := "https://simplywall.st/stocks/us/automobiles/nasdaq-tsla/tesla"
+	_, buf := ss.MakeScreenshotForSimplyWallSt(linkURL)
 
 	if len(buf) == 0 {
 		log.Println("exit buf == 0")
