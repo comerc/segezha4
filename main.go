@@ -349,11 +349,11 @@ func main() {
 						key := int64(bytesToUint64(k))
 						val := int64(bytesToUint64(v))
 						totalValues += val
-						if val > 10 {
-							// s = s + fmt.Sprintf("\n%d %d", key, val)
+						if key < 0 {
+							s = s + escape(fmt.Sprintf("\n%d %d", key, val))
+						} else if val > 10 && key > 0 {
 							s = s + fmt.Sprintf("\n[%[1]d](tg://user?id=%[1]d) %d", key, val)
 						}
-						// log.Print(key, val)
 						return nil
 					}); err != nil {
 						return err
@@ -636,7 +636,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 					isAlarm = true
 				}
 				if isAlarm {
-					sendToAdmins(fmt.Sprintf("Not responsed %s", pingURL))
+					sendToAdmins(escape(fmt.Sprintf("Not responsed %s", pingURL)))
 				}
 			}()
 		}
@@ -777,7 +777,7 @@ func getWhatFinvizMap() interface{} {
 	caption := getCaption("#map", "", linkURL)
 	screenshot := ss.MakeScreenshotForFinvizMap(linkURL)
 	if len(screenshot) == 0 {
-		sendToAdmins("Invalid /map")
+		sendToAdmins(escape("Invalid /map"))
 		return caption
 	}
 	go writeFileToAssets(screenshot, "map.png")
@@ -817,7 +817,7 @@ func getWhatFear() interface{} {
 	caption := getCaption("#fear", "", linkURL)
 	screenshot := ss.MakeScreenshotForFear(linkURL)
 	if len(screenshot) == 0 {
-		sendToAdmins("Invalid /fear")
+		sendToAdmins(escape("Invalid /fear"))
 		return caption
 	}
 	go writeFileToAssets(screenshot, "fear.png")
@@ -843,7 +843,7 @@ func getWhatFinvizBB() interface{} {
 	caption := getCaption("#bb", "Bull or Bear", linkURL)
 	screenshot := ss.MakeScreenshotForFinvizBB(linkURL)
 	if len(screenshot) == 0 {
-		sendToAdmins("Invalid /bb")
+		sendToAdmins(escape("Invalid /bb"))
 		return caption
 	}
 	go writeFileToAssets(screenshot, "bb.png")
@@ -869,7 +869,7 @@ func getWhatMarketWatchIDs(tab ss.MarketWatchTab) interface{} {
 	caption := getCaption("#"+tab, "", linkURL)
 	screenshot := ss.MakeScreenshotForMarketWatchIDs(linkURL, tab)
 	if len(screenshot) == 0 {
-		sendToAdmins("Invalid /" + tab)
+		sendToAdmins(escape("Invalid /" + tab))
 		return caption
 	}
 	return &tb.Photo{
@@ -888,7 +888,7 @@ func getWhatBestDay() interface{} {
 	caption := escape("#bestday S&P500 1 Day Average Returns (1950-2019)")
 	screenshot := ss.MakeScreenshotForBestDay(linkURL)
 	if len(screenshot) == 0 {
-		sendToAdmins("Invalid /bestday")
+		sendToAdmins(escape("Invalid /bestday"))
 		return caption
 	}
 	return &tb.Photo{
@@ -972,7 +972,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 				linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(ticker.SimplyWallSt))
 				screenshot1, screenshot2 := ss.MakeScreenshotForSimplyWallSt(linkURL)
 				if len(screenshot1) == 0 {
-					sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+					sendToAdmins(escape(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol))))
 				} else {
 					a := make([]interface{}, 0)
 					a = append(a,
@@ -999,7 +999,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			fileURL := fmt.Sprintf("file://%s?%s", filePath, strings.Replace(symbol, " ", ":", -1))
 			screenshot := ss.MakeScreenshotForTradingView(fileURL)
 			if len(screenshot) == 0 {
-				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+				sendToAdmins(escape(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol))))
 			} else {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
@@ -1023,7 +1023,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			fileURL := fmt.Sprintf("file://%s?%s", filePath, strings.Replace(symbol, " ", ":", -1))
 			screenshot := ss.MakeScreenshotForTradingView2(fileURL)
 			if len(screenshot) == 0 {
-				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+				sendToAdmins(escape(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol))))
 			} else {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
@@ -1049,7 +1049,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
 			screenshot := ss.MakeScreenshotForFinviz(linkURL)
 			if len(screenshot) == 0 {
-				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+				sendToAdmins(escape(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol))))
 			} else {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
@@ -1064,7 +1064,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
 			screenshot := ss.MakeScreenshotForMarketWatch(linkURL)
 			if len(screenshot) == 0 {
-				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+				sendToAdmins(escape(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol))))
 			} else {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
@@ -1075,7 +1075,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
 			screenshot := ss.MakeScreenshotForCathiesArk(linkURL)
 			if len(screenshot) == 0 {
-				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+				sendToAdmins(escape(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol))))
 			} else {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
@@ -1090,7 +1090,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
 			screenshot := ss.MakeScreenshotForGuruFocus(linkURL)
 			if len(screenshot) == 0 {
-				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+				sendToAdmins(escape(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol))))
 			} else {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
@@ -1113,7 +1113,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 				linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToUpper(s))
 				screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
 				if len(screenshot) == 0 {
-					sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+					sendToAdmins(escape(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol))))
 				} else {
 					result = &tb.Photo{
 						File:    tb.FromReader(bytes.NewReader(screenshot)),
@@ -1129,7 +1129,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
 			screenshot := ss.MakeScreenshotForTipRanks2(linkURL)
 			if len(screenshot) == 0 {
-				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+				sendToAdmins(escape(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol))))
 			} else {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
@@ -1144,7 +1144,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
 			screenshot := ss.MakeScreenshotForZacks(linkURL)
 			if len(screenshot) == 0 {
-				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+				sendToAdmins(escape(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol))))
 			} else {
 				result = &tb.Photo{
 					File:    tb.FromReader(bytes.NewReader(screenshot)),
@@ -1167,7 +1167,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			dstURL := fmt.Sprintf(srcURL, symbol, "/fullscreen", volume, height)
 			screenshot := ss.MakeScreenshotForBarChart(dstURL)
 			if len(screenshot) == 0 {
-				sendToAdmins(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol)))
+				sendToAdmins(escape(fmt.Sprintf("Invalid /%s %s", articleCase.name, strings.ToUpper(tag+symbol))))
 			} else {
 				linkURL := fmt.Sprintf(srcURL, symbol, "", volume, height)
 				result = &tb.Photo{
@@ -1367,7 +1367,7 @@ func sendToAdmins(text string) {
 	for _, ID := range IDs {
 		_, err := b.Send(
 			tb.ChatID(utils.ConvertToInt(ID)),
-			escape(text),
+			text,
 			&tb.SendOptions{
 				// ParseMode:             tb.ModeMarkdownV2,
 				DisableWebPagePreview: true,
