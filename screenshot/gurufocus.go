@@ -60,6 +60,7 @@ func makeScreenshotForGuruFocus(linkURL string, x, y, width, height float64, qua
 		chromedp.SetAttributeValue("body > div.el-dialog__wrapper", "style", "display:none"),
 		chromedp.SetAttributeValue("body > div.v-modal", "style", "display:none"),
 		chromedp.Sleep(4 * time.Second),
+		chromedp.ActionFunc(hideIfExists(selMainContainer + " > section.notification-bar")),
 		chromedp.SetAttributeValue(selMainContainer+" > div.navbar", "style", "display:none"),
 		chromedp.SetAttributeValue(selMainContainer+" > div:nth-child(3)", "style", "display:none"),
 		// // chromedp.SetAttributeValue(selMoreMarginChild1+" > div.adswrapper", "style", "display:none"),
@@ -82,7 +83,7 @@ func makeScreenshotForGuruFocus(linkURL string, x, y, width, height float64, qua
 		chromedp.SetAttributeValue(selMoreMarginChild2+" #financials > div > div:nth-child(5)", "style", "width: 100%; height: 235px; position: relative;"),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			// get layout metrics
-			_, _, contentSize, err := page.GetLayoutMetrics().Do(ctx)
+			_, _, contentSize, _, _, _, err := page.GetLayoutMetrics().Do(ctx)
 			if err != nil {
 				return err
 			}
