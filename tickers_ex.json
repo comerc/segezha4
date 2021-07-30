@@ -1,5 +1,17 @@
 [
   {
+    "Symbol": "CMCS.A",
+    "Alter": true
+  },
+  {
+    "Symbol": "GOOG.L",
+    "Alter": true
+  },
+  {
+    "Symbol": "DISC.A",
+    "Alter": true
+  },
+  {
     "Symbol": "AACH",
     "Title": "AAC Holdings"
   },

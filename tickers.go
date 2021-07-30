@@ -14,7 +14,7 @@ import (
 
 // var tickersMu sync.Mutex
 
-func getTickers() []Ticker {
+func getTickers() []*Ticker {
 	// tickersMu.Lock()
 	// defer tickersMu.Unlock()
 	return tickers
@@ -37,8 +37,11 @@ func init() {
 			return
 		}
 		for _, tickerEx := range tmpEx {
-			if GetExactTicker(tickerEx.Symbol) == nil {
+			ticker := GetExactTickerForAlter(tickerEx.Symbol)
+			if ticker == nil {
 				tickers = append(tickers, tickerEx)
+			} else if tickerEx.Alter {
+				ticker.Alter = tickerEx.Alter
 			}
 		}
 	})
@@ -47,9 +50,9 @@ func init() {
 const filename = "tickers.json"
 const filenameEx = "tickers_ex.json"
 
-func load(filename string) ([]Ticker, error) {
+func load(filename string) ([]*Ticker, error) {
 	var (
-		result   []Ticker
+		result   []*Ticker
 		err      error
 		file     *os.File
 		jsonData []byte
@@ -127,10 +130,11 @@ type Ticker struct {
 	Symbol       string
 	Title        string
 	SimplyWallSt string
+	Alter        bool
 }
 
 // from https://stockanalysis.com/stocks/
-var tickers = []Ticker{}
+var tickers = []*Ticker{}
 
 // func Filter(vs []string, f func(string) bool) []string {
 // 	vsf := make([]string, 0)
@@ -147,8 +151,8 @@ var tickers = []Ticker{}
 // }
 
 // GetTickers function
-func GetTickers(search string) []Ticker {
-	result := []Ticker{}
+func GetTickers(search string) []*Ticker {
+	result := []*Ticker{}
 	if search != "" {
 		search = strings.ToUpper(search)
 		for _, ticker := range getTickers() {
@@ -176,7 +180,24 @@ func GetExactTicker(search string) *Ticker {
 			symbol = strings.Replace(symbol, ".", "", -1)
 			symbol = strings.ToUpper(symbol)
 			if symbol == search {
-				result = &ticker
+				result = ticker
+				break
+			}
+		}
+	}
+	return result
+}
+
+// GetExactTickerForAlter function
+func GetExactTickerForAlter(search string) *Ticker {
+	var result *Ticker
+	if search != "" {
+		search = strings.ToUpper(search)
+		for _, ticker := range getTickers() {
+			symbol := ticker.Symbol
+			symbol = strings.ToUpper(symbol)
+			if symbol == search {
+				result = ticker
 				break
 			}
 		}

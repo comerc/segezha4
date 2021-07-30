@@ -35,30 +35,6 @@ import (
 // TODO: Invalid /simplywallst #JFIN
 // TODO: Invalid /simplywallst #STLD
 // TODO: Invalid /simplywallst #BLUE
-// TODO: Invalid /finviz #DISCA
-// TODO: Invalid /finviz #CMCSA
-
-// 2021/07/29 14:27:36 util.go:18: runtime error: invalid memory address or nil pointer dereference
-// gopkg.in/tucnak/telebot%2ev2.(*Bot).debug
-//         /home/aka/go/pkg/mod/gopkg.in/tucnak/telebot.v2@v2.3.5/util.go:14
-// gopkg.in/tucnak/telebot%2ev2.(*Bot).deferDebug
-//         /home/aka/go/pkg/mod/gopkg.in/tucnak/telebot.v2@v2.3.5/util.go:25
-// runtime.gopanic
-//         /usr/local/go/src/runtime/panic.go:965
-// runtime.panicmem
-//         /usr/local/go/src/runtime/panic.go:212
-// runtime.sigpanic
-//         /usr/local/go/src/runtime/signal_unix.go:734
-// main.closeWhat.func1
-//         /home/aka/segezha4/main.go:1119
-// main.main.func2
-//         /home/aka/segezha4/main.go:342
-// gopkg.in/tucnak/telebot%2ev2.(*Bot).handle.func1
-//         /home/aka/go/pkg/mod/gopkg.in/tucnak/telebot.v2@v2.3.5/bot.go:462
-// gopkg.in/tucnak/telebot%2ev2.(*Bot).runHandler.func1
-//         /home/aka/go/pkg/mod/gopkg.in/tucnak/telebot.v2@v2.3.5/util.go:35
-// runtime.goexit
-//         /usr/local/go/src/runtime/asm_amd64.s:1371
 
 // TODO: обогощать информером сообщения MarketTwits #wsb #акции #sentiment #WISH
 
@@ -66,13 +42,9 @@ import (
 
 // TODO: собирать метрики сколько каким информером пользуются
 
-// TODO: упал /bch $vix
-
 // TODO: Хочется оформлять информер в виде ответа на сообщения с отчётом. Чтобы работал переход.
 
 // TODO: https://swaggystocks.com/dashboard/home
-
-// TODO: http://simplywall.st
 
 // TODO: откуда тянуть данные для индексов https://t.me/c/1363975627/4588
 
@@ -132,7 +104,6 @@ import (
 
 // TODO: источник по ТА https://finviz.com/screener.ashx?v=210&s=ta_p_tlresistance
 // TODO: источник по ТА https://ru.investing.com/equities/facebook-inc-technical
-// TODO: Тикеры с точкой BRK.B RDS.A (finviz заменяет на "-")
 // TODO: подсказки, если неправильные команды в приватном чате
 // TODO: демо всех тикеров в приватном чате
 // TODO: параллельная обработка https://gobyexample.ru/worker-pools.html
@@ -163,8 +134,6 @@ import (
 // TODO: поиск по ticker.title
 // TODO: README
 // TODO: svg to png
-// TODO: подключить tradingview.com
-// TODO: добавить тайм-фрейм в пакетный режим /tv TSLA?15 TSLA?4H
 // TODO: выборка с графиками https://finviz.com/screener.ashx?v=212&t=ZM,BA,MU,MS,GE,AA
 
 var (
@@ -374,9 +343,9 @@ func main() {
 			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, "reset")
 		} else if text == "/bb" {
 			handleBB(m)
-			// } else if text == "/vix" {
-			// 	getWhat := closeWhat("$VIX", GetExactArticleCase("barchart"))
-			// 	send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhat())
+		} else if text == "/vix" {
+			getWhat := closeWhat("$VIX", GetExactArticleCase("barchart"))
+			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhat())
 		} else if text == "/spy" {
 			getWhat := closeWhat("SPY", GetExactArticleCase("barchart"))
 			send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhat())
@@ -723,7 +692,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 					callbacks = append(callbacks, getWhatFinvizBB)
 					callbacks = append(callbacks, getWhatFinvizMap)
 				}
-				// callbacks = append(callbacks, closeWhat("$VIX", GetExactArticleCase("barchart")))
+				callbacks = append(callbacks, closeWhat("$VIX", GetExactArticleCase("barchart")))
 				// callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabUS))
 				// if h >= 8 && h <= 17 {
 				// 	callbacks = append(callbacks, closeWhatMarketWatchIDs(ss.MarketWatchTabEurope))
@@ -990,7 +959,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		case ScreenshotModeTradingView:
 			s := symbol
-			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+			if ticker != nil && !ticker.Alter {
 				s = ticker.Symbol
 			}
 			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
@@ -1008,7 +977,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		case ScreenshotModeTradingView2:
 			s := symbol
-			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+			if ticker != nil && !ticker.Alter {
 				s = ticker.Symbol
 			}
 			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
@@ -1032,7 +1001,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		case ScreenshotModeImage:
 			s := symbol
-			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+			if ticker != nil && !ticker.Alter {
 				s = ticker.Symbol
 			}
 			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
@@ -1043,7 +1012,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		case ScreenshotModeFinviz:
 			s := symbol
-			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+			if ticker != nil && !ticker.Alter {
 				s = strings.Replace(ticker.Symbol, ".", "-", -1)
 			}
 			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
@@ -1058,7 +1027,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		case ScreenshotModeMarketWatch:
 			s := symbol
-			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+			if ticker != nil && !ticker.Alter {
 				s = ticker.Symbol
 			}
 			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
@@ -1084,7 +1053,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		case ScreenshotModeGuruFocus:
 			s := symbol
-			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+			if ticker != nil && !ticker.Alter {
 				s = ticker.Symbol
 			}
 			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
@@ -1098,17 +1067,17 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 				}
 			}
 		case ScreenshotModeMarketBeat:
-			if ticker.SimplyWallSt == "" {
+			if ticker == nil || ticker.SimplyWallSt == "" {
 				linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(symbol))
 				result = nil
 			} else {
 				a := strings.Split(ticker.SimplyWallSt, "/")
 				aa := strings.Split(a[4], "-")
-				if strings.Compare(ticker.Symbol, "GOOG.L") == 0 {
-					aa[1] = "GOOGL"
-				} else if strings.Contains(ticker.Symbol, ".") {
-					aa[1] = strings.Replace(ticker.Symbol, ".", "-", -1)
+				to := "-"
+				if ticker.Alter {
+					to = ""
 				}
+				aa[1] = strings.Replace(ticker.Symbol, ".", to, -1)
 				s := fmt.Sprintf("%s/%s", aa[0], aa[1])
 				linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToUpper(s))
 				screenshot := ss.MakeScreenshotForMarketBeat(linkURL)
@@ -1123,7 +1092,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		case ScreenshotModeTipRanks:
 			s := symbol
-			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+			if ticker != nil && !ticker.Alter {
 				s = ticker.Symbol
 			}
 			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
@@ -1138,7 +1107,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		case ScreenshotModeZacks:
 			s := symbol
-			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+			if ticker != nil && !ticker.Alter {
 				s = ticker.Symbol
 			}
 			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
@@ -1153,10 +1122,10 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		case ScreenshotModeBarChart:
 			s := symbol
-			if strings.Contains(ticker.Symbol, ".") && strings.Compare(ticker.Symbol, "GOOG.L") != 0 {
+			if ticker != nil && !ticker.Alter {
 				s = ticker.Symbol
 			}
-			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToLower(s))
+			linkURL = fmt.Sprintf(articleCase.linkURL, strings.ToUpper(s))
 			volume, height := func() (string, string) {
 				if strings.HasPrefix(symbol, "$") {
 					return "0", "O"
@@ -1331,7 +1300,7 @@ func closeWhatMarketWatchIDs(tab ss.MarketWatchTab) getWhat {
 }
 
 func isBarChart(text string) bool {
-	return strings.HasPrefix(strings.ToUpper(text), "/BARCHART ")
+	return strings.HasPrefix(strings.ToUpper(text), "/BARCHART ") || strings.HasPrefix(strings.ToUpper(text), "/BCH")
 }
 
 // **** db routines
