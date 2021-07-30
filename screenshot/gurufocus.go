@@ -83,7 +83,7 @@ func makeScreenshotForGuruFocus(linkURL string, x, y, width, height float64, qua
 		chromedp.SetAttributeValue(selMoreMarginChild2+" #financials > div > div:nth-child(5)", "style", "width: 100%; height: 235px; position: relative;"),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			// get layout metrics
-			_, _, contentSize, _, _, _, err := page.GetLayoutMetrics().Do(ctx)
+			_, _, contentSize, err := page.GetLayoutMetrics().Do(ctx)
 			if err != nil {
 				return err
 			}

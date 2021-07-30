@@ -87,16 +87,16 @@ func glueForFinviz(buf1, buf2, buf3 []byte, src *image.Image) error {
 		return err
 	}
 	buf2 = nil
-	// img3, _, err := image.Decode(bytes.NewReader(buf3))
-	// if err != nil {
-	// 	return err
-	// }
-	// buf3 = nil
+	img3, _, err := image.Decode(bytes.NewReader(buf3))
+	if err != nil {
+		return err
+	}
+	buf3 = nil
 	glueImages(img1, img2, src)
-	// glueImages(*src, img3, src)
+	glueImages(*src, img3, src)
 	img1 = nil
 	img2 = nil
-	// img3 = nil
+	img3 = nil
 	return nil
 }
 
@@ -119,11 +119,11 @@ func takeScreenshotForFinviz(ctx context.Context, buf1, buf2, buf3 *[]byte) erro
 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
 		return chromedp.Tasks{
 			chromedp.SetAttributeValue(selChart, "style", "margin-bottom:10px"),
-			chromedp.Screenshot(selChart, buf3, chromedp.NodeVisible),
+			chromedp.Screenshot(selChart, buf1, chromedp.NodeVisible),
 			chromedp.SetAttributeValue(selTitleContainer, "style", "padding:0"),
-			chromedp.Screenshot(selTitle, buf1, chromedp.NodeVisible),
+			chromedp.Screenshot(selTitle, buf2, chromedp.NodeVisible),
 			chromedp.SetAttributeValue(selTable, "style", "margin-top:16px"),
-			chromedp.Screenshot(selTable, buf2, chromedp.NodeVisible),
+			chromedp.Screenshot(selTable, buf3, chromedp.NodeVisible),
 		}
 	}()); err != nil {
 		return err

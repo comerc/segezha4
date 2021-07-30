@@ -24,7 +24,7 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// TODO: оптимизировать /sm
+// TODO: оптимизировать /sm и убрать 3.1 и 4.1
 
 // TODO: объединить /bb и /map в один информер
 

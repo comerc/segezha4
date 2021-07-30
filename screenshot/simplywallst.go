@@ -32,15 +32,15 @@ func MakeScreenshotForSimplyWallSt(linkURL string) ([]byte, []byte) {
 	selFairValue := "[data-cy-id='report-sub-section-share-price-vs-fair-value']"
 	selERGrowth := "[data-cy-id='report-sub-section-earnings-and-revenue-growth-forecasts']"
 	selFutureGrowth := "[data-cy-id='report-sub-section-analyst-future-growth-forecasts']"
-	script := `
-	(css) => {
-		const style = document.createElement('style');
-		style.type = 'text/css';
-		style.appendChild(document.createTextNode(css));
-		document.head.appendChild(style);
-		return true;
-	}
-	`
+	// script := `
+	// (css) => {
+	// 	const style = document.createElement('style');
+	// 	style.type = 'text/css';
+	// 	style.appendChild(document.createTextNode(css));
+	// 	document.head.appendChild(style);
+	// 	return true;
+	// }
+	// `
 	var buf1, buf2, buf3, buf4 []byte
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
@@ -49,7 +49,8 @@ func MakeScreenshotForSimplyWallSt(linkURL string) ([]byte, []byte) {
 			chromedp.WaitReady("body"),
 			chromedp.SetAttributeValue("#root", "style", "margin: -16px"),
 			chromedp.SetAttributeValue(selNav, "style", "display:none"),
-			chromedp.PollFunction(script, nil, chromedp.WithPollingArgs("#root h3:before { display:none }")),
+			// chromedp.PollFunction(script, nil, chromedp.WithPollingArgs("#root h3:before { display:none }")),
+			chromedp.ActionFunc(AddCSS),
 
 			chromedp.SetAttributeValue(selSnowflake+" > h4", "style", "display:none"),
 			chromedp.SetAttributeValue(selSnowflake+" > p", "style", "display:none"),
@@ -123,4 +124,19 @@ func glueForSimplyWallSt(buf1, buf2 []byte, src *image.Image) error {
 	img1 = nil
 	img2 = nil
 	return nil
+}
+
+func AddCSS(ctx context.Context) error {
+	css := "#root h3:before { display:none }"
+	script := `
+	(() => {
+		const style = document.createElement('style');
+		style.type = 'text/css';
+		style.appendChild(document.createTextNode(` + "`" + css + "`" + `));
+		document.head.appendChild(style);
+	})()
+	`
+	var evaluateResult []byte
+	err := chromedp.Evaluate(script, &evaluateResult).Do(ctx)
+	return err
 }

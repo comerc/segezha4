@@ -3,10 +3,11 @@ module github.com/comerc/segezha4
 go 1.16
 
 require (
-	github.com/IvanMenshykov/MoonPhase v0.0.0-20210411203237-6c61017953a8
-	github.com/chromedp/cdproto v0.0.0-20210728214956-1fab41c4e0b7
-	github.com/chromedp/chromedp v0.7.4
+	github.com/IvanMenshykov/MoonPhase v0.0.0-20180124195458-2a9432a62575
+	github.com/chromedp/cdproto v0.0.0-20210305224431-50b9f457e822
+	github.com/chromedp/chromedp v0.6.8
 	github.com/dgraph-io/badger v1.6.2
+	github.com/dgraph-io/badger/v3 v3.2011.1 // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/radovskyb/watcher v1.0.7
 	// github.com/pkg/errors v0.8.1
