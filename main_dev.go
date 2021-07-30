@@ -83,7 +83,7 @@ func _main() {
 	// linkURL := "https://zacks.com/stock/quote/tsla"
 	// buf := ss.MakeScreenshotForZacks(linkURL)
 
-	linkURL := "https://simplywall.st/stocks/us/automobiles/nasdaq-tsla/tesla"
+	linkURL := "https://simplywall.st/stocks/us/pharmaceuticals-biotech/nasdaq-blue/bluebird-bio"
 	_, buf := ss.MakeScreenshotForSimplyWallSt(linkURL)
 
 	if len(buf) == 0 {

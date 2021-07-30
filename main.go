@@ -24,17 +24,7 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// TODO: оптимизировать /sm и убрать 3.1 и 4.1
-
 // TODO: объединить /bb и /map в один информер
-
-// TODO: Invalid /simplywallst #COP
-// TODO: Invalid /simplywallst #PBR
-// TODO: Invalid /simplywallst #RMD
-// TODO: Invalid /simplywallst #SCCO
-// TODO: Invalid /simplywallst #JFIN
-// TODO: Invalid /simplywallst #STLD
-// TODO: Invalid /simplywallst #BLUE
 
 // TODO: обогощать информером сообщения MarketTwits #wsb #акции #sentiment #WISH
 
