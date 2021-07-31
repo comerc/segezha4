@@ -24,6 +24,10 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: /sw spi не выдаёт второй информер
+
+// TODO: кешировать /sw раз в сутки по запросу
+
 // TODO: объединить /bb и /map в один информер
 
 // TODO: обогощать информером сообщения MarketTwits #wsb #акции #sentiment #WISH
@@ -310,7 +314,7 @@ func main() {
 						totalValues += val
 						if key < 0 {
 							s = s + escape(fmt.Sprintf("\n%d %d", key, val))
-						} else if val > 10 && key > 0 {
+						} else if val >= 100 && key > 0 {
 							s = s + fmt.Sprintf("\n[%[1]d](tg://user?id=%[1]d) %d", key, val)
 						}
 						return nil
