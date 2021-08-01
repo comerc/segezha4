@@ -24,6 +24,20 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: /futures в кнопки, /bb приклеить к /map
+
+// TODO: запрашивать у бота фильтр по передаваемому списку Zacks #1 и #2
+
+// TODO: Пожелание: пока бот думает, пусть хоть action typing шлёт, чтобы я понимал, что он думает, а не просто игнорирует мои сообщения)
+
+// TODO: https://shortsqueeze.com/?symbol=SAVA "Trading Volume - Today vs Avg"
+
+// TODO: getUserInfo 370341170 (активный пользователь)
+
+// TODO: надо бы уже распарсить etfdb по большему весу бумажек
+
+// TODO: надо бы уже распарсить tipranks по топовым аналитикам
+
 // TODO: /sw spi не выдаёт второй информер
 
 // TODO: кешировать /sw раз в сутки по запросу
@@ -943,11 +957,13 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 							File:    tb.FromReader(bytes.NewReader(screenshot1)),
 							Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
 						})
-					a = append(a,
-						&tb.Photo{
-							File:    tb.FromReader(bytes.NewReader(screenshot2)),
-							Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
-						})
+					if len(screenshot2) != 0 {
+						a = append(a,
+							&tb.Photo{
+								File:    tb.FromReader(bytes.NewReader(screenshot2)),
+								Caption: getCaption(strings.ToUpper(tag+symbol), "", linkURL),
+							})
+					}
 					result = a
 				}
 			}
