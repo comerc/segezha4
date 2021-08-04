@@ -48,6 +48,8 @@ func MakeScreenshotForGuruFocus(linkURL string) []byte {
 //
 // Note: this will override the viewport emulation settings.
 func makeScreenshotForGuruFocus(linkURL string, x, y, width, height float64, quality int64, res *[]byte) chromedp.Tasks {
+	// body > #__nuxt > #__layout > div > div.main-container  > section.el-container > main > div.more-margin > section.el-container  > main.el-main > div.responsive-section:nth-child(1)
+	// body > #__nuxt > #__layout > div > div.main-container  > section.el-container > main > div.more-margin > section.el-container  > main.el-main > div.responsive-section:nth-child(2)
 	selMainContainer := "body > #__nuxt > #__layout > div > div.main-container"
 	selMoreMarginSection := selMainContainer + " > section.el-container > main > div.more-margin > section.el-container"
 	selMoreMarginChild1 := selMoreMarginSection + " > main.el-main > div.responsive-section:nth-child(1)"
@@ -56,7 +58,8 @@ func makeScreenshotForGuruFocus(linkURL string, x, y, width, height float64, qua
 		chromedp.Emulate(device.IPadPro),
 		chromedp.Navigate(linkURL),
 		chromedp.WaitReady("body"),
-		chromedp.SetAttributeValue("#__layout > div > div > section > div > aside", "style", "display:none"),
+		chromedp.ActionFunc(hideIfExists("#__layout > div > div.main-container > section:nth-child(4) > div > div.note-button > i")),
+		chromedp.ActionFunc(hideIfExists("#__layout > div > div > section > div > aside")),
 		chromedp.SetAttributeValue("body > div.el-dialog__wrapper", "style", "display:none"),
 		chromedp.SetAttributeValue("body > div.v-modal", "style", "display:none"),
 		chromedp.Sleep(4 * time.Second),
