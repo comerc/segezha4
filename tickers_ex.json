@@ -1,5 +1,15 @@
 [
   {
+    "Symbol": "TAK",
+    "Title": "Takeda Pharmaceutical",
+    "SimplyWallSt": "/stocks/us//nyse-tak/"
+  },
+  {
+    "Symbol": "TSM",
+    "Title": "Taiwan Semiconductor Manufacturing Company Ltd.",
+    "SimplyWallSt": "/stocks/us//nyse-tsm/"
+  },
+  {
     "Symbol": "CMCS.A",
     "Alter": true
   },
@@ -4346,10 +4356,6 @@
   {
     "Symbol": "TAC",
     "Title": "TransAlta"
-  },
-  {
-    "Symbol": "TAK",
-    "Title": "Takeda Pharmaceutical"
   },
   {
     "Symbol": "TAT",
