@@ -24,11 +24,13 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: не работает /fsq /str /sta /ear
+
 // TODO: /futures в кнопки, /bb приклеить к /map
 
 // TODO: запрашивать у бота фильтр по передаваемому списку Zacks #1 и #2
 
-// TODO: Пожелание: пока бот думает, пусть хоть action typing шлёт, чтобы я понимал, что он думает, а не просто игнорирует мои сообщения)
+// TODO: пока бот думает, пусть хоть action typing шлёт, чтобы я понимал, что он думает, а не просто игнорирует мои сообщения)
 
 // TODO: https://shortsqueeze.com/?symbol=SAVA "Trading Volume - Today vs Avg"
 
