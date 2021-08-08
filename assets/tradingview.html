@@ -56,6 +56,11 @@ const s = queryString.substr(1)
 const a = s.split(':')
 const symbol = a[0]
 const interval = a[1] ?? 'D'
+if (interval == 'D') {
+  studies.push({
+    id: 'MoonPhases@tv-basicstudies',
+  })
+}
 const tw = new TradingView.widget({
   symbol,
   interval,
