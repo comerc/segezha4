@@ -10,6 +10,10 @@
     "SimplyWallSt": "/stocks/us//nyse-tsm/"
   },
   {
+    "Symbol": "QRTE.A",
+    "Alter": true
+  },
+  {
     "Symbol": "CMCS.A",
     "Alter": true
   },
