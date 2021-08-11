@@ -33,7 +33,7 @@ type Dst struct {
 	SimplyWallSt string
 }
 
-func Run() {
+func Run() bool {
 	allTickers = make([]*Ticker, 0)
 	steps := 0
 	for step := 0; step <= steps; step++ {
@@ -41,9 +41,13 @@ func Run() {
 		totalRecords := getData(offset)
 		steps = totalRecords / limit
 	}
+	if steps < 200 {
+		log.Print("error: steps < 200")
+		return false
+	}
 	if len(allTickers) == 0 {
 		log.Print("error: allTickers is empty")
-		return
+		return false
 	}
 	result := make([]*Dst, 0)
 	for _, ticker := range allTickers {
@@ -56,13 +60,14 @@ func Run() {
 	file, err := json.MarshalIndent(result, "", " ")
 	if err != nil {
 		log.Print(err)
-		return
+		return false
 	}
 	err = ioutil.WriteFile("tickers.json", file, 0644)
 	if err != nil {
 		log.Print(err)
-		return
+		return false
 	}
+	return true
 }
 
 func getData(offset int) int {
