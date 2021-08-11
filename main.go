@@ -24,6 +24,12 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: автоматизировать импорт growth и парсить valued
+
+// TODO: Периодически рассылать пользователем бота сообщение без нотификации с этими кнопками. И потом удалять отправленное сообщение.
+
+// TODO: предупреждать о полной и новой луне за день до/после, если выпадает на выходные
+
 // TODO: https://shortdata.ru/chart/MRNA (но уже есть /shv)
 
 // TODO: сообщения "not found" удалять после паузы
@@ -406,7 +412,7 @@ func main() {
 				callbacks = append(callbacks, closeWhat(symbol, articleCase))
 			}
 			sendBatch(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, callbacks)
-		} else if isEarnings(text) {
+		} else if isEarnings(text) || isOnaryx(text) {
 			re := regexp.MustCompile(`(?i)(^|[^A-Z])\$([A-Z]+)`)
 			matches := re.FindAllStringSubmatch(text, -1)
 			executed := make([]string, 0)
@@ -652,7 +658,11 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 		h := utc.Hour()
 		m := utc.Minute()
 		if h == 0 && m == 0 && s == 0 {
-			go import_tickers.Run()
+			go func() {
+				if !import_tickers.Run() {
+					sendToAdmins(escape("Error of import_tickers.Run()"))
+				}
+			}()
 		}
 		if d != currentDay {
 			currentDay = d
@@ -890,6 +900,11 @@ func getWhatBestDay() interface{} {
 
 func isEarnings(text string) bool {
 	re := regexp.MustCompile("#ОТЧЕТ") // TODO: #отчетность by @MarketTwits
+	return re.FindStringIndex(text) != nil
+}
+
+func isOnaryx(text string) bool {
+	re := regexp.MustCompile("⏸ Приостановка торгов")
 	return re.FindStringIndex(text) != nil
 }
 
