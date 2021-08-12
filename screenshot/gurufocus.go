@@ -59,7 +59,6 @@ func makeScreenshotForGuruFocus(linkURL string, x, y, width, height float64, qua
 		network.SetBlockedURLS([]string{
 			"https://www.google-analytics.com/analytics.js",
 			"*doubleclick.net*",
-			"*google.com*",
 			"*googlesyndication.com*",
 		}),
 		chromedp.Emulate(device.IPadPro),
@@ -91,6 +90,7 @@ func makeScreenshotForGuruFocus(linkURL string, x, y, width, height float64, qua
 		chromedp.SetAttributeValue(selMoreMarginChild2+" #financials > div > div:nth-child(3)", "style", "width: 100%; height: 235px; position: relative;"),
 		chromedp.SetAttributeValue(selMoreMarginChild2+" #financials > div > div:nth-child(4)", "style", "width: 100%; height: 235px; position: relative;"),
 		chromedp.SetAttributeValue(selMoreMarginChild2+" #financials > div > div:nth-child(5)", "style", "width: 100%; height: 235px; position: relative;"),
+		chromedp.SetAttributeValue("#components-root", "style", "height: calc(100vh);"),
 		chromedp.ActionFunc(func(ctx context.Context) error {
 			// get layout metrics
 			_, _, contentSize, err := page.GetLayoutMetrics().Do(ctx)
