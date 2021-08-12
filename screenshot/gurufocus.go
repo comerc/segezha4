@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/chromedp/cdproto/emulation"
+	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
@@ -55,6 +56,12 @@ func makeScreenshotForGuruFocus(linkURL string, x, y, width, height float64, qua
 	selMoreMarginChild1 := selMoreMarginSection + " > main.el-main > div.responsive-section:nth-child(1)"
 	selMoreMarginChild2 := selMoreMarginSection + " > main.el-main > div.responsive-section:nth-child(2)"
 	return chromedp.Tasks{
+		network.SetBlockedURLS([]string{
+			"https://www.google-analytics.com/analytics.js",
+			"*doubleclick.net*",
+			"*google.com*",
+			"*googlesyndication.com*",
+		}),
 		chromedp.Emulate(device.IPadPro),
 		chromedp.Navigate(linkURL),
 		chromedp.WaitReady("body"),
