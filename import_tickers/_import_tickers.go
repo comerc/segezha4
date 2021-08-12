@@ -1,12 +1,18 @@
-package import_tickers
+package main
 
 import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
+	"time"
 )
+
+func main() {
+	Run()
+}
 
 type Ticker struct {
 	Name         string `json:"name"`
@@ -25,7 +31,7 @@ type Src struct {
 
 var allTickers []*Ticker
 
-const limit = 44
+const limit = 24
 
 type Dst struct {
 	Symbol       string
@@ -37,6 +43,8 @@ func Run() bool {
 	allTickers = make([]*Ticker, 0)
 	steps := 0
 	for step := 0; step <= steps; step++ {
+		time.Sleep(time.Duration(getRand(1, 4)) * time.Second)
+		log.Print("step ", step)
 		offset := step * limit
 		totalRecords := getData(offset)
 		steps = totalRecords / limit
@@ -80,18 +88,57 @@ func getData(offset int) int {
 		"state":              "read",
 	})
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		return 0
 	}
+	// client := &http.Client{
+	// 	Timeout: 10 * time.Minute,
+	// }
+	// request, err := http.NewRequest("POST", "https://api.simplywall.st/api/grid/filter?include=grid,score", bytes.NewBuffer(requestBody))
+	// if err != nil {
+	// 	log.Print(err)
+	// 	return 0
+	// }
+	// request.Header.Add("accept", "application/json")
+	// request.Header.Add("accept-encoding", "gzip, deflate, br")
+	// request.Header.Add("accept-language", "en")
+	// request.Header.Add("cache-control", "no-cache")
+	// // request.Header.Add("content-length", "289")
+	// request.Header.Add("content-type", "application/json")
+	// request.Header.Add("origin", "https://simplywall.st")
+	// request.Header.Add("pragma", "no-cache")
+	// request.Header.Add("referer", "https://simplywall.st")
+	// request.Header.Add("sec-fetch-dest", "empty")
+	// request.Header.Add("sec-fetch-mode", "cors")
+	// request.Header.Add("sec-fetch-site", "same-site")
+	// request.Header.Add("user-agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36")
+	// request.Header.Add("x-requested-with", "sws-services/mono-v1.14.33")
+	// response, err := client.Do(request)
 	response, err := http.Post(
-		"https://api.simplywall.st/api/grid/filter",
+		"https://api.simplywall.st/api/grid/filter?include=grid,score",
 		"application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		log.Print(err)
 		return 0
 	}
 	defer response.Body.Close()
+	// var p []byte
+	// n, err := response.Body.Read(p)
+	// if err != nil {
+	// 	log.Print(err)
+	// }
+	// log.Print(string(p), n)
+	// return 0
 	var src Src
-	json.NewDecoder(response.Body).Decode(&src)
+	if err := json.NewDecoder(response.Body).Decode(&src); err != nil {
+		log.Print(err)
+		return 0
+	}
 	allTickers = append(allTickers, src.Data...)
 	return src.Meta.TotalRecords
+}
+
+func getRand(min, max int) int {
+	rand.Seed(time.Now().UnixNano())
+	return rand.Intn(max-min+1) + min
 }

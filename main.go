@@ -16,13 +16,20 @@ import (
 	"time"
 
 	"github.com/IvanMenshykov/MoonPhase"
-	"github.com/comerc/segezha4/import_tickers"
 	ss "github.com/comerc/segezha4/screenshot"
 	"github.com/comerc/segezha4/utils"
 	"github.com/dgraph-io/badger"
 	"github.com/joho/godotenv"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
+
+//TODO: https://api.simplywall.st/api/company/stocks/us/tech/nasdaq-aapl/apple?include=info,score%2Cscore%2Canalysis.extended.raw_data%2Canalysis.extended.raw_data.insider_transactions&version=2.0
+
+// TODO: убрать рекламу из /gf
+
+// TODO: ротация main.log
+
+// TODO: https://www.optionistics.com/screener/volume-screener & https://marketchameleon.com/Reports/UnusualOptionVolumeReport
 
 // TODO: автоматизировать импорт growth и парсить valued
 
@@ -657,13 +664,13 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 		}
 		h := utc.Hour()
 		m := utc.Minute()
-		if h == 0 && m == 0 && s == 0 {
-			go func() {
-				if !import_tickers.Run() {
-					sendToAdmins(escape("Error of import_tickers.Run()"))
-				}
-			}()
-		}
+		// if h == 0 && m == 0 && s == 0 {
+		// 	go func() {
+		// 		if !import_tickers.Run() {
+		// 			sendToAdmins(escape("Error of import_tickers.Run()"))
+		// 		}
+		// 	}()
+		// }
 		if d != currentDay {
 			currentDay = d
 			go func() {
