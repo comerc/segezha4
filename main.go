@@ -24,6 +24,8 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: (simplywall.st) /nysemkt-xxii/ - https://www.marketbeat.com/stocks/NYSEAMERICAN/XXII/
+
 // TODO: переделать tickers на map и обновлять постепенно, сколько получится вытащить из simplywall.st
 
 // TODO: https://api.simplywall.st/api/company/stocks/us/tech/nasdaq-aapl/apple?include=info,score%2Cscore%2Canalysis.extended.raw_data%2Canalysis.extended.raw_data.insider_transactions&version=2.0
@@ -1126,6 +1128,9 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 				to := "-"
 				if ticker.Alter {
 					to = ""
+				}
+				if aa[0] == "nysemkt" {
+					aa[0] = "NYSEAMERICAN"
 				}
 				aa[1] = strings.Replace(ticker.Symbol, ".", to, -1)
 				s := fmt.Sprintf("%s/%s", aa[0], aa[1])
