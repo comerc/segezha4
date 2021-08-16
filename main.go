@@ -24,17 +24,17 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: /gfq - gurufocus квартальный
+
 // TODO: переделать tickers на map и обновлять постепенно, сколько получится вытащить из simplywall.st
 
 // TODO: https://api.simplywall.st/api/company/stocks/us/tech/nasdaq-aapl/apple?include=info,score%2Cscore%2Canalysis.extended.raw_data%2Canalysis.extended.raw_data.insider_transactions&version=2.0
-
-// TODO: убрать рекламу из /gf
 
 // TODO: ротация main.log
 
 // TODO: https://www.optionistics.com/screener/volume-screener & https://marketchameleon.com/Reports/UnusualOptionVolumeReport
 
-// TODO: автоматизировать импорт growth и парсить valued
+// TODO: автоматизировать импорт growth и парсить valued из /sw
 
 // TODO: Периодически рассылать пользователем бота сообщение без нотификации с этими кнопками. И потом удалять отправленное сообщение.
 
@@ -60,7 +60,7 @@ import (
 
 // TODO: https://shortsqueeze.com/?symbol=SAVA "Trading Volume - Today vs Avg"
 
-// TODO: getUserInfo 370341170 (активный пользователь)
+// TODO: getUserInfo 370341170 (активный пользователь) - кто это?
 
 // TODO: надо бы уже распарсить etfdb по большему весу бумажек
 
