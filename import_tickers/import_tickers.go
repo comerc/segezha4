@@ -8,6 +8,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"net/http/httputil"
 	"time"
 )
 
@@ -120,6 +121,11 @@ func getData(offset int) int {
 	var src Src
 	if err := json.NewDecoder(response.Body).Decode(&src); err != nil {
 		log.Print(err)
+		b, err := httputil.DumpResponse(response, true)
+		if err != nil {
+			log.Print(err)
+		}
+		log.Print(string(b))
 		return 0
 	}
 	allTickers = append(allTickers, src.Data...)
