@@ -24,6 +24,12 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: собирать статистику запросов по бумажкам на дату, исключая админские и автоматические; и выдавать отчёт раз в неделю
+
+// TODO: https://www.cnbc.com/sector-etfs/
+
+// TODO: https://stockbeep.com/unusual-volume-stocks
+
 // TODO: /gfq - gurufocus квартальный
 
 // TODO: переделать tickers на map и обновлять постепенно, сколько получится вытащить из simplywall.st
@@ -636,10 +642,10 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 				isAlarm := false
 				response, err := netClient.Get(fmt.Sprintf("%s?rand=%d", pingURL, time.Now().Unix()))
 				if err != nil {
-					log.Printf("netClient.Get(pingURL): %s", err)
+					log.Printf("netClient.Get for pingURL > %s", err)
 					isAlarm = true
 				} else if response.StatusCode != 200 {
-					log.Print("netClient.Get(pingURL): response.StatusCode != 200")
+					log.Print("netClient.Get for pingURL > response.StatusCode != 200")
 					isAlarm = true
 				}
 				if isAlarm {
@@ -696,7 +702,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 					linkURL := "https://finviz.com/"
 					screenshot := ss.MakeScreenshotForFinvizBB(linkURL)
 					if len(screenshot) == 0 {
-						log.Print("error MakeScreenshotForFinvizBB() == 0")
+						log.Print("error: MakeScreenshotForFinvizBB() == 0")
 					}
 					writeFileToAssets(screenshot, "bb.png")
 				}()
@@ -704,7 +710,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 					linkURL := "https://finviz.com/map.ashx?t=sec"
 					screenshot := ss.MakeScreenshotForFinvizMap(linkURL)
 					if len(screenshot) == 0 {
-						log.Print("error MakeScreenshotForFinvizMap() == 0")
+						log.Print("error: MakeScreenshotForFinvizMap() == 0")
 					}
 					writeFileToAssets(screenshot, "map.png")
 				}()
@@ -1379,7 +1385,7 @@ func increment(chatID int64) {
 	defer m.Stop()
 	err := m.Add(uint64ToBytes(1))
 	if err != nil {
-		log.Printf("increment() chatID: %d %s", chatID, err)
+		log.Printf("increment > chatID: %d %s", chatID, err)
 	}
 }
 
@@ -1547,6 +1553,6 @@ func writeFileToAssets(buf []byte, fileName string) {
 	path, _ := os.Getwd()
 	filePath := filepath.Join(path, "assets/"+fileName)
 	if err := ioutil.WriteFile(filePath, buf, 0644); err != nil {
-		log.Print("error writeFileToAssets() ", fileName)
+		log.Print("error: writeFileToAssets for ", fileName)
 	}
 }
