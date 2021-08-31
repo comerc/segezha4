@@ -65,6 +65,7 @@ func MakeScreenshotForSimplyWallSt(linkURL string) ([]byte, []byte) {
 			chromedp.WaitReady("body"),
 			chromedp.SetAttributeValue("#root", "style", "margin: -16px"),
 			chromedp.SetAttributeValue(selNav, "style", "display:none"),
+			chromedp.ActionFunc(hideIfExists("iframe")),
 			// chromedp.PollFunction(script, nil, chromedp.WithPollingArgs("#root h3:before { display:none }")),
 			chromedp.ActionFunc(AddCSS),
 		}
