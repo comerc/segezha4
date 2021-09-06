@@ -24,6 +24,8 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: U.S. Market Barometer https://www.morningstar.com/markets
+
 // TODO: собирать статистику запросов по бумажкам на дату, исключая админские и автоматические; и выдавать отчёт раз в неделю
 
 // TODO: https://www.cnbc.com/sector-etfs/
@@ -663,7 +665,8 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 		isIndependenceDay := month == 7 && d == 4
 		isChristmas := month == 12 && d == 25
 		isMemorialDay := month == 5 && d > 24 && w == 1
-		if isNewYear || isIndependenceDay || isChristmas || isMemorialDay {
+		isLaborDay := month == 9 && d < 8 && w == 1
+		if isNewYear || isIndependenceDay || isChristmas || isMemorialDay || isLaborDay {
 			continue
 		}
 		if d == pauseDay {
@@ -1463,7 +1466,7 @@ func getAdminMessageSelector(m *tb.Message) *tb.ReplyMarkup {
 				log.Print(err)
 			}
 		}
-		b.Delete(m2)
+		b.Delete(m2) // TODO: отчёт о доставке
 	})
 	go func() {
 		time.Sleep(1 * time.Minute)
