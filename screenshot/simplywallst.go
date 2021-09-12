@@ -37,6 +37,7 @@ func MakeScreenshotForSimplyWallSt(linkURL string) ([]byte, []byte) {
 	const average = 14
 	ctx2, cancel2 := context.WithTimeout(ctx1, utils.GetTimeout(average))
 	defer cancel2()
+	selHeader := "[data-cy-id='header-cover-image']"
 	selNav := "#root > div > nav"
 	// script := `
 	// (css) => {
@@ -63,7 +64,10 @@ func MakeScreenshotForSimplyWallSt(linkURL string) ([]byte, []byte) {
 			chromedp.Emulate(device.KindleFireHDX),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body"),
-			chromedp.SetAttributeValue("#root", "style", "margin: -16px"),
+			chromedp.SetAttributeValue("#root", "style", "margin: 0 -16px"),
+			chromedp.SetAttributeValue("#root > div > div", "style", "display:none"),
+			chromedp.SetAttributeValue("#root > div", "style", "padding-top: env(safe-area-inset-top)"),
+			chromedp.SetAttributeValue(selHeader, "style", "display:none"),
 			chromedp.SetAttributeValue(selNav, "style", "display:none"),
 			chromedp.ActionFunc(hideIfExists("iframe")),
 			// chromedp.PollFunction(script, nil, chromedp.WithPollingArgs("#root h3:before { display:none }")),
@@ -73,9 +77,32 @@ func MakeScreenshotForSimplyWallSt(linkURL string) ([]byte, []byte) {
 		log.Println(err)
 		return nil, nil
 	}
-	if err := takeScreenshotForSimplyWallSt(ctx2, &buf1, &buf2, &buf3, &buf4); err != nil {
+	// !!!!
+	var nodes []*cdp.Node
+	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
+		return chromedp.Tasks{
+			chromedp.Nodes("section[data-variant]", &nodes, chromedp.AtLeast(0)),
+		}
+	}()); err != nil {
 		log.Println(err)
+	} else {
+		if len(nodes) == 0 {
+			if err := takeScreenshotForSimplyWallSt(ctx2, &buf1, &buf2, &buf3, &buf4); err != nil {
+				log.Println(err)
+			}
+		} else {
+			if nodes[0].Attributes[0] == "data-variant" && nodes[0].Attributes[1] == "c" {
+				if err := takeScreenshotForSimplyWallStVariantC(ctx2, &buf1, &buf2, &buf3, &buf4); err != nil {
+					log.Println(err)
+				}
+			} else {
+				if err := takeScreenshotForSimplyWallStOtherVariant(ctx2, &buf1, &buf2, &buf3, &buf4); err != nil {
+					log.Println(err)
+				}
+			}
+		}
 	}
+	// !!!!
 	var out1, out2 []byte
 	if len(buf2) == 0 {
 		out1 = buf1
@@ -185,6 +212,175 @@ func takeScreenshotForSimplyWallSt(ctx context.Context, buf1, buf2, buf3, buf4 *
 			chromedp.SetAttributeValue(selERGrowth+" > div > div > div:nth-child(1) > div:nth-child(2)", "style", "display: none"),
 			chromedp.SetAttributeValue(selERGrowth+" > div > div > div:nth-child(2)", "style", "display: none"),
 			chromedp.Screenshot(selERGrowth, buf3, chromedp.NodeVisible),
+			chromedp.SetAttributeValue(selFutureGrowth, "style", "padding: 8px"),
+			chromedp.SetAttributeValue(selFutureGrowth+" > h3", "style", "display: none"),
+			chromedp.SetAttributeValue(selFutureGrowth+" > div > div > div:nth-child(2)", "style", "display: none"),
+			chromedp.SetAttributeValue(selFutureGrowth+" > div:nth-child(2) > div:nth-child(2)", "style", "display: none"),
+			chromedp.Screenshot(selFutureGrowth, buf4, chromedp.NodeVisible),
+		}
+	}()); err != nil {
+		return err
+	}
+	return nil
+}
+
+func takeScreenshotForSimplyWallStOtherVariant(ctx context.Context, buf1, buf2, buf3, buf4 *[]byte) error {
+	selCompany := "[data-cy-id='company-summary'] > div"
+	// selFairValue := "[data-cy-id='report-sub-section-share-price-vs-fair-value']"
+	// selERGrowth := "[data-cy-id='report-sub-section-earnings-and-revenue-growth-forecasts']"
+	// selFutureGrowth := "[data-cy-id='report-sub-section-analyst-future-growth-forecasts']"
+	if err := chromedp.Run(ctx, func() chromedp.Tasks {
+		return chromedp.Tasks{
+			chromedp.SetAttributeValue(selCompany, "style", "padding: 0; min-height: 0;"),
+			chromedp.SetAttributeValue(selCompany+" > div > h2", "style", "display: none"),
+			chromedp.SetAttributeValue(selCompany+" > div > [data-cy-id='company-summary-desc']", "style", "display: none"),
+			chromedp.SetAttributeValue(selCompany+" > div > [data-cy-id='company-about-button']", "style", "display: none"),
+			chromedp.SetAttributeValue(selCompany+" > div > [data-cy-id='risk-reward-wrapper']", "style", "display: none"),
+			chromedp.SetAttributeValue(selCompany+" > div > div > div", "style", "height: 280px"),
+			chromedp.SetAttributeValue(selCompany+" > div > div > div > div", "style", "max-width: unset; width: 280px; margin: 0 auto;"),
+			chromedp.SetAttributeValue(selCompany+" > div > div > div > div > div:nth-child(2)", "style", "display: none"),
+			chromedp.SetAttributeValue(selCompany+" > div > div > div:nth-child(3)", "style", "display: none"),
+			chromedp.SetAttributeValue(selCompany+" > div > div", "style", "max-width: unset; margin: 0; float: unset; flex: unset;"),
+			// chromedp.SetAttributeValue("[data-cy-id='summary-risk-modal-button']", "style", "display:none"),
+			// chromedp.SetAttributeValue("[data-cy-id='overview-summary-snowflake'] > div:nth-child(2)", "style", "display:none"),
+			// chromedp.SetAttributeValue("[data-cy-id='chart-action-toggle-data-overview-summary-snowflake']", "style", "display:none"),
+			// chromedp.SetAttributeValue("[data-cy-id='chart-action-help-overview-summary-snowflake']", "style", "display:none"),
+			// chromedp.SetAttributeValue("[data-cy-id='chart-action-more-overview-summary-snowflake']", "style", "display:none"),
+			chromedp.Screenshot(selCompany, buf1, chromedp.NodeVisible),
+		}
+	}()); err != nil {
+		return err
+	}
+	// {
+	// 	var nodes []*cdp.Node
+	// 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
+	// 		return chromedp.Tasks{
+	// 			chromedp.Nodes("#root article > section", &nodes, chromedp.AtLeast(0)),
+	// 		}
+	// 	}()); err != nil {
+	// 		return err
+	// 	}
+	// 	log.Print(len(nodes))
+	// 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
+	// 		return chromedp.Tasks{
+	// 			chromedp.ActionFunc(func(ctx context.Context) error {
+	// 				for i, node := range nodes {
+	// 					if i == 7 {
+	// 						break
+	// 					}
+	// 					log.Printf("%#v", node.Attributes)
+	// 					if err := dom.SetAttributeValue(nodes[i].NodeID, "style", "display:none").Do(ctx); err != nil {
+	// 						return err
+	// 					}
+	// 				}
+	// 				return nil
+	// 			}),
+	// 		}
+	// 	}()); err != nil {
+	// 		return err
+	// 	}
+	// }
+	// var nodes []*cdp.Node
+	// if err := chromedp.Run(ctx, func() chromedp.Tasks {
+	// 	return chromedp.Tasks{
+	// 		chromedp.Nodes(selFairValue+" > div > div > div", &nodes, chromedp.AtLeast(0)),
+	// 	}
+	// }()); err != nil {
+	// 	return err
+	// }
+	// log.Print(len(nodes))
+	// if len(nodes) != 0 {
+	// 	if err := chromedp.Run(ctx, func() chromedp.Tasks {
+	// 		return chromedp.Tasks{
+	// 			chromedp.SetAttributeValue(selFairValue, "style", "padding: 8px"),
+	// 			chromedp.SetAttributeValue(selFairValue+" > div > div > div:nth-child(2)", "style", "display: none"),
+	// 			chromedp.SetAttributeValue(selFairValue+" > div > div:nth-child(2)", "style", "display: none"),
+	// 			chromedp.Screenshot(selFairValue, buf2, chromedp.NodeVisible),
+	// 		}
+	// 	}()); err != nil {
+	// 		return err
+	// 	}
+	// }
+	// if err := chromedp.Run(ctx, func() chromedp.Tasks {
+	// 	return chromedp.Tasks{
+	// 		chromedp.SetAttributeValue("#root article > section:nth-child(5)", "style", "display:none"),
+	// 		chromedp.SetAttributeValue(selERGrowth, "style", "padding: 8px"),
+	// 		chromedp.SetAttributeValue(selERGrowth+" > div > div > div > div > div > div", "style", "display: none"),
+	// 		chromedp.SetAttributeValue(selERGrowth+" > div > div > div:nth-child(1) > div:nth-child(2)", "style", "display: none"),
+	// 		chromedp.SetAttributeValue(selERGrowth+" > div > div > div:nth-child(2)", "style", "display: none"),
+	// 		chromedp.Screenshot(selERGrowth, buf3, chromedp.NodeVisible),
+	// 		// chromedp.SetAttributeValue(selERGrowth, "style", "display:none"),
+	// 		chromedp.SetAttributeValue(selFutureGrowth, "style", "padding: 8px"),
+	// 		chromedp.SetAttributeValue(selFutureGrowth+" > h3", "style", "display: none"),
+	// 		chromedp.SetAttributeValue(selFutureGrowth+" > div > div > div:nth-child(2)", "style", "display: none"),
+	// 		chromedp.SetAttributeValue(selFutureGrowth+" > div:nth-child(2) > div:nth-child(2)", "style", "display: none"),
+	// 		chromedp.Screenshot(selFutureGrowth, buf4, chromedp.NodeVisible),
+	// 	}
+	// }()); err != nil {
+	// 	return err
+	// }
+	return nil
+}
+
+func takeScreenshotForSimplyWallStVariantC(ctx context.Context, buf1, buf2, buf3, buf4 *[]byte) error {
+	selCompany := "[data-cy-id='company-summary'] > div"
+	selFairValue := "[data-cy-id='report-sub-section-share-price-vs-fair-value']"
+	selERGrowth := "[data-cy-id='report-sub-section-earnings-and-revenue-growth-forecasts']"
+	selFutureGrowth := "[data-cy-id='report-sub-section-analyst-future-growth-forecasts']"
+	if err := chromedp.Run(ctx, func() chromedp.Tasks {
+		return chromedp.Tasks{
+			chromedp.SetAttributeValue(selCompany, "style", "padding: 0; min-height: 0;"),
+			chromedp.SetAttributeValue(selCompany+" > div > h2", "style", "display: none"),
+			chromedp.SetAttributeValue(selCompany+" > div > [data-cy-id='company-summary-desc']", "style", "display: none"),
+			chromedp.SetAttributeValue(selCompany+" > div > [data-cy-id='risk-reward-wrapper']", "style", "display: none"),
+			chromedp.SetAttributeValue(selCompany+" > div > div > div", "style", "height: 280px"),
+			chromedp.SetAttributeValue(selCompany+" > div > div > div > div", "style", "max-width: unset; width: 280px; margin: 0 auto;"),
+			chromedp.SetAttributeValue(selCompany+" > div > div > div > div > div:nth-child(2)", "style", "display: none"),
+			chromedp.SetAttributeValue(selCompany+" > div > div > div:nth-child(3)", "style", "display: none"),
+			chromedp.SetAttributeValue(selCompany+" > div > div", "style", "max-width: unset; margin: 0; float: unset; flex: unset;"),
+			// chromedp.SetAttributeValue("[data-cy-id='summary-risk-modal-button']", "style", "display:none"),
+			// chromedp.SetAttributeValue("[data-cy-id='overview-summary-snowflake'] > div:nth-child(2)", "style", "display:none"),
+			// chromedp.SetAttributeValue("[data-cy-id='chart-action-toggle-data-overview-summary-snowflake']", "style", "display:none"),
+			// chromedp.SetAttributeValue("[data-cy-id='chart-action-help-overview-summary-snowflake']", "style", "display:none"),
+			// chromedp.SetAttributeValue("[data-cy-id='chart-action-more-overview-summary-snowflake']", "style", "display:none"),
+			chromedp.Screenshot(selCompany, buf1, chromedp.NodeVisible),
+			chromedp.SetAttributeValue("#root article > section:nth-child(1)", "style", "display:none"),
+			chromedp.SetAttributeValue("#root article > section:nth-child(2)", "style", "display:none"),
+			chromedp.SetAttributeValue("#root article > section:nth-child(3)", "style", "display:none"),
+			chromedp.SetAttributeValue("#root article > section.dabTGn", "style", "display:none"),
+		}
+	}()); err != nil {
+		return err
+	}
+	var nodes []*cdp.Node
+	if err := chromedp.Run(ctx, func() chromedp.Tasks {
+		return chromedp.Tasks{
+			chromedp.Nodes(selFairValue+" > div > div > div", &nodes, chromedp.AtLeast(0)),
+		}
+	}()); err != nil {
+		return err
+	}
+	if len(nodes) != 0 {
+		if err := chromedp.Run(ctx, func() chromedp.Tasks {
+			return chromedp.Tasks{
+				chromedp.SetAttributeValue(selFairValue, "style", "padding: 8px"),
+				chromedp.SetAttributeValue(selFairValue+" > div > div > div:nth-child(2)", "style", "display: none"),
+				chromedp.SetAttributeValue(selFairValue+" > div > div:nth-child(2)", "style", "display: none"),
+				chromedp.Screenshot(selFairValue, buf2, chromedp.NodeVisible),
+			}
+		}()); err != nil {
+			return err
+		}
+	}
+	if err := chromedp.Run(ctx, func() chromedp.Tasks {
+		return chromedp.Tasks{
+			chromedp.SetAttributeValue("#root article > section:nth-child(5)", "style", "display:none"),
+			chromedp.SetAttributeValue(selERGrowth, "style", "padding: 8px"),
+			chromedp.SetAttributeValue(selERGrowth+" > div > div > div > div > div > div", "style", "display: none"),
+			chromedp.SetAttributeValue(selERGrowth+" > div > div > div:nth-child(1) > div:nth-child(2)", "style", "display: none"),
+			chromedp.SetAttributeValue(selERGrowth+" > div > div > div:nth-child(2)", "style", "display: none"),
+			chromedp.Screenshot(selERGrowth, buf3, chromedp.NodeVisible),
+			// chromedp.SetAttributeValue(selERGrowth, "style", "display:none"),
 			chromedp.SetAttributeValue(selFutureGrowth, "style", "padding: 8px"),
 			chromedp.SetAttributeValue(selFutureGrowth+" > h3", "style", "display: none"),
 			chromedp.SetAttributeValue(selFutureGrowth+" > div > div > div:nth-child(2)", "style", "display: none"),

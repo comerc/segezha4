@@ -30,8 +30,8 @@ func _main() {
 	// linkURL := "https://www.marketwatch.com/"
 	// buf := ss.MakeScreenshotForMarketWatchIDs(linkURL, ss.MarketWatchTabUS)
 
-	linkURL := "https://marketwatch.com/investing/stock/TSLA"
-	buf := ss.MakeScreenshotForMarketWatch(linkURL)
+	// linkURL := "https://marketwatch.com/investing/stock/TSLA"
+	// buf := ss.MakeScreenshotForMarketWatch(linkURL)
 
 	// linkURL := "https://www.gurufocus.com/stock/amd/summary#"
 	// buf := ss.MakeScreenshotForGuruFocus(linkURL)
@@ -83,7 +83,14 @@ func _main() {
 	// linkURL := "https://zacks.com/stock/quote/tsla"
 	// buf := ss.MakeScreenshotForZacks(linkURL)
 
+	// linkURL := "https://simplywall.st/stocks/us/retail/nasdaq-amzn/amazoncom"
+	// linkURL := "https://simplywall.st/stocks/us/software/nasdaq-msft/microsoft"
 	// linkURL := "https://simplywall.st/stocks/us/pharmaceuticals-biotech/nasdaq-blue/bluebird-bio"
+
+	// linkURL := "https://simplywall.st/stocks/us/semiconductors/nasdaq-amat/applied-materials" // variant b
+	linkURL := "https://simplywall.st/stocks/us/media/nasdaq-goog.l/alphabet" // variant c
+	// linkURL := "https://simplywall.st/stocks/us/capital-goods/nyse-ajrd/aerojet-rocketdyne-holdings" // variant d
+	buf, _ := ss.MakeScreenshotForSimplyWallSt(linkURL)
 	// _, buf := ss.MakeScreenshotForSimplyWallSt(linkURL)
 
 	if len(buf) == 0 {
