@@ -919,7 +919,7 @@ func getWhatBestDay() interface{} {
 }
 
 func isEarnings(text string) bool {
-	re := regexp.MustCompile("#ОТЧЕТ") // TODO: #отчетность by @MarketTwits
+	re := regexp.MustCompile("#отчёт")
 	return re.FindStringIndex(text) != nil
 }
 
