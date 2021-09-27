@@ -24,6 +24,18 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: банер для #инвестидеи by @InvestingCorp
+
+// TODO: /fear показывает вчерашние данные
+
+// TODO: #VOW not found (исключить $VOW3@DE, или вообще все @DE)
+
+// TODO: информер для https://fstock.ru/etf - раз в час для вытрезвителя
+
+// TODO: Обновление данных в режиме реального времени в закрепленном сообщении: https://t.me/investing/11632
+
+// TODO: не работает /sw TAK TSM
+
 // TODO: U.S. Market Barometer https://www.morningstar.com/markets
 
 // TODO: собирать статистику запросов по бумажкам на дату, исключая админские и автоматические; и выдавать отчёт раз в неделю
