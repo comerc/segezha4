@@ -24,6 +24,16 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: smartctl -H /dev/sda (подробнее тут: http://sysadm.pp.ua/linux/monitoring-systems/smartd.html)
+
+// TODO: информер для order flow distibution by webull
+
+// TODO: подключить к новому новостному каналу: /map, /bb
+
+// TODO: починить /map, /fear, объединить /bb & /map
+
+// TODO: бот отвечает мгновенно сообщением "wait...", которое меняется на информер, когда он готов
+
 // TODO: банер для #инвестидеи by @InvestingCorp
 
 // TODO: /fear показывает вчерашние данные
@@ -46,7 +56,7 @@ import (
 
 // TODO: /gfq - gurufocus квартальный
 
-// TODO: переделать tickers на map и обновлять постепенно, сколько получится вытащить из simplywall.st
+// TODO: переделать tickers на [map] и обновлять постепенно, сколько получится вытащить из simplywall.st
 
 // TODO: https://api.simplywall.st/api/company/stocks/us/tech/nasdaq-aapl/apple?include=info,score%2Cscore%2Canalysis.extended.raw_data%2Canalysis.extended.raw_data.insider_transactions&version=2.0
 
@@ -941,11 +951,13 @@ func isOnaryx(text string) bool {
 }
 
 func isARK(text string) bool {
+	// TODO: переделать под FTT "ТОРГОВАЯ ДЕЯТЕЛЬНОСТЬ КЭТИ ВУД & ARKINVEST", только для сердечек
 	re := regexp.MustCompile("#ARK Trading Desk")
 	return re.FindStringIndex(text) != nil
 }
 
 func isWatchList(text string) bool {
+	// TODO: загнулся формат на @usamarke1
 	re := regexp.MustCompile("#Watch_list")
 	return re.FindStringIndex(text) != nil
 }
@@ -957,7 +969,9 @@ func isInsiders(text string) bool {
 }
 
 func isIdeas(text string) bool {
-	re := regexp.MustCompile("(?i)#Идеи_покупок|#ИнвестИдея")
+	// TODO: для FTT, больше не используется #ИнвестИдея
+	// TODO: заставить @investingcorp добавлять хештег для тикера вместе с #инвестидеи
+	re := regexp.MustCompile("(?i)#Идеи_покупок")
 	return re.FindStringIndex(text) != nil
 }
 
