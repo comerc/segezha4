@@ -24,6 +24,8 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO: кнопка Refresh под информерами и время последнего обновления (актуально для отчётов)
+
 // TODO: smartctl -H /dev/sda (подробнее тут: http://sysadm.pp.ua/linux/monitoring-systems/smartd.html)
 
 // TODO: информер для order flow distibution by webull
@@ -941,7 +943,7 @@ func getWhatBestDay() interface{} {
 }
 
 func isEarnings(text string) bool {
-	re := regexp.MustCompile("#отчёт")
+	re := regexp.MustCompile("🗂 #отчёт")
 	return re.FindStringIndex(text) != nil
 }
 
