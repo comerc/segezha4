@@ -31,11 +31,11 @@ func MakeScreenshotForFinvizMap(linkURL string) []byte {
 	const average = 9
 	ctx2, cancel2 := context.WithTimeout(ctx1, utils.GetTimeout(average))
 	defer cancel2()
-	selHeader := "body > table.header"
-	selNavbar := "body > table.navbar"
-	selView := "body > div.content.map > div.fv-container > div.view"
-	selChart := "body > div.content.map > div.fv-container > div.content-view-map > #map > #body > div > div > canvas.chart"
-	selFooter := "body > div.content.map > div.fv-container > div.content-view-map > #map > #body > div > div:nth-child(2)"
+	// selHeader := "body > table.header"
+	// selNavbar := "body > table.navbar"
+	// selView := "body > div.content.map > div.fv-container > div.view"
+	selChart := "#body > canvas.chart"
+	// selFooter := "body > div.content.map > div.fv-container > div.content-view-map > #map > #body > div > div:nth-child(2)"
 	var buf []byte
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
@@ -64,12 +64,12 @@ func MakeScreenshotForFinvizMap(linkURL string) []byte {
 			// chromedp.Emulate(device.KindleFireHDXlandscape),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body"),
-			chromedp.SetAttributeValue(selHeader, "style", "display:none"),
-			chromedp.SetAttributeValue(selNavbar, "style", "display:none"),
-			chromedp.SetAttributeValue(selView, "style", "display:none"),
-			// chromedp.SetAttributeValue(selChart, "style", "margin:2px 0 0 2px; width: 788px;height: 438px;"),
-			chromedp.SetAttributeValue(selChart, "style", "margin:2px 1px 1px 2px; width: 1211px; height: 672px;"),
-			chromedp.SetAttributeValue(selFooter, "style", "display:none"),
+			// chromedp.SetAttributeValue(selHeader, "style", "display:none"),
+			// chromedp.SetAttributeValue(selNavbar, "style", "display:none"),
+			// chromedp.SetAttributeValue(selView, "style", "display:none"),
+			// // chromedp.SetAttributeValue(selChart, "style", "margin:2px 0 0 2px; width: 788px;height: 438px;"),
+			// chromedp.SetAttributeValue(selChart, "style", "margin:2px 1px 1px 2px; width: 1211px; height: 672px;"),
+			// chromedp.SetAttributeValue(selFooter, "style", "display:none"),
 			chromedp.Screenshot(selChart, &buf, chromedp.NodeVisible),
 		}
 	}()); err != nil {
