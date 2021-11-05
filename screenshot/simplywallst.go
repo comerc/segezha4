@@ -37,8 +37,8 @@ func MakeScreenshotForSimplyWallSt(linkURL string) ([]byte, []byte) {
 	const average = 14
 	ctx2, cancel2 := context.WithTimeout(ctx1, utils.GetTimeout(average))
 	defer cancel2()
-	selHeader := "[data-cy-id='header-cover-image']"
-	selNav := "#root > div > nav"
+	// selHeader := "[data-cy-id='header-cover-image']"
+	// selNav := "#root > div > nav"
 	// script := `
 	// (css) => {
 	// 	const style = document.createElement('style');
@@ -48,7 +48,10 @@ func MakeScreenshotForSimplyWallSt(linkURL string) ([]byte, []byte) {
 	// 	return true;
 	// }
 	// `
-	var buf1, buf2, buf3, buf4 []byte
+	// var buf1, buf2, buf3, buf4 []byte
+	var out1, out2 []byte
+	sel1 := "[data-cy-id='overview-summary-snowflake'] > div"
+	sel2 := "[data-cy-id='report-sub-section-share-price-vs-fair-value'] > div > div > svg"
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 		return chromedp.Tasks{
 			network.SetBlockedURLS([]string{
@@ -64,53 +67,58 @@ func MakeScreenshotForSimplyWallSt(linkURL string) ([]byte, []byte) {
 			chromedp.Emulate(device.KindleFireHDX),
 			chromedp.Navigate(linkURL),
 			chromedp.WaitReady("body"),
-			chromedp.SetAttributeValue("#root", "style", "margin: 0 -16px"),
-			chromedp.SetAttributeValue("#root > div > div", "style", "display:none"),
-			chromedp.SetAttributeValue("#root > div", "style", "padding-top: env(safe-area-inset-top)"),
-			chromedp.SetAttributeValue(selHeader, "style", "display:none"),
-			chromedp.SetAttributeValue(selNav, "style", "display:none"),
-			chromedp.ActionFunc(hideIfExists("iframe")),
+			// chromedp.SetAttributeValue("#root", "style", "margin: 0 -16px"),
+			// chromedp.SetAttributeValue("#root > div > div", "style", "display:none"),
+			// chromedp.SetAttributeValue("#root > div", "style", "padding-top: env(safe-area-inset-top)"),
+			// chromedp.SetAttributeValue(selHeader, "style", "display:none"),
+			// chromedp.SetAttributeValue(selNav, "style", "display:none"),
+			// chromedp.ActionFunc(hideIfExists("iframe")),
 			// chromedp.PollFunction(script, nil, chromedp.WithPollingArgs("#root h3:before { display:none }")),
-			chromedp.ActionFunc(AddCSS),
+			// chromedp.ActionFunc(AddCSS),
+			chromedp.Screenshot(sel1, &out1, chromedp.NodeVisible),
+			chromedp.SetAttributeValue("#company-report > div", "style", "display:none"),
+			chromedp.SetAttributeValue(sel2, "style", "margin: 20px 0"),
+			chromedp.Screenshot(sel2, &out2, chromedp.NodeVisible),
 		}
 	}()); err != nil {
 		log.Println(err)
 		return nil, nil
 	}
-	// !!!!
-	var nodes []*cdp.Node
-	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
-		return chromedp.Tasks{
-			chromedp.Nodes("section[data-variant]", &nodes, chromedp.AtLeast(0)),
-		}
-	}()); err != nil {
-		log.Println(err)
-	} else {
-		if len(nodes) == 0 {
-			if err := takeScreenshotForSimplyWallSt(ctx2, &buf1, &buf2, &buf3, &buf4); err != nil {
-				log.Println(err)
-			}
-		} else {
-			if nodes[0].Attributes[0] == "data-variant" && nodes[0].Attributes[1] == "c" {
-				if err := takeScreenshotForSimplyWallStVariantC(ctx2, &buf1, &buf2, &buf3, &buf4); err != nil {
-					log.Println(err)
-				}
-			} else {
-				if err := takeScreenshotForSimplyWallStOtherVariant(ctx2, &buf1, &buf2, &buf3, &buf4); err != nil {
-					log.Println(err)
-				}
-			}
-		}
-	}
-	// !!!!
-	var out1, out2 []byte
-	if len(buf2) == 0 {
-		out1 = buf1
-	} else {
-		out1 = getOut(buf1, buf2)
-	}
-	out2 = getOut(buf3, buf4)
 	return out1, out2
+	// // !!!!
+	// var nodes []*cdp.Node
+	// if err := chromedp.Run(ctx2, func() chromedp.Tasks {
+	// 	return chromedp.Tasks{
+	// 		chromedp.Nodes("section[data-variant]", &nodes, chromedp.AtLeast(0)),
+	// 	}
+	// }()); err != nil {
+	// 	log.Println(err)
+	// } else {
+	// 	if len(nodes) == 0 {
+	// 		if err := takeScreenshotForSimplyWallSt(ctx2, &buf1, &buf2, &buf3, &buf4); err != nil {
+	// 			log.Println(err)
+	// 		}
+	// 	} else {
+	// 		if nodes[0].Attributes[0] == "data-variant" && nodes[0].Attributes[1] == "c" {
+	// 			if err := takeScreenshotForSimplyWallStVariantC(ctx2, &buf1, &buf2, &buf3, &buf4); err != nil {
+	// 				log.Println(err)
+	// 			}
+	// 		} else {
+	// 			if err := takeScreenshotForSimplyWallStOtherVariant(ctx2, &buf1, &buf2, &buf3, &buf4); err != nil {
+	// 				log.Println(err)
+	// 			}
+	// 		}
+	// 	}
+	// }
+	// // !!!!
+	// var out1, out2 []byte
+	// if len(buf2) == 0 {
+	// 	out1 = buf1
+	// } else {
+	// 	out1 = getOut(buf1, buf2)
+	// }
+	// out2 = getOut(buf3, buf4)
+	// return out1, out2
 }
 
 func getOut(buf1, buf2 []byte) []byte {
