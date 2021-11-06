@@ -9,6 +9,7 @@ import (
 	"image"
 	"image/png"
 	"log"
+	"time"
 
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/network"
@@ -77,6 +78,7 @@ func MakeScreenshotForSimplyWallSt(linkURL string) ([]byte, []byte) {
 			// chromedp.ActionFunc(AddCSS),
 			chromedp.Screenshot(sel1, &out1, chromedp.NodeVisible),
 			chromedp.SetAttributeValue("#company-report > div", "style", "display:none"),
+			chromedp.Sleep(1 * time.Second),
 		}
 	}()); err != nil {
 		log.Println(err)
@@ -91,8 +93,9 @@ func MakeScreenshotForSimplyWallSt(linkURL string) ([]byte, []byte) {
 	}()); err != nil {
 		log.Println(err)
 	} else {
+		log.Print(len(nodes))
 		if len(nodes) == 1 {
-			if err := chromedp.Run(ctx, func() chromedp.Tasks {
+			if err := chromedp.Run(ctx2, func() chromedp.Tasks {
 				return chromedp.Tasks{
 					chromedp.SetAttributeValue(sel2, "style", "margin: 20px 0"),
 					chromedp.Screenshot(sel2, &out2, chromedp.NodeVisible),
