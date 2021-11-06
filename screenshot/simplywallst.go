@@ -77,12 +77,30 @@ func MakeScreenshotForSimplyWallSt(linkURL string) ([]byte, []byte) {
 			// chromedp.ActionFunc(AddCSS),
 			chromedp.Screenshot(sel1, &out1, chromedp.NodeVisible),
 			chromedp.SetAttributeValue("#company-report > div", "style", "display:none"),
-			chromedp.SetAttributeValue(sel2, "style", "margin: 20px 0"),
-			chromedp.Screenshot(sel2, &out2, chromedp.NodeVisible),
 		}
 	}()); err != nil {
 		log.Println(err)
 		return nil, nil
+	}
+	// !!!!
+	var nodes []*cdp.Node
+	if err := chromedp.Run(ctx2, func() chromedp.Tasks {
+		return chromedp.Tasks{
+			chromedp.Nodes(sel2, &nodes, chromedp.AtLeast(0)),
+		}
+	}()); err != nil {
+		log.Println(err)
+	} else {
+		if len(nodes) == 1 {
+			if err := chromedp.Run(ctx, func() chromedp.Tasks {
+				return chromedp.Tasks{
+					chromedp.SetAttributeValue(sel2, "style", "margin: 20px 0"),
+					chromedp.Screenshot(sel2, &out2, chromedp.NodeVisible),
+				}
+			}()); err != nil {
+				log.Println(err)
+			}
+		}
 	}
 	return out1, out2
 	// // !!!!
