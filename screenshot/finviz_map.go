@@ -34,7 +34,7 @@ func MakeScreenshotForFinvizMap(linkURL string) []byte {
 	// selHeader := "body > table.header"
 	// selNavbar := "body > table.navbar"
 	// selView := "body > div.content.map > div.fv-container > div.view"
-	selChart := "#body > canvas.chart"
+	selChart := "#body > #canvas-wrapper > canvas.chart"
 	// selFooter := "body > div.content.map > div.fv-container > div.content-view-map > #map > #body > div > div:nth-child(2)"
 	var buf []byte
 	if err := chromedp.Run(ctx2, func() chromedp.Tasks {

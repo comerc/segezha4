@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -833,13 +834,31 @@ func getWhatFinvizMap() interface{} {
 }
 
 func getWhatFinvizMapFastly() interface{} {
-	linkURL := "https://finviz.com/map.ashx?t=sec"
-	defer utils.Elapsed(linkURL)()
-	caption := getCaption("#map", "", linkURL)
-	return &tb.Photo{
-		File:    tb.FromDisk("./assets/map.png"),
-		Caption: caption,
+	const filename = "./assets/map.png"
+	if fileIsExist(filename) {
+		linkURL := "https://finviz.com/map.ashx?t=sec"
+		defer utils.Elapsed(linkURL)()
+		caption := getCaption("#map", "", linkURL)
+		return &tb.Photo{
+			File:    tb.FromDisk(filename),
+			Caption: caption,
+		}
 	}
+	return getWhatFinvizMap()
+}
+
+func fileIsExist(filename string) bool {
+	if _, err := os.Stat(filename); err == nil {
+		// path exists
+		return true
+	} else if errors.Is(err, os.ErrNotExist) {
+		// path does *not* exist
+	} else {
+		// Schrodinger: file may or may not exist. See err for details.
+		// Therefore, do *NOT* use !os.IsNotExist(err) to test for file existence
+		log.Print(err)
+	}
+	return false
 }
 
 func getWhatFullMoon() interface{} {
