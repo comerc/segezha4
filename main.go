@@ -5,13 +5,13 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math"
 	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -257,7 +257,7 @@ func main() {
 	{
 		path := filepath.Join(".", ".data")
 		if _, err := os.Stat(path); os.IsNotExist(err) {
-			os.Mkdir(path, os.ModePerm)
+			_ = os.Mkdir(path, os.ModePerm)
 		}
 		var err error
 		db, err = badger.Open(badger.DefaultOptions(path))
@@ -265,7 +265,11 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-	defer db.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Print(err)
+		}
+	}()
 	var (
 		// port      = os.Getenv("PORT")
 		// publicURL = os.Getenv("PUBLIC_URL") // you must add it to your config vars
@@ -288,11 +292,11 @@ func main() {
 		var err error
 		b, err = tb.NewBot(pref)
 		if err != nil {
-			log.Fatal(err)
+			log.Panic(err)
 		}
 	}
 	// b.Handle(tb.OnCallback, func(*tb.Callback) {
-	// 	log.Println("OnCallback")
+	// 	log.Print("OnCallback")
 	// })
 	b.Handle(tb.OnQuery, func(q *tb.Query) {
 		re := regexp.MustCompile("(?i)[^A-Z]")
@@ -339,7 +343,7 @@ func main() {
 			Results:   results,
 			CacheTime: 60, // TODO: а если уменьшить?
 		}); err != nil {
-			log.Println(err)
+			log.Print(err)
 		}
 	})
 	b.Handle(&btnBB, handleBB)
@@ -347,22 +351,22 @@ func main() {
 	b.Handle(&btnFear, handleFear)
 	b.Handle(&btnHelp, handleHelp)
 	messageHandler := func(m *tb.Message) {
-		log.Println("****")
-		log.Println("LastEdit:", m.LastEdit)
+		log.Print("****")
+		log.Print("LastEdit:", m.LastEdit)
 		if m.Sender != nil {
-			log.Println("Username:", m.Sender.Username)
-			log.Println("FirstName:", m.Sender.FirstName)
-			log.Println("LastName:", m.Sender.LastName)
+			log.Print("Username:", m.Sender.Username)
+			log.Print("FirstName:", m.Sender.FirstName)
+			log.Print("LastName:", m.Sender.LastName)
 		}
-		log.Println(m.Chat.Username)
+		log.Print(m.Chat.Username)
 		var text string
 		if m.Photo != nil {
 			text = m.Caption
 		} else {
 			text = m.Text
 		}
-		log.Println(text)
-		log.Println("****")
+		log.Print(text)
+		log.Print("****")
 		for tab := range ss.MarketWatchTabs {
 			if text == "/"+tab {
 				send(m.Chat.ID, m.Chat.Type == tb.ChatPrivate, getWhatMarketWatchIDs(tab))
@@ -382,7 +386,7 @@ func main() {
 				for it.Rewind(); it.Valid(); it.Next() {
 					item := it.Item()
 					k := item.Key()
-					totalKeys += 1
+					totalKeys++
 					if err := item.Value(func(v []byte) error {
 						key := int64(bytesToUint64(k))
 						val := int64(bytesToUint64(v))
@@ -801,7 +805,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 		// 			"send text "+t.String(),
 		// 		)
 		// 		if err1 != nil {
-		// 			log.Println(err1)
+		// 			log.Print(err1)
 		// 		}
 		// 		time.Sleep(5 * time.Second)
 		// 		_, err2 := b.Edit(
@@ -810,7 +814,7 @@ func runBackgroundTask(b *tb.Bot, chatID int64, pingURL string) {
 		// 			tb.ModeMarkdownV2,
 		// 		)
 		// 		if err2 != nil {
-		// 			log.Println(err2)
+		// 			log.Print(err2)
 		// 		}
 		// 	}(t)
 		// }
@@ -1005,10 +1009,10 @@ func hasDots(text string) string {
 	return ""
 }
 
-func isAdmin(ID int) bool {
+func isAdmin(userID int64) bool {
 	s := os.Getenv("SEGEZHA4_ADMIN_USER_IDS")
-	IDs := strings.Split(s, ",")
-	return utils.Contains(IDs, fmt.Sprintf("%d", ID))
+	userIDs := strings.Split(s, ",")
+	return utils.Contains(userIDs, strconv.FormatInt(userID, 10))
 }
 
 type getWhat func() interface{}
@@ -1032,6 +1036,7 @@ func closeWhat(symbol string, articleCase *ArticleCase) getWhat {
 			}
 		} else {
 			// TODO: not found for $symbol
+			_ = "dummy" // for linter workaround
 		}
 		var result interface{}
 		linkURL := ""
@@ -1278,6 +1283,7 @@ func getCaption(tagSymbol, description, linkURL string) string {
 
 // **** параллельная обработка
 
+// ParallelResult - результат параллельной обработки
 type ParallelResult struct {
 	what       interface{}
 	isReceived bool
@@ -1295,7 +1301,7 @@ func sendBatch(chatID int64, isPrivateChat bool, callbacks []getWhat) {
 	if threads == 0 {
 		threads = 1
 	}
-	var tokens = make(chan struct{}, threads) // ограничение количества горутин
+	tokens := make(chan struct{}, threads) // ограничение количества горутин
 	var mu sync.Mutex
 	receivedCount := 0
 	for i, cb := range callbacks {
@@ -1382,7 +1388,7 @@ func send(chatID int64, withIncrementPrivateChat bool, what interface{}, options
 			}()...,
 		)
 		if err != nil {
-			log.Println(err)
+			log.Print(err)
 		}
 	}
 }
@@ -1452,7 +1458,7 @@ func sendToAdmins(text string) {
 			},
 		)
 		if err != nil {
-			log.Println(err)
+			log.Print(err)
 		}
 	}
 }
@@ -1484,8 +1490,12 @@ func getAdminMessageSelector(m *tb.Message) *tb.ReplyMarkup {
 		}); err != nil {
 			log.Print(err)
 		}
-		b.Respond(c, &tb.CallbackResponse{})
-		b.Delete(c.Message)
+		if err := b.Respond(c, &tb.CallbackResponse{}); err != nil {
+			log.Print(err)
+		}
+		if err := b.Delete(c.Message); err != nil {
+			log.Print(err)
+		}
 		m2 := sendWithReplyMarkup(m.Chat.ID, escape("Выполняется пересылка..."), nil)
 		for _, chatID := range chatIDs {
 			if m.Chat.ID == chatID {
@@ -1513,7 +1523,10 @@ func getAdminMessageSelector(m *tb.Message) *tb.ReplyMarkup {
 				log.Print(err)
 			}
 		}
-		b.Delete(m2) // TODO: отчёт о доставке
+		// TODO: отчёт о доставке
+		if err := b.Delete(m2); err != nil {
+			log.Print(err)
+		}
 	})
 	go func() {
 		time.Sleep(1 * time.Minute)
@@ -1569,7 +1582,9 @@ func sendAboutAdminMessage(m *tb.Message) {
 			editWithReplyMarkup(commandMessage, fmt.Sprintf(aboutAdminMessageText, i), selector)
 		}
 		time.Sleep(1 * time.Second)
-		b.Delete(commandMessage)
+		if err := b.Delete(commandMessage); err != nil {
+			log.Print(err)
+		}
 	}()
 }
 
@@ -1602,7 +1617,7 @@ func handleHelp(m *tb.Message) {
 func writeFileToAssets(buf []byte, fileName string) {
 	path, _ := os.Getwd()
 	filePath := filepath.Join(path, "assets/"+fileName)
-	if err := ioutil.WriteFile(filePath, buf, 0644); err != nil {
+	if err := os.WriteFile(filePath, buf, 0644); err != nil {
 		log.Print("error: writeFileToAssets for ", fileName)
 	}
 }
